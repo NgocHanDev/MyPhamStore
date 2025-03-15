@@ -311,5 +311,129 @@
             MimeMessage msg = new MimeMessage(session);
             return msg;
         }
+        public static boolean forgotPassword(String to, String otp) {
+            log.info("Sending email to: {}",to);
+            String tieuDe = "Email lấy lại mật khẩu";
+            String noiDung = "<!DOCTYPE html>\n" +
+                    "<html lang=\"en\">\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    "    <style>\n" +
+                    "        body {\n" +
+                    "            font-family: Arial, sans-serif;\n" +
+                    "            background-color: #f4f4f4;\n" +
+                    "            margin: 0;\n" +
+                    "            padding: 0;\n" +
+                    "        }\n" +
+                    "        .email-container {\n" +
+                    "            max-width: 600px;\n" +
+                    "            margin: 20px auto;\n" +
+                    "            background-color: #ffffff;\n" +
+                    "            border: 1px solid #ddd;\n" +
+                    "            border-radius: 8px;\n" +
+                    "            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n" +
+                    "            overflow: hidden;\n" +
+                    "        }\n" +
+                    "        .email-header {\n" +
+                    "            background-color: #007bff;\n" +
+                    "            color: #ffffff;\n" +
+                    "            text-align: center;\n" +
+                    "            padding: 20px;\n" +
+                    "        }\n" +
+                    "        .email-header h1 {\n" +
+                    "            margin: 0;\n" +
+                    "            font-size: 24px;\n" +
+                    "        }\n" +
+                    "        .email-body {\n" +
+                    "            padding: 20px;\n" +
+                    "            color: #333333;\n" +
+                    "        }\n" +
+                    "        .email-body p {\n" +
+                    "            margin: 10px 0;\n" +
+                    "            line-height: 1.6;\n" +
+                    "        }\n" +
+                    "        .email-body a {\n" +
+                    "            display: inline-block;\n" +
+                    "            margin-top: 20px;\n" +
+                    "            padding: 10px 20px;\n" +
+                    "            background-color: #007bff;\n" +
+                    "            color: #ffffff;\n" +
+                    "            text-decoration: none;\n" +
+                    "            border-radius: 5px;\n" +
+                    "            font-size: 16px;\n" +
+                    "        }\n" +
+                    "        .email-body a:hover {\n" +
+                    "            background-color: #0056b3;\n" +
+                    "        }\n" +
+                    "        .email-footer {\n" +
+                    "            text-align: center;\n" +
+                    "            padding: 10px;\n" +
+                    "            font-size: 12px;\n" +
+                    "            color: #777;\n" +
+                    "            border-top: 1px solid #ddd;\n" +
+                    "            background-color: #f9f9f9;\n" +
+                    "        }\n" +
+                    "    </style>\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "    <div class=\"email-container\">\n" +
+                    "        <!-- Header -->\n" +
+                    "        <div class=\"email-header\">\n" +
+                    "            <h1>Lấy lại mật khẩu</h1>\n" +
+                    "        </div>\n" +
+                    "\n" +
+                    "        <!-- Body -->\n" +
+                    "        <div class=\"email-body\">\n" +
+                    "            <p>Chào bạn,</p>\n" +
+                    "            <p>Bạn đã yêu cầu lấy lại mật khẩu tại <strong>Website của chúng tôi</strong>.</p>\n" +
+                    "            <p>Vui lòng nhấn vào nút bên dưới để xác nhận tài khoản của bạn:</p>\n" +
+                    "            <a href=\"http://localhost:8080/register?action=verify&register&otp="+otp+"&email="+to+"  \">Xác nhận tài khoản</a>\n" +
+                    "            <p>Nếu bạn không thực hiện lấy lại mật khẩu, vui lòng bỏ qua email này.</p>\n" +
+                    "            <p>Trân trọng,</p>\n" +
+                    "            <p><strong>Đội ngũ hỗ trợ</strong></p>\n" +
+                    "        </div>\n" +
+                    "\n" +
+                    "        <!-- Footer -->\n" +
+                    "        <div class=\"email-footer\">\n" +
+                    "            &copy; 2025 Website của chúng tôi. Tất cả các quyền được bảo lưu.\n" +
+                    "        </div>\n" +
+                    "    </div>\n" +
+                    "</body>\n" +
+                    "</html>\n";
 
+            // Properties : khai báo các thuộc tính
+            MimeMessage msg = getMimeMessage();
+
+            try {
+                // Kiểu nội dung
+                msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
+
+                // Người gửi
+
+                // Người nhận
+                msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
+
+                // Tiêu đề email
+                msg.setSubject(tieuDe);
+
+                // Quy đinh ngày gửi
+                msg.setSentDate(new Date());
+
+                // Quy định email nhận phản hồi
+                // msg.setReplyTo(InternetAddress.parse(from, false))
+
+                // Nội dung
+                msg.setContent(noiDung, "text/HTML; charset=UTF-8");
+
+                // Gửi email
+                Transport.send(msg);
+                log.info("Send email successful to: {}", to);
+                return true;
+            } catch (Exception e) {
+                log.info("Send email fail to: {}", to);
+                e.printStackTrace();
+                return false;
+            }
+        }
     }
