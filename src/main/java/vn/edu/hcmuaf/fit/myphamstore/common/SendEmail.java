@@ -313,7 +313,7 @@
         }
         public static boolean forgotPassword(String to, String otp) {
             log.info("Sending email to: {}",to);
-            String tieuDe = "Email xác nhận tài khoản";
+            String tieuDe = "Email lấy lại mật khẩu";
             String noiDung = "<!DOCTYPE html>\n" +
                     "<html lang=\"en\">\n" +
                     "<head>\n" +
@@ -380,16 +380,16 @@
                     "    <div class=\"email-container\">\n" +
                     "        <!-- Header -->\n" +
                     "        <div class=\"email-header\">\n" +
-                    "            <h1>Kích hoạt tài khoản</h1>\n" +
+                    "            <h1>Lấy lại mật khẩu</h1>\n" +
                     "        </div>\n" +
                     "\n" +
                     "        <!-- Body -->\n" +
                     "        <div class=\"email-body\">\n" +
                     "            <p>Chào bạn,</p>\n" +
-                    "            <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>Website của chúng tôi</strong>.</p>\n" +
-                    "            <p>Vui lòng nhấn vào nút bên dưới để kích hoạt tài khoản của bạn:</p>\n" +
-                    "            <a href=\"http://localhost:8080/register?action=verify&register&otp="+otp+"&email="+to+"  \">Kích hoạt tài khoản</a>\n" +
-                    "            <p>Nếu bạn không thực hiện đăng ký, vui lòng bỏ qua email này.</p>\n" +
+                    "            <p>Bạn đã yêu cầu lấy lại mật khẩu tại <strong>Website của chúng tôi</strong>.</p>\n" +
+                    "            <p>Vui lòng nhấn vào nút bên dưới để xác nhận tài khoản của bạn:</p>\n" +
+                    "            <a href=\"http://localhost:8080/register?action=verify&register&otp="+otp+"&email="+to+"  \">Xác nhận tài khoản</a>\n" +
+                    "            <p>Nếu bạn không thực hiện lấy lại mật khẩu, vui lòng bỏ qua email này.</p>\n" +
                     "            <p>Trân trọng,</p>\n" +
                     "            <p><strong>Đội ngũ hỗ trợ</strong></p>\n" +
                     "        </div>\n" +
