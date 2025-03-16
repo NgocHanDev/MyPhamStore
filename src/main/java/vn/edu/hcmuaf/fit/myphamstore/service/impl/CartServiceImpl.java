@@ -182,4 +182,12 @@ public class CartServiceImpl implements ICartService {
         }
         return 0;
     }
+    public int getTotalQuantity(HttpSession session) {
+        @SuppressWarnings("unchecked")
+        List<CartModel> cart = (List<CartModel>) session.getAttribute("cart");
+        if (cart == null) {
+            return 0;
+        }
+        return cart.stream().mapToInt(CartModel::getQuantity).sum();
+    }
 }

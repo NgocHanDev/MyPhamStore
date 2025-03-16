@@ -133,9 +133,9 @@
             <li>
                 <div class="ss_cart_value dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <p>${cart.size()}</p>
+                        <p id="cart-count"></p>
                         <a href="<c:url value='/gio-hang' />"><img src="../static/images/header/cart_icon.png" alt="Cart" title="Yêu thích">
-                            <span>Giỏ hàng: <ins style="text-transform: lowercase;">đ</ins></span>
+                            <span>Giỏ hàng <ins id="cart-quantity" style="text-transform: lowercase;"></ins></span>
                         </a>
                     </a>
                 </div>
@@ -147,5 +147,34 @@
     </ul>
 </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function updateCartCount() {
+            fetch('/cart-count')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cart-quantity').textContent = data.totalQuantity;
+                    document.getElementById('cart-count').textContent = data.totalQuantity;
+                });
+        }
+
+        // Fetch and display the cart count as soon as the page loads
+        updateCartCount();
+
+        document.querySelectorAll(".add-to-cart-button").forEach(function(button) {
+            button.addEventListener("click", function() {
+                let productId = this.getAttribute("data-product-id");
+                fetch('/gio-hang', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `action=add&productId=${productId}&quantity=1`
+                }).then(() => updateCartCount());
+            });
+        });
+    });
+</script>
 
 <!-- Header Wrapper End -->

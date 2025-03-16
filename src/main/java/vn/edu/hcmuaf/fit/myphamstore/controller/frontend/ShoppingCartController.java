@@ -23,7 +23,10 @@ public class ShoppingCartController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        cartService.displayCart(request, response);
+        HttpSession session = request.getSession();
+        int totalQuantity = cartService.getTotalQuantity(session);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"totalQuantity\": " + totalQuantity + "}");
     }
 
     @Override
