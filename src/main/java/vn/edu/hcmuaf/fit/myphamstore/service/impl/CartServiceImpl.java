@@ -182,12 +182,16 @@ public class CartServiceImpl implements ICartService {
         }
         return 0;
     }
-    public int getTotalQuantity(HttpSession session) {
-        @SuppressWarnings("unchecked")
+    public void getCartCount(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
         List<CartModel> cart = (List<CartModel>) session.getAttribute("cart");
-        if (cart == null) {
-            return 0;
-        }
-        return cart.stream().mapToInt(CartModel::getQuantity).sum();
+
+        System.out.println("Cart Session: " + (cart == null ? "null" : cart.size())); // Debug
+
+        int count = cart == null ? 0 : cart.size();
+        response.setContentType("application/json");
+        response.getWriter().write("{\"count\":" + count + "}");
     }
+
 }
+

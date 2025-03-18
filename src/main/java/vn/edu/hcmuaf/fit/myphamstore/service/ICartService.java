@@ -3,7 +3,6 @@ package vn.edu.hcmuaf.fit.myphamstore.service;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -13,5 +12,5 @@ public interface ICartService {
     void removeCartItem(HttpServletRequest request, HttpServletResponse response) throws IOException;
     void clearCart(HttpServletRequest request, HttpServletResponse response);
     void displayCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
-    int getTotalQuantity(HttpSession session);
+    void getCartCount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 }
