@@ -33,9 +33,9 @@
                                 </a>
                             </li>
                             <li class="parent">
-                            <a href="<c:url value="/thuong-hieu" />">
-                                Thương hiệu
-                            </a>
+                                <a href="<c:url value="/thuong-hieu" />">
+                                    Thương hiệu
+                                </a>
                             </li>
                             <li class="parent">
                                 <a href="<c:url value="/lien-he" />">
@@ -43,7 +43,7 @@
                                 </a>
                             </li>
                             <li class="parent visible-xs"><a href="/gio-hang">Cart &nbsp;<i
-                                        class="fa fa-angle-down" aria-hidden="true"></i></a>
+                                    class="fa fa-angle-down" aria-hidden="true"></i></a>
                                 <ul class="lg-submenu">
                                     <li>
                                         <div class="ss_cart_inner_main_section">
@@ -108,16 +108,6 @@
                                 <li><a href="<c:url value='/profile' />">Thông tin cá nhân</a></li>
                                 <li><a href="<c:url value='/order-history' />">Lịch sử đơn hàng</a></li>
                                 <li role="separator" class="divider"></li>
-<%--                                <form id="form-login" class="form-group" action=<c:url value="/login?action=logout" /> method="post"/>--%>
-<%--                                <li><a href="<c:url value='/login?action=logout' />" methods="post">Đăng xuất</a></li>--%>
-<%--                                </form>--%>
-<%--                                <li>--%>
-<%--                                    <form id="logout-form" action="<c:url value='/login?action=logout' />" method="post">--%>
-<%--                                        <button type="submit" style="border: none; background: none; padding: 0; color: inherit; cursor: pointer;">--%>
-<%--                                            Đăng xuất--%>
-<%--                                        </button>--%>
-<%--                                    </form>--%>
-<%--                                </li>--%>
                                 <li>
                                     <a href="#" onclick="document.getElementById('logout-form').submit();" style="cursor: pointer;">
                                         Đăng xuất
@@ -132,11 +122,9 @@
 
             <li>
                 <div class="ss_cart_value dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <p>${cart.size()}</p>
-                        <a href="<c:url value='/gio-hang' />"><img src="../static/images/header/cart_icon.png" alt="Cart" title="Yêu thích">
-                            <span>Giỏ hàng: <ins style="text-transform: lowercase;">đ</ins></span>
-                        </a>
+                    <a href="<c:url value='/gio-hang' />">
+                        <img src="<c:url value='/static/images/header/cart_icon.png'/>" alt="Cart" title="Giỏ hàng">
+                        <span>Giỏ hàng <ins id="cart-quantity">0</ins></span>
                     </a>
                 </div>
             </li>
@@ -147,5 +135,44 @@
     </ul>
 </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function updateCartCount() {
+            $.ajax({
+                url: '<c:url value="/gio-hang?action=count" />',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#cart-quantity').text(data.count);
+                },
+                error: function() {
+                    console.error('Failed to fetch cart count');
+                }
+            });
+        }
+
+        updateCartCount(); // Gọi khi trang tải
+
+        $('.add-to-cart-button').on('click', function() {
+            let productId = $(this).data('product-id');
+            $.ajax({
+                url: '<c:url value="/gio-hang" />',
+                method: 'POST',
+                data: {
+                    action: 'add',
+                    productId: productId,
+                    quantity: 1
+                },
+                success: function() {
+                    updateCartCount();
+                },
+                error: function() {
+                    console.error('Failed to add item to cart');
+                }
+            });
+        });
+    });
+</script>
 
 <!-- Header Wrapper End -->
