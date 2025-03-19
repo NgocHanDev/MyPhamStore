@@ -93,7 +93,6 @@ To change this template use File | Settings | File Templates.
 										<ul class="submenu">
 											<c:forEach var="category" items="${categories}">
 												<li>
-
 													<input type="checkbox" id="category${category.id}" name="selectedCategories" value="${category.id}"<c:if test="${fn:contains(selectedCategories, category.id.toString())}">checked</c:if>>
 													<label for="category${category.id}">${category.name}</label>
 												</li>
@@ -109,7 +108,7 @@ To change this template use File | Settings | File Templates.
 										<ul class="submenu">
 											<c:forEach var="brand" items="${brands}">
 												<li>
-													<input type="checkbox" id="brand${brand.id}" name="selectedBrands" value="${brand.id}" <c:if test="${fn:contains(selectedBrands, brand.id)}">checked</c:if>>
+													<input type="checkbox" id="brand${brand.id}" name="selectedBrands" value="${brand.id}" <c:if test="${fn:contains(selectedBrands, brand.id.toString())}">checked</c:if>>
 													<label for="brand${brand.id}">${brand.name}</label>
 												</li>
 											</c:forEach>

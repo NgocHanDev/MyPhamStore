@@ -416,7 +416,9 @@ To change this template use File | Settings | File Templates.
 									<div class="ss_featured_products_box">
 										<div class="ss_featured_products_box_img">
 											<span class="ss_tag">mới</span>
-											<img src="${brand.logo != null ? brand.logo : '/path/to/default/image.jpg'}" alt="Brand Logo"/>
+											<a href="/danh-muc?selectedBrands=${brand.id}">
+												<img src="${brand.logo != null ? brand.logo : '/path/to/default/image.jpg'}" alt="Brand Logo"/>
+											</a>
 										</div>
 									</div>
 								</div>

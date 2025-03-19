@@ -145,6 +145,11 @@ public class CategoryDAOImpl implements ICategoryDAO {
     }
 
     @Override
+    public List<CategoryModel> findAll(String keyword, int currentPage, int pageSize, String orderBy, List<Long> selectedBrands) {
+        return null;
+    }
+
+    @Override
     public Long getTotalPage(int numOfItems) {
         String query = "SELECT COUNT(*) FROM category";
 
