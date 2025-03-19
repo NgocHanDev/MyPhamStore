@@ -8,13 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICategoryDAO;
-import vn.edu.hcmuaf.fit.myphamstore.model.BrandModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CategoryModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICategoryService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.rmi.server.LogStream.log;
 
@@ -74,10 +75,12 @@ public class CategoryServiceImpl implements ICategoryService {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/category/category-management.jsp");
         String keyword = request.getParameter("keyword");
         String orderBy = request.getParameter("orderBy");
-        int currentPage = Integer.parseInt(request.getParameter("currentPage")==null?"1": request.getParameter("currentPage"));
-        int pageSize = Integer.parseInt(request.getParameter("pageSize") == null?"5": request.getParameter("pageSize"));
+        int currentPage = Integer.parseInt(request.getParameter("currentPage") == null ? "1" : request.getParameter("currentPage"));
+        int pageSize = Integer.parseInt(request.getParameter("pageSize") == null ? "5" : request.getParameter("pageSize"));
+        String[] selectedBrandsParam = request.getParameterValues("selectedBrands");
+        List<Long> selectedBrands = selectedBrandsParam != null ? Arrays.stream(selectedBrandsParam).map(Long::parseLong).collect(Collectors.toList()) : null;
 
-        List<CategoryModel> categories = this.pagingCategory(keyword, currentPage, pageSize, orderBy);
+        List<CategoryModel> categories = this.pagingCategory(keyword, currentPage, pageSize, orderBy, selectedBrands);
         Long totalPages = this.categoryDAO.getTotalPage(pageSize);
 
         request.setAttribute("categories", categories);
@@ -86,6 +89,7 @@ public class CategoryServiceImpl implements ICategoryService {
         request.setAttribute("pageSize", pageSize);
         request.setAttribute("keyword", keyword);
         request.setAttribute("orderBy", orderBy);
+        request.setAttribute("selectedBrands", selectedBrands);
         dispatcher.forward(request, response);
     }
 
@@ -107,5 +111,12 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public void updateCategory(HttpServletRequest request, HttpServletResponse response) {
 
+    }
+    @Override
+    public List<CategoryModel> pagingCategory(String keyword, int currentPage, int pageSize, String orderBy, List<Long> selectedBrands) {
+        if (keyword != null && !keyword.isEmpty()) {
+            keyword = keyword.trim();
+        }
+        return this.categoryDAO.findAll(keyword, currentPage, pageSize, orderBy, selectedBrands);
     }
 }

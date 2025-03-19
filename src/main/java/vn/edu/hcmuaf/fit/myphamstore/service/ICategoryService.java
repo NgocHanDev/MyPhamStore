@@ -25,4 +25,6 @@ public interface ICategoryService {
     void addCategory(HttpServletRequest request, HttpServletResponse response);
 
     void updateCategory(HttpServletRequest request, HttpServletResponse response);
+
+    List<CategoryModel> pagingCategory(String keyword, int currentPage, int pageSize, String orderBy, List<Long> selectedBrands);
 }
