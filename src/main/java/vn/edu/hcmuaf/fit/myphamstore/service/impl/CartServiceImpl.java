@@ -182,4 +182,16 @@ public class CartServiceImpl implements ICartService {
         }
         return 0;
     }
+    public void getCartCount(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
+        List<CartModel> cart = (List<CartModel>) session.getAttribute("cart");
+
+        System.out.println("Cart Session: " + (cart == null ? "null" : cart.size())); // Debug
+
+        int count = cart == null ? 0 : cart.size();
+        response.setContentType("application/json");
+        response.getWriter().write("{\"count\":" + count + "}");
+    }
+
 }
+

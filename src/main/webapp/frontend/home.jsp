@@ -131,7 +131,8 @@ To change this template use File | Settings | File Templates.
 											<div class="ss_feat_prod_cont_heading_wrapper">
 												<h4><a class="limited-text" href="<c:url value="/product-detail?id=${product.id}"  />">${product.name}</a></h4>
 
-												<del>${product.price}</del> <ins>${product.price}</ins>
+												<del class="price">${product.price}</del>
+												<ins class="price">${product.price - (product.price * 0.2)}</ins>
 											</div>
 											<div class="ss_featured_products_box_footer">
 												<fieldset class="rating">
@@ -222,8 +223,9 @@ To change this template use File | Settings | File Templates.
 													<h4>
 														<a class="limited-text" href="<c:url value='/product-detail?id=${product.id}' />">${product.name}</a>
 													</h4>
-													<del>${product.price}</del>
-													<ins>${product.price - (product.price * 0.2)}</ins>
+
+													<del class="price">${product.price}</del>
+													<ins class="price">${product.price - (product.price * 0.2)}</ins>
 												</div>
 												<div class="ss_featured_products_box_footer">
 													<ul style="display: flex; padding-top: 15px; justify-content: center;">
@@ -265,8 +267,8 @@ To change this template use File | Settings | File Templates.
 													<h4>
 														<a class="limited-text" href="<c:url value='/product-detail?id=${product.id}' />">${product.name}</a>
 													</h4>
-													<del>${product.price}</del>
-													<ins>${product.price - (product.price * 0.2)}</ins>
+													<del class="price">${product.price}</del>
+													<ins class="price">${product.price - (product.price * 0.2)}</ins>
 												</div>
 												<div class="ss_featured_products_box_footer">
 													<ul style="display: flex; padding-top: 15px; justify-content: center;">
@@ -308,8 +310,8 @@ To change this template use File | Settings | File Templates.
 													<h4>
 														<a class="limited-text" href="<c:url value='/product-detail?id=${product.id}' />">${product.name}</a>
 													</h4>
-													<del>${product.price}</del>
-													<ins>${product.price - (product.price * 0.2)}</ins>
+													<del class="price">${product.price}</del>
+													<ins class="price">${product.price - (product.price * 0.2)}</ins>
 												</div>
 												<div class="ss_featured_products_box_footer">
 													<ul style="display: flex; padding-top: 15px; justify-content: center;">
@@ -359,7 +361,8 @@ To change this template use File | Settings | File Templates.
 											</div>
 											<div class="ss_feat_prod_cont_heading_wrapper">
 												<h4><a class="limited-text" href="<c:url value="/product-detail?id=${product.id}" />">${product.name}</a></h4>
-												<del>${product.price}</del> <ins>${product.price}</ins>
+												<del class="price">${product.price}</del>
+												<ins class="price">${product.price - (product.price * 0.2)}</ins>
 											</div>
 											<div class="ss_featured_products_box_footer">
 												<ul style="    display: flex
@@ -444,6 +447,18 @@ To change this template use File | Settings | File Templates.
 	<!-- demo feature -->
 	 <script src="../static/js/demo/login-label.js"></script>
 
+	<script>
+		function formatPrice(price, currencySymbol, delimiter) {
+			return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, delimiter) + ' ' + currencySymbol;
+		}
+
+		document.addEventListener("DOMContentLoaded", function() {
+			document.querySelectorAll(".price").forEach(function(element) {
+				let price = parseFloat(element.textContent.replace(/[^0-9.-]+/g,""));
+				element.textContent = formatPrice(price, "VND", ".");
+			});
+		});
+	</script>
 
 </body>
 </html>

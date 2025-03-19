@@ -12,4 +12,5 @@ public interface ICartService {
     void removeCartItem(HttpServletRequest request, HttpServletResponse response) throws IOException;
     void clearCart(HttpServletRequest request, HttpServletResponse response);
     void displayCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+    void getCartCount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 }
