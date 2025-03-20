@@ -25,7 +25,6 @@ public class AutFilter implements Filter {
                 "/logout",
                 "/checkout",
                 "/wishlist",
-                "/forgot-password",
                 "/admin"
         };
     }
