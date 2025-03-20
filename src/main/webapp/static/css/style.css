@@ -123,50 +123,53 @@ textarea {
 .lr_nl_form_wrapper button:hover {
   background-color: #0056b3;
 }
-.coupons-section {
-  margin-top: 30px;
-}
-
-.coupons-list {
+.coupon-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px;
 }
 
 .coupon-card {
-  background: #f9f9f9;
+  background: #f8f9fa;
   border: 1px solid #ddd;
+  padding: 15px;
+  width: 300px;
   border-radius: 8px;
-  padding: 20px;
-  width: calc(33.333% - 20px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
 
-.coupon-header {
+.coupon-code {
+  font-size: 18px;
+  font-weight: bold;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
 }
 
-.coupon-header h2 {
-  font-size: 1.5em;
-  margin: 0;
+.copy-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.coupon-expiry {
-  font-size: 0.9em;
-  color: #888;
+.copy-btn:hover {
+  background-color: #0056b3;
 }
 
-.coupon-body p {
-  margin: 5px 0;
-  font-size: 1em;
+.coupon-details {
+  margin-top: 10px;
+  list-style-type: none;
+  padding: 0;
 }
 
-.coupon-body p strong {
-  color: #333;
+.coupon-details li {
+  font-size: 14px;
+  margin-bottom: 5px;
 }
+
 .cart-summary {
   margin-top: 20px;
   font-size: 16px;
