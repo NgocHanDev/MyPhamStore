@@ -123,7 +123,50 @@ textarea {
 .lr_nl_form_wrapper button:hover {
   background-color: #0056b3;
 }
+.coupons-section {
+  margin-top: 30px;
+}
 
+.coupons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.coupon-card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: calc(33.333% - 20px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.coupon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.coupon-header h2 {
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.coupon-expiry {
+  font-size: 0.9em;
+  color: #888;
+}
+
+.coupon-body p {
+  margin: 5px 0;
+  font-size: 1em;
+}
+
+.coupon-body p strong {
+  color: #333;
+}
 .cart-summary {
   margin-top: 20px;
   font-size: 16px;

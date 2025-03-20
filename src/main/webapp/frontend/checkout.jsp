@@ -348,7 +348,29 @@
       </table>
     </div>
     <!--End Order Box-->
-
+    <!-- Coupons Section -->
+    <div class="coupons-section">
+      <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">
+        <h1>Available Coupons</h1>
+      </div>
+      <div class="coupons-list">
+        <c:forEach items="${availableCoupons}" var="coupon">
+          <div class="coupon-card">
+            <div class="coupon-header">
+              <h2>${coupon.code}</h2>
+              <span class="coupon-expiry">Expires on: ${coupon.endDate}</span>
+            </div>
+            <div class="coupon-body">
+              <p><strong>Discount:</strong> ${coupon.discountValue} ${coupon.discountType}</p>
+              <p><strong>Min Order Value:</strong> ${coupon.minOrderValue}</p>
+              <p><strong>Max Discount:</strong> ${coupon.maxDiscountValue}</p>
+              <p><strong>Remaining Quantity:</strong> ${coupon.maxUsage - coupon.currentUsage}</p>
+              <p><strong>Conditions:</strong> ${coupon.conditions}</p>
+            </div>
+          </div>
+        </c:forEach>
+      </div>
+    </div>
     <!--Payment Box-->
     <div class="payment-box">
       <div class="upper-box">

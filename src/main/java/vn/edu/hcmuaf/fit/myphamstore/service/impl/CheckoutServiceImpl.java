@@ -13,6 +13,7 @@ import vn.edu.hcmuaf.fit.myphamstore.dao.IAddressDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IOrderDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICheckoutService;
+import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
 
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class CheckoutServiceImpl implements ICheckoutService {
     private IAddressDAO addressDAO;
     @Inject
     private IOrderDAO orderDAO;
+    @Inject
+    private ICouponService couponService;
 
     @Override
     public void displayCheckout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -105,6 +108,18 @@ public class CheckoutServiceImpl implements ICheckoutService {
             request.setAttribute("errorMessage", "An error occurred while processing your cart.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
+        }
+        String couponCode = request.getParameter("couponCode");
+        if (couponCode != null && !couponCode.isEmpty()) {
+            CouponModel coupon = couponService.applyCoupon(couponCode, totalAmount);
+            if (coupon != null) {
+                totalAmount -= coupon.getDiscountValue();
+                request.setAttribute("appliedCoupon", coupon);
+            } else {
+                request.setAttribute("errorMessage", "Invalid or expired coupon code.");
+                request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
+                return;
+            }
         }
         AddressModel address = this.getAddressFromRequest(request);
         OrderModel order = OrderModel.builder()

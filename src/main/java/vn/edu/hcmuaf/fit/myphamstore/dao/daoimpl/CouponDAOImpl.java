@@ -195,4 +195,20 @@ public class CouponDAOImpl implements ICouponDAO {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public CouponModel findCouponByCode(String code) {
+        String sql = "SELECT * FROM coupon WHERE code = :code";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind("code", code)
+                            .mapToBean(CouponModel.class)
+                            .one()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
