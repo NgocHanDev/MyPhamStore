@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    cap_add:
+      - SYS_NICE  # Cho phép điều chỉnh mức ưu tiên tiến trình
+    restart: always
+    environment:
+      MYSQL_DATABASE: myphamstoredb  # Đổi từ 'root' thành tên DB thực tế
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql  # Lưu trữ dữ liệu DB
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql  # File SQL khởi tạo
+    networks:
+      - app-network
+    command: --default-authentication-plugin=mysql_native_password  # Đảm bảo tương thích driver cũ
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
