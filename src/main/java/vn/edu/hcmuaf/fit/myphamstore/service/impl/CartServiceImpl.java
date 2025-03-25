@@ -6,10 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
-import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
@@ -28,14 +25,18 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
+        Long variantId = request.getParameter("variantId").isBlank() ? null : Long.parseLong(request.getParameter("variantId"));
+
         int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
         ProductModel product = productService.findProductById(productId);
         Long brandId = product.getBrandId();
+
 
         CartModel item = CartModel.builder()
                 .productId(productId)
                 .quantity(quantity)
                 .brandId(brandId)
+                .variantId(variantId)
                 .build();
 
         HttpSession session = request.getSession();
@@ -113,6 +114,7 @@ public class CartServiceImpl implements ICartService {
     public void displayCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
+        System.out.println("Before displaying: " + listCartItems);
         if (listCartItems == null) {
             request.setAttribute("errorMessage", "Your cart is empty.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
@@ -128,10 +130,27 @@ public class CartServiceImpl implements ICartService {
                     request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
                     request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
                     return;
+                }else if(cartItem.getVariantId() == null){
+                    totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
+                    CartModelHelper helper = new CartModelHelper();
+                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setProduct(product);
+                    listCartDisplay.add(helper);
+                }else{
+                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
+                    ProductVariant variant = null;
+                    for (ProductVariant productVariant : listVariant) {
+                        if(cartItem.getVariantId() == productVariant.getId()){
+                            variant = productVariant;
+                        }
+                    }
+                    totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
+                    listCartDisplay.add(cartModelHelper);
                 }
-                totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
-                listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity()));
+
             }
+            System.out.println("After displaying: " + listCartDisplay);
         } catch (Exception e) {
             request.setAttribute("errorMessage", "An error occurred while processing your cart.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
