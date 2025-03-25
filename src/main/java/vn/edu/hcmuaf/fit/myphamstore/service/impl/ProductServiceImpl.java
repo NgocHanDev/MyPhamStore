@@ -11,7 +11,10 @@ import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @ApplicationScoped
 public class ProductServiceImpl implements IProductService {
     //khai báo các hằng số cấu hình
@@ -70,6 +73,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductModel getProductDetail(Long id) {
+        ProductModel product = productDAO.getProductDetail(id);
         return productDAO.getProductDetail(id);
     }
 

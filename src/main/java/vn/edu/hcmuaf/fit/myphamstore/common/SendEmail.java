@@ -7,7 +7,8 @@
     import vn.edu.hcmuaf.fit.myphamstore.model.AddressModel;
     import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
     import vn.edu.hcmuaf.fit.myphamstore.model.OrderModel;
-    
+    import vn.edu.hcmuaf.fit.myphamstore.model.ProductVariant;
+
     import java.text.NumberFormat;
     import java.time.format.DateTimeFormatter;
     import java.util.Date;
@@ -150,14 +151,17 @@
             // Sử dụng NumberFormat với locale cho Việt Nam
             NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
     
-            String items = "";
-    
+
+            StringBuilder items = new StringBuilder();
             for (CartModelHelper cartItem : listCartDisplay) {
-                items += "<tr>\n" +
-                        "                    <td>" + cartItem.getProduct().getName() + "</td>\n" +
-                        "                    <td>" + cartItem.getQuantity() + "</td>\n" +
-                        "                    <td>" + numberFormat.format(cartItem.getProduct().getPrice()) + " VNĐ</td>\n" +
-                        "                </tr>\n";
+                ProductVariant variant = cartItem.getVariant();
+                String price = (variant != null) ? numberFormat.format(variant.getPrice()) : numberFormat.format(cartItem.getProduct().getPrice());
+                items.append("<tr>\n")
+                        .append("                    <td>").append(cartItem.getProduct().getName()).append("</td>\n")
+                        .append("                    <td>").append((variant == null)?"sản phẩm gốc":variant.getName()).append("</td>\n")
+                        .append("                    <td>").append(cartItem.getQuantity()).append("</td>\n")
+                        .append("                    <td>").append(price).append(" VNĐ</td>\n")
+                        .append("                </tr>\n");
             }
     
             String template = "<!DOCTYPE html>\n" +
@@ -244,6 +248,7 @@
                     "            <table>\n" +
                     "                <tr>\n" +
                     "                    <th>Tên Sản Phẩm</th>\n" +
+                    "                    <th>Loại</th>\n"+
                     "                    <th>Số Lượng</th>\n" +
                     "                    <th>Đơn Giá</th>\n" +
                     "                </tr>\n" +

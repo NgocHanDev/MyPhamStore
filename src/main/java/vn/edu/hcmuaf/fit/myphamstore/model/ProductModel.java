@@ -3,6 +3,9 @@ package vn.edu.hcmuaf.fit.myphamstore.model;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -304,37 +304,32 @@
       <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">
         <h1>Sản phẩm đã đặt hàng của bạn </h1>
       </div>
-<%--      <div class="title-box row">--%>
-<%--          <div class="col-md-4">SẢN PHẨM</div>--%>
-<%--          <div class="col-md-4">GIÁ</div>--%>
-<%--          <div class="col-md-4">Số lượng</div>--%>
-
-<%--      </div>--%>
-<%--      <ul class="row">--%>
-<%--          <li class="clearfix col-md-4"><strong>Kem chống nắng Sun</strong></li>--%>
-<%--          <li class="clearfix">139. 000 đ</li>--%>
-<%--           <li class="clearfixcol-md-4">Giá sản phẩm <span>139. 000 đ</span></li>--%>
-<%--          <li class="clearfix col-md-4">Vận chuyển <span class="Miễn phí">Miễn phí vận chuyển </span></li>--%>
-<%--      </ul>--%>
       <table class="table">
         <thead>
         <tr>
           <th>Sản phẩm</th>
+          <th>Loại</th>
           <th>Giá</th>
           <th>Số lượng</th>
         </tr>
         </thead>
         <tbody>
-        <!-- hiển thị các sản phẩm đã mua -->
-<%--        <tr>--%>
-<%--          <td>Kem chống nắng Sun</td>--%>
-<%--          <td>139.000 đ</td>--%>
-<%--          <td>1</td>--%>
-<%--        </tr>--%>
-        <c:forEach items="${listCart}" var="cart">
+        <c:forEach items="${listCartDisplay}" var="cart">
+          <c:set var="variant" value="${cart.variant}"/>
           <tr>
             <td>${cart.product.name}</td>
-            <td>${cart.product.price}</td>
+            <td>
+              <c:choose>
+                <c:when test="${variant != null}">${variant.name}</c:when>
+                <c:otherwise>Sản phẩm gốc</c:otherwise>
+              </c:choose>
+            </td>
+            <td>
+              <c:choose>
+                <c:when test="${variant != null}">${variant.price}đ</c:when>
+                <c:otherwise>${cart.product.price}đ</c:otherwise>
+              </c:choose>
+            </td>
             <td>${cart.quantity}</td>
           </tr>
         </c:forEach>
@@ -343,7 +338,7 @@
         <tr>
           <td>Tổng: </td>
           <td>${totalAmount}đ</td>
-        <!-- hiển thị tổng -->
+        </tr>
         </tfoot>
       </table>
     </div>

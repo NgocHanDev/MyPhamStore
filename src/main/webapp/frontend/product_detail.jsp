@@ -39,6 +39,15 @@
     .btc_shop_sin_pro_icon_wrapper i.fa-star {
       color: gold !important; /* Màu khi được chọn */
     }
+    #variants{
+      border-radius: 4px;
+      padding: 2px;
+      border: none;
+      transform: translateX(-6px);
+    }
+    #variants:hover{
+    border: 1px solid #0091DC;
+    }
   </style>
 </head>
 <body>
@@ -93,15 +102,36 @@
             <p>
               <c:out value="${reviewCount} "/> Đánh Giá <span><a href="#collapseFiveLeftfive"></a></span>
             </p>
+              <c:set var="variants" value="${variants}"/>
+              <c:if test="${not empty variants}">
+                <h5>Chọn biến thể:</h5>
+                <select id="variants" onchange="changeVariant(this)">
+<%--                  mặt định sản phẩm gốc--%>
+                  <option value="" selected
+                          data-price="${product.price}"
+                          data-stock="${product.stock}">sản phẩm gốc - ${product.price}(Còn: ${product.stock})
+                  </option>
+<%--  các biến thể--%>
+                  <c:forEach items="${variants}" var="variant">
+                    <option value="${variant.id}"
+                            data-price="${variant.price}"
+                            data-stock="${variant.stock}">
+                        ${variant.name} - ${variant.price}
+                      (Còn: ${variant.stock})
+                    </option>
+                  </c:forEach>
+                </select>
+              </c:if>
             <div class="ss_featured_products_box_img_list_cont ss_featured_products_box_img_list_cont_single">
 
 <%--              <p class="shop_pera"><c:out value="${product.brandName}"/></p>--%>
-              <del><c:out value="${product.costPrice}"/>đ</del> <ins><c:out value="${product.price}"/>đ</ins>
+              <del><c:out value="${product.costPrice}"/>đ</del> <ins id="product-price"><c:out value="${product.price}"/>đ</ins>
 <%--              <h5>--%>
 <%--                Giới Thiệu:--%>
 <%--                <c:out value="${product.description}"/>--%>
 <%--              </h5>--%>
             </div>
+
           </div>
           <div class="btc_shop_prod_quanty_bar">
             <div class="row">
@@ -127,10 +157,11 @@
                     </div>
                 </div>
               </div>
-              <form method="post" action="/gio-hang">
+              <form method="post" action="/gio-hang" onsubmit="submitAddCart(event)">
                 <input type="hidden" name="action" value="add">
-                <input type="hidden" name="productId" value="${product.id}">
-                <button type="submit" class="ss_btn">Thêm vào giỏ</button>
+                <input type="hidden" name="productId" id="productId" value="${product.id}">
+                <input type="hidden" name="variantId" id="variantId" value="">
+                <button type="submit"  class="ss_btn">Thêm vào giỏ</button>
               </form>
             </div>
           </div>
@@ -348,6 +379,37 @@
 <!-- accordion section end -->
 
   <%@include file="component/footer.jsp"%>
+
+<script>
+  const submitAddCart = (e) =>{
+    e.preventDefault();
+    //
+    const productId = document.getElementById("productId").value;
+    const  select = document.getElementById('variants');
+    const variantId = select.options[select.selectedIndex].value
+
+    const url = '/gio-hang?action=add&variantId='+variantId+'&productId='+productId
+
+    fetch(url, {
+      method: 'POST'
+    }).then(()=>{
+      window.location.reload();
+    })
+  }
+
+</script>
+
+<script>
+  const changeVariant = (select) =>{
+    const selectedOption = select.options[select.selectedIndex];
+    const id = selectedOption.id;
+    const price = parseInt(selectedOption.getAttribute("data-price"));
+    const stock = selectedOption.getAttribute("data-stock");
+
+    document.getElementById('variantId').value = id
+    document.getElementById('product-price').textContent = price+'đ'
+  }
+</script>
   <script src="../static/js/jquery_min.js"></script>
   <script src="../static/js/wow.js"></script>
   <script src="../static/js/bootstrap.js"></script>

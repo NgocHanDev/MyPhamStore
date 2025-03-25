@@ -56,9 +56,25 @@ public class CheckoutServiceImpl implements ICheckoutService {
                     request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
                     request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
                     return;
+                }else if(cartItem.getVariantId() == null){
+                    totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
+                    CartModelHelper helper = new CartModelHelper();
+                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setProduct(product);
+                    listCartDisplay.add(helper);
+                }else{
+                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
+                    ProductVariant variant = null;
+                    for (ProductVariant productVariant : listVariant) {
+                        if(cartItem.getVariantId() == productVariant.getId()){
+                            variant = productVariant;
+                        }
+                    }
+                    totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
+                    listCartDisplay.add(cartModelHelper);
                 }
-                totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
-                listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity()));
+
             }
         } catch (Exception e) {
             request.setAttribute("errorMessage", "An error occurred while processing your cart.");
@@ -73,7 +89,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
             }
         }
 
-        request.setAttribute("listCart", listCartDisplay);
+        request.setAttribute("listCartDisplay", listCartDisplay);
         request.setAttribute("totalAmount", totalAmount);
         request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
     }
@@ -88,7 +104,6 @@ public class CheckoutServiceImpl implements ICheckoutService {
             return;
         }
         List<CartModelHelper> listCartDisplay = new ArrayList<>();
-//        AtomicLong totalAmount = new AtomicLong(0);
         Double totalAmount = 0.0;
         try {
             for (CartModel cartItem : listCartItems) {
@@ -97,10 +112,27 @@ public class CheckoutServiceImpl implements ICheckoutService {
                     request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
                     request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
                     return;
+                }else if(cartItem.getVariantId() == null){
+                    totalAmount += product.getPrice() * cartItem.getQuantity();
+                    CartModelHelper helper = new CartModelHelper();
+                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setProduct(product);
+                    listCartDisplay.add(helper);
+                }else{
+                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
+                    ProductVariant variant = null;
+                    for (ProductVariant productVariant : listVariant) {
+                        if(cartItem.getVariantId() == productVariant.getId()){
+                            variant = productVariant;
+                        }
+                    }
+                    totalAmount += (variant.getPrice() * cartItem.getQuantity());
+                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
+                    listCartDisplay.add(cartModelHelper);
                 }
-                totalAmount += product.getPrice() * cartItem.getQuantity();
-                listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity()));
+
             }
+            System.out.println("After displaying: " + listCartDisplay);
         } catch (Exception e) {
             request.setAttribute("errorMessage", "An error occurred while processing your cart.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
