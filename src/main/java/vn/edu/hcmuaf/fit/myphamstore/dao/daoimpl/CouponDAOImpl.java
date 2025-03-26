@@ -195,4 +195,63 @@ public class CouponDAOImpl implements ICouponDAO {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public CouponModel findCouponByCode(String code) {
+        String sql = "SELECT * FROM coupon WHERE code = :code";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind("code", code)
+                            .mapToBean(CouponModel.class)
+                            .one()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public CouponModel findByCode(String code) {
+        String sql = "SELECT * FROM coupons WHERE code = :code";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
+                    .bind("code", code)
+                    .mapToBean(CouponModel.class)
+                    .one());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public int getRemainingQuantity(String code) {
+        String sql = "SELECT remaining_quantity FROM coupons WHERE code = :code";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
+                    .bind("code", code)
+                    .mapTo(Integer.class)
+                    .one());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public double getDiscount(String code) {
+        String sql = "SELECT discount FROM coupons WHERE code = :code";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
+                    .bind("code", code)
+                    .mapTo(Double.class)
+                    .one());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 }

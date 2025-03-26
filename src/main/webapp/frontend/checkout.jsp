@@ -77,29 +77,27 @@
       <div class="panel panel-default panel-checkout">
         <div class="panel-heading checkout_panel_heading">
           <h4 class="panel-title">
-            <i class="fa fa-user"></i> Bạn có phiếu giảm giá?
-            <a data-toggle="collapse" data-parent="#accordion_oneLeft" href="#collapseFiveLeftone" aria-expanded="false">
-              Bấm vào đây để nhập mã của bạn
-            </a>
+            <i class="fa fa-ticket"></i> Mã giảm giá khả dụng
           </h4>
         </div>
-        <div id="collapseFiveLeftone" class="panel-collapse collapse" aria-expanded="false" role="tablist">
-          <div class="panel-body">
-
-            <div class="text-accordion">
-              <div class="estimate_shiping_Wrapper_cntnt estimate_shiping_Wrapper_cntnt_3">
-                <div class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head related_pdt_shop_head_2">
-                  <h1>Mã giảm giá ở đây : </h1>
-                  <div class="lr_nl_form_wrapper">
-                    <input type="text" placeholder="Type Your Code">
-                    <button type="submit">Áp dụng</button>
-                  </div>
+        <div class="panel-body">
+          <div class="coupon-container">
+            <c:forEach items="${availableCoupons}" var="coupon">
+              <div class="coupon-card">
+                <div class="coupon-code">
+                  <span>${coupon.code}</span>
+                  <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
                 </div>
+                <ul class="coupon-details">
+                  <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
+                  <li><strong>Loại giảm giá:</strong> ${coupon.type eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
+                  <li><strong>Số tiền giảm:</strong> ${coupon.type eq 'percentage' ? coupon.discount + '%' : coupon.discount + 'đ'}</li>
+                  <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
+                  <li><strong>Ngày hết hạn:</strong> ${coupon.expiryDate}</li>
+                </ul>
               </div>
-
-            </div>
+            </c:forEach>
           </div>
-          <!-- end of panel-body -->
         </div>
       </div>
       <div class="panel panel-default panel-checkout panel-checkout-2">
@@ -214,86 +212,6 @@
             </div>
           </div>
         </div>
-        <!--Column-->
-<%--        <form action="POST">--%>
-<%--          <div class="column col-md-6 col-sm-12 col-xs-12 checkout_form_2_wrapper">--%>
-<%--            <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">--%>
-<%--              <h1>GỬI ĐẾN ĐỊA CHỈ KHÁC? </h1>--%>
-<%--            </div>--%>
-
-<%--            <div class="row clearfix">--%>
-
-<%--              <!--Form Group-->--%>
-<%--              <div class="form-group col-md-12 col-sm-6 col-xs-12">--%>
-<%--                <div class="field-label">Họ và Tên <sup>*</sup></div>--%>
-<%--                <input type="text" name="field-name" value="" placeholder=""--%>
-<%--                       required--%>
-<%--                       oninvalid="this.setCustomValidity('Vui lòng nhập họ tên.')"--%>
-<%--                       oninput="this.setCustomValidity('')"--%>
-<%--                >--%>
-<%--              </div>--%>
-
-<%--              <!--Form Group-->--%>
-<%--              <div class="form-group col-md-12 col-sm-12 col-xs-12">--%>
-<%--                <div class="field-label">Số điện thoại </div>--%>
-<%--                <input type="text" name="field-name" value="" placeholder=""--%>
-<%--                       required--%>
-<%--                       oninvalid="this.setCustomValidity('Vui lòng nhập số điện thoại.')"--%>
-<%--                       oninput="this.setCustomValidity('')">--%>
-<%--              </div>--%>
-
-<%--              <!--Form Group-->--%>
-<%--              <div class="form-group col-md-6 col-sm-12 col-xs-12">--%>
-<%--                <div class="field-label">Tỉnh </div>--%>
-<%--                <select id="province"--%>
-<%--                        required--%>
-<%--                        oninvalid="this.setCustomValidity('Vui lòng nhập tỉnh thành.')"--%>
-<%--                        oninput="this.setCustomValidity('')"--%>
-<%--                >--%>
-<%--                  <option value="" selected disabled>Chọn tỉnh thành</option>--%>
-<%--                </select>--%>
-<%--              </div>--%>
-
-<%--              <!--Form Group-->--%>
-<%--              <div class="form-group col-md-6 col-sm-12 col-xs-12">--%>
-<%--                <div class="field-label">Quận/Huyện </div>--%>
-<%--                <select id="district"--%>
-<%--                        required--%>
-<%--                        oninvalid="this.setCustomValidity('Vui lòng nhập quận huyện.')"--%>
-<%--                        oninput="this.setCustomValidity('')">--%>
-<%--                  <option value="" selected disabled>Chọn quận huyện</option>--%>
-<%--                </select>--%>
-<%--              </div>--%>
-
-<%--              <!--Form Group-->--%>
-<%--              <div class="form-group col-md-6 col-sm-12 col-xs-12">--%>
-<%--                <div class="field-label">Phường/xã</div>--%>
-<%--                <select id="ward" required--%>
-<%--                        required--%>
-<%--                        oninvalid="this.setCustomValidity('Vui lòng nhập phường xã.')"--%>
-<%--                        oninput="this.setCustomValidity('')"--%>
-<%--                >--%>
-<%--                  <option value="" selected disabled>Chọn phường xã</option>--%>
-<%--                </select>--%>
-<%--              </div>--%>
-
-<%--              <!--Form Group-->--%>
-<%--              <div class="form-group col-md-6 col-sm-6 col-xs-12">--%>
-<%--                <div class="field-label">Chi tiết địa chỉ </div>--%>
-<%--                <input type="text" name="field-name" value=""  placeholder=""--%>
-<%--                       required--%>
-<%--                       oninvalid="this.setCustomValidity('Vui lòng nhập chi tiết địa chỉ.')"--%>
-<%--                       oninput="this.setCustomValidity('')"--%>
-<%--                >--%>
-<%--              </div>--%>
-
-<%--              <div class="form-group col-md-12 col-sm-12 col-xs-12 text-center">--%>
-<%--                <button type="submit" class="btn btn-primary">Sử dụng địa chỉ này</button>--%>
-<%--              </div>--%>
-<%--            </div>--%>
-
-<%--          </div>--%>
-<%--        </form>--%>
       </div>
 
     </form>
@@ -314,6 +232,8 @@
         </tr>
         </thead>
         <tbody>
+
+          <c:forEach items="${listCart}" var="cart">
         <c:forEach items="${listCartDisplay}" var="cart">
           <c:set var="variant" value="${cart.variant}"/>
           <tr>
@@ -343,7 +263,29 @@
       </table>
     </div>
     <!--End Order Box-->
-
+<%--    <!-- Coupons Section -->--%>
+<%--    <div class="coupons-section">--%>
+<%--      <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">--%>
+<%--        <h1>Available Coupons</h1>--%>
+<%--      </div>--%>
+<%--      <div class="coupons-list">--%>
+<%--        <c:forEach items="${availableCoupons}" var="coupon">--%>
+<%--          <div class="coupon-card">--%>
+<%--            <div class="coupon-header">--%>
+<%--              <h2>${coupon.code}</h2>--%>
+<%--              <span class="coupon-expiry">Expires on: ${coupon.endDate}</span>--%>
+<%--            </div>--%>
+<%--            <div class="coupon-body">--%>
+<%--              <p><strong>Discount:</strong> ${coupon.discountValue} ${coupon.discountType}</p>--%>
+<%--              <p><strong>Min Order Value:</strong> ${coupon.minOrderValue}</p>--%>
+<%--              <p><strong>Max Discount:</strong> ${coupon.maxDiscountValue}</p>--%>
+<%--              <p><strong>Remaining Quantity:</strong> ${coupon.maxUsage - coupon.currentUsage}</p>--%>
+<%--              <p><strong>Conditions:</strong> ${coupon.conditions}</p>--%>
+<%--            </div>--%>
+<%--          </div>--%>
+<%--        </c:forEach>--%>
+<%--      </div>--%>
+<%--    </div>--%>
     <!--Payment Box-->
     <div class="payment-box">
       <div class="upper-box">
@@ -378,8 +320,8 @@
             </li>
             <li>
               <div class="radio-option">
-                <input type="radio" name="payment-group" id="payment-4">
-                <label for="payment-4"><strong>PayPal</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
+                <input type="radio" name="payment-group" id="payment-5">
+                <label for="payment-5"><strong>PayPal</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
               </div>
             </li>
           </ul>
@@ -445,6 +387,16 @@
       ward.add(option);
     });
   });
+
+</script>
+<script>
+  function copyCoupon(code) {
+    navigator.clipboard.writeText(code).then(function() {
+      alert("Mã giảm giá đã được sao chép: " + code);
+    }).catch(function(error) {
+      console.error("Lỗi khi sao chép mã: ", error);
+    });
+  }
 
 </script>
 

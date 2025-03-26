@@ -10,6 +10,7 @@ import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CouponServiceImpl implements ICouponService {
@@ -28,7 +29,16 @@ public class CouponServiceImpl implements ICouponService {
         }
         return couponDAO.findAll(keyword, currentPage, pageSize, orderBy);
     }
-
+    public CouponModel applyCoupon(String couponCode, Double totalAmount) {
+        CouponModel coupon = couponDAO.findCouponByCode(couponCode);
+        if (coupon == null || !coupon.getIsAvailable() || coupon.getEndDate().isBefore(LocalDateTime.now())) {
+            return null;
+        }
+        if (totalAmount < coupon.getMinOrderValue()) {
+            return null;
+        }
+        return coupon;
+    }
     @Override
     public Long getTotalPage(int numOfItem) {
         return couponDAO.getTotalPage(numOfItem);

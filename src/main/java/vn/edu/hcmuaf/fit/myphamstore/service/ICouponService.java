@@ -27,4 +27,6 @@ public interface ICouponService {
     void updateCoupon(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
     List<CouponModel> findAvailableCoupons();
+
+    CouponModel applyCoupon(String couponCode, Double totalAmount);
 }

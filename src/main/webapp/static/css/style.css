@@ -123,6 +123,52 @@ textarea {
 .lr_nl_form_wrapper button:hover {
   background-color: #0056b3;
 }
+.coupon-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.coupon-card {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 15px;
+  width: 300px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.coupon-code {
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background-color: #0056b3;
+}
+
+.coupon-details {
+  margin-top: 10px;
+  list-style-type: none;
+  padding: 0;
+}
+
+.coupon-details li {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
 
 .cart-summary {
   margin-top: 20px;

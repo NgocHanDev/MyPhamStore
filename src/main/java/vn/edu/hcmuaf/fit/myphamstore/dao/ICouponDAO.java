@@ -12,4 +12,8 @@ public interface ICouponDAO extends GenericDAO<CouponModel> {
     CouponModel findCouponById(Long id);
 
     List<CouponModel> findAvailableCoupons();
+    CouponModel findCouponByCode(String code);
+    CouponModel findByCode(String code);
+    int getRemainingQuantity(String code);
+    double getDiscount(String code);
 }
