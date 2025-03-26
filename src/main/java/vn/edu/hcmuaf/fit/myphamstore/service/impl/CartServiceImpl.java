@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
 import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
@@ -25,6 +26,8 @@ public class CartServiceImpl implements ICartService {
     private IProductService productService;
     @Inject
     private ICouponService couponService;
+    @Inject
+    private ICouponDAO couponDAO;
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
@@ -138,7 +141,7 @@ public class CartServiceImpl implements ICartService {
             return;
         }
 
-        List<CouponModel> discountCodes= couponService.findAvailableCoupons();
+        List<CouponModel> discountCodes = couponService.findAvailableCoupons();
         List<Map<String, Object>> simplifiedDiscountCodes = discountCodes.stream()
                 .map(coupon -> {
                     Map<String, Object> map = new HashMap<>();
@@ -150,13 +153,11 @@ public class CartServiceImpl implements ICartService {
                 .collect(Collectors.toList());
         request.setAttribute("discountCodes", simplifiedDiscountCodes);
 
-        String discountCode = request.getParameter("discountCode");
-        boolean isDiscountValid = false;
+        String discountCode = (String) session.getAttribute("discountCode");
         long discountAmount = 0;
         if (discountCode != null) {
             for (CouponModel coupon : discountCodes) {
                 if (coupon.getCode().equals(discountCode)) {
-                    isDiscountValid = true;
                     discountAmount = calculateDiscount(totalAmount.get(), coupon);
                     break;
                 }
@@ -168,8 +169,6 @@ public class CartServiceImpl implements ICartService {
         long finalAmount = totalAmount.get() - discountAmount;
         request.setAttribute("discountAmount", discountAmount);
         request.setAttribute("finalAmount", finalAmount);
-        request.setAttribute("isDiscountValid", isDiscountValid);
-
 
         request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
     }
@@ -192,6 +191,18 @@ public class CartServiceImpl implements ICartService {
         response.setContentType("application/json");
         response.getWriter().write("{\"count\":" + count + "}");
     }
-
+    @Override
+    public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
+        HttpSession session = request.getSession();
+        CouponModel coupon = couponDAO.findByCode(discountCode);
+        if (coupon != null && coupon.getRemainingQuantity() > 0) {
+            session.setAttribute("discountAmount", coupon.getDiscount());
+            session.setAttribute("discountCode", discountCode);
+            response.sendRedirect("/gio-hang");
+        } else {
+            session.setAttribute("discountError", "Mã giảm giá không hợp lệ hoặc đã hết hạn.");
+            response.sendRedirect("/gio-hang");
+        }
+    }
 }
 

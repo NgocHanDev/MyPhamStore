@@ -203,33 +203,69 @@ Purchase:
 
                 </table>
               </div>
-
-              <div class="estimate_shiping_Wrapper_cntnt estimate_shiping_Wrapper_cntnt_2">
-                <div class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head related_pdt_shop_head_2">
-                  <h1>Nhập mã giảm giá tại đây:</h1>
-                  <form method="post" action="/gio-hang">
-                    <div class="lr_nl_form_wrapper">
-                      <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" />
-                      <button type="submit">Xác nhận</button>
+              <div class="panel-heading checkout_panel_heading">
+                <h4 class="panel-title">
+                  <i class="fa fa-ticket"></i> Nhập mã giảm giá tại đây:
+                </h4>
+              </div>
+              <div class="panel-body">
+                <form method="post" action="/gio-hang">
+                  <input type="hidden" name="action" value="applyDiscount" />
+                  <div class="lr_nl_form_wrapper">
+                    <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" required />
+                    <button type="submit">Xác nhận</button>
+                  </div>
+                </form>
+              </div>
+              <div class="panel-heading checkout_panel_heading">
+                <h4 class="panel-title">
+                  <i class="fa fa-ticket"></i> Mã giảm giá khả dụng
+                </h4>
+              </div>
+              <div class="panel-body">
+                <div class="coupon-container">
+                  <c:forEach items="${availableCoupons}" var="coupon">
+                    <div class="coupon-card">
+                      <div class="coupon-code">
+                        <span>${coupon.code}</span>
+                        <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
+                      </div>
+                      <ul class="coupon-details">
+                        <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
+                        <li><strong>Loại giảm giá:</strong> ${coupon.type eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
+                        <li><strong>Số tiền giảm:</strong> ${coupon.type eq 'percentage' ? coupon.discount + '%' : coupon.discount + 'đ'}</li>
+                        <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
+                        <li><strong>Ngày hết hạn:</strong> ${coupon.expiryDate}</li>
+                      </ul>
                     </div>
-                  </form>
-
-                  <c:if test="${not empty discountCodes}">
-                    <h2>Các mã giảm giá:</h2>
-                    <ul id="discountCodesList">
-                      <c:forEach var="code" items="${discountCodes}" varStatus="status">
-                        <c:if test="${status.index < 3}">
-                          <li>${code.code} - ${code.discountValue}</li>
-                        </c:if>
-                      </c:forEach>
-                    </ul>
-                    <c:if test="${discountCodes.size() > 3}">
-                      <button id="seeMoreBtn" onclick="showMoreCodes()">Xem thêm</button>
-                    </c:if>
-                  </c:if>
-
-
+                  </c:forEach>
                 </div>
+<%--              <div class="estimate_shiping_Wrapper_cntnt estimate_shiping_Wrapper_cntnt_2">--%>
+<%--                <div class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head related_pdt_shop_head_2">--%>
+<%--                  <h1>Nhập mã giảm giá tại đây:</h1>--%>
+<%--                  <form method="post" action="/gio-hang">--%>
+<%--                    <div class="lr_nl_form_wrapper">--%>
+<%--                      <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" />--%>
+<%--                      <button type="submit">Xác nhận</button>--%>
+<%--                    </div>--%>
+<%--                  </form>--%>
+
+<%--                  <c:if test="${not empty discountCodes}">--%>
+<%--                    <h2>Các mã giảm giá:</h2>--%>
+<%--                    <ul id="discountCodesList">--%>
+<%--                      <c:forEach var="code" items="${discountCodes}" varStatus="status">--%>
+<%--                        <c:if test="${status.index < 3}">--%>
+<%--                          <li>${code.code} - ${code.discountValue}</li>--%>
+<%--                        </c:if>--%>
+<%--                      </c:forEach>--%>
+<%--                    </ul>--%>
+<%--                    <c:if test="${discountCodes.size() > 3}">--%>
+<%--                      <button id="seeMoreBtn" onclick="showMoreCodes()">Xem thêm</button>--%>
+<%--                    </c:if>--%>
+<%--                  </c:if>--%>
+
+
+<%--                </div>--%>
               </div>
 
             </div>

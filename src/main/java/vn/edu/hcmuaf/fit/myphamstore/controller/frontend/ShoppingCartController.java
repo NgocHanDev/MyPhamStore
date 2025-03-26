@@ -43,10 +43,12 @@ public class ShoppingCartController extends HttpServlet {
             cartService.removeCartItem(request, response);
         } else if ("clear".equals(action)) {
             cartService.clearCart(request, response);
-        }else {
+        } else if ("applyDiscount".equals(action)) {
+            String discountCode = request.getParameter("discountCode");
+            cartService.applyDiscountCode(request, response, discountCode);
+        } else {
             cartService.displayCart(request, response);
         }
-
     }
 
 }
