@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
+import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.CouponDAOImpl;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
 import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
@@ -28,6 +29,8 @@ public class CartServiceImpl implements ICartService {
     private ICouponService couponService;
     @Inject
     private ICouponDAO couponDAO;
+    @Inject
+    private CouponDAOImpl couponDAOImpl;
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
@@ -195,8 +198,8 @@ public class CartServiceImpl implements ICartService {
     public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
         HttpSession session = request.getSession();
         CouponModel coupon = couponDAO.findByCode(discountCode);
-        if (coupon != null && coupon.getRemainingQuantity() > 0) {
-            session.setAttribute("discountAmount", coupon.getDiscount());
+        if (coupon != null && couponDAOImpl.getRemainingQuantity(discountCode) > 0) {
+            session.setAttribute("discountAmount", couponDAOImpl.getDiscount(discountCode));
             session.setAttribute("discountCode", discountCode);
             response.sendRedirect("/gio-hang");
         } else {
