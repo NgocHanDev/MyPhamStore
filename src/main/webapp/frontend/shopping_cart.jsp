@@ -141,6 +141,7 @@ Purchase:
 
                     <th>Tên sản phẩm</th>
                     <th>&nbsp;</th>
+                    <th>Loại</th>
                     <th>Giá</th>
 
                     <th>Số lượng</th>
@@ -151,6 +152,7 @@ Purchase:
                   </thead>
                   <tbody>
                   <c:forEach var="i" items="${listCartDisplay}">
+                    <c:set var="variant" value="${i.variant}"/>
                     <tr>
                       <td>
                         <div class="table_cart_img">
@@ -164,7 +166,18 @@ Purchase:
                           <h1>${i.product.name}</h1>
                         </div>
                       </td>
-                      <td class="cart_page_price">${i.product.price}đ</td>
+                      <c:if test="${variant == null}">
+                       <td> sản phẩm gốc</td>
+                      </c:if>
+                      <c:if test="${variant != null}">
+                        <td>${variant.name}</td>
+                      </c:if>
+                      <td class="cart_page_price">
+                        <c:choose>
+                          <c:when test="${variant != null}">${variant.price}đ</c:when>
+                          <c:otherwise>${i.product.price}đ</c:otherwise>
+                        </c:choose>
+                      </td>
                       <td>
                       <td>
                         <form method="post" action="/gio-hang">
@@ -173,7 +186,12 @@ Purchase:
                           <input type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
                         </form>
                       </td>
-                      <td class="cart_page_totl">${i.product.price * i.quantity}đ</td>
+                      <td class="cart_page_totl">
+                        <c:choose>
+                          <c:when test="${variant != null}">${variant.price * i.quantity}đ</c:when>
+                          <c:otherwise>${i.product.price * i.quantity}đ</c:otherwise>
+                        </c:choose>
+                      </td>
                       <td>
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="remove" />

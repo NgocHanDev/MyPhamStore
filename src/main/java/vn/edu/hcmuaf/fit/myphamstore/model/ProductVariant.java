@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 public class ProductVariant extends BaseModel{
+    private Long id;
     private Long productId;
     private String name;
     private Double price;

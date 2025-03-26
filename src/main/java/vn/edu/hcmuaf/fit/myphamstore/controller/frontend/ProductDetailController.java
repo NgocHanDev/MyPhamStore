@@ -53,7 +53,7 @@ public class ProductDetailController extends HttpServlet {
         request.setAttribute("users", users);
         List<ProductVariant> productVariants = productService.getProductVariantsByProductId(id);
         request.setAttribute("variants", productVariants);
-
+        System.out.println(productVariants);
         for (ReviewModel review : reviews) {
             totalReview += review.getRating();
             switch (review.getRating()) {

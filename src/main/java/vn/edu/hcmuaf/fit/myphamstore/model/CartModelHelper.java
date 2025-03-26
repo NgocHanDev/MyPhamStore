@@ -14,4 +14,6 @@ import java.io.Serializable;
 public class CartModelHelper implements Serializable {
     private ProductModel product;
     private Integer quantity;
+    private ProductVariant variant;
+    public CartModelHelper(ProductModel product, Integer quantity) {}
 }
