@@ -9,12 +9,8 @@ import jakarta.servlet.http.HttpSession;
 
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.CouponDAOImpl;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
-import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.*;
 
-import vn.edu.hcmuaf.fit.myphamstore.model;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
@@ -34,15 +30,16 @@ public class CartServiceImpl implements ICartService {
     private ICouponDAO couponDAO;
     @Inject
     private CouponDAOImpl couponDAOImpl;
+
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
-        Long variantId = request.getParameter("variantId").isBlank() ? null : Long.parseLong(request.getParameter("variantId"));
+        String variantIdParam = request.getParameter("variantId");
+        Long variantId = (variantIdParam == null || variantIdParam.isBlank()) ? null : Long.parseLong(variantIdParam);
 
         int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
         ProductModel product = productService.findProductById(productId);
         Long brandId = product.getBrandId();
-
 
         CartModel item = CartModel.builder()
                 .productId(productId)
@@ -69,7 +66,6 @@ public class CartServiceImpl implements ICartService {
         session.setAttribute("cart", listCartItems);
         response.sendRedirect(request.getHeader("referer"));
     }
-
     @Override
     public void updateCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -122,6 +118,7 @@ public class CartServiceImpl implements ICartService {
 
     }
 
+
     @Override
     public void displayCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -142,25 +139,24 @@ public class CartServiceImpl implements ICartService {
                     request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
                     request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
                     return;
-                }else if(cartItem.getVariantId() == null){
+                } else if (cartItem.getVariantId() == null) {
                     totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
                     CartModelHelper helper = new CartModelHelper();
-                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setQuantity(cartItem.getQuantity());
                     helper.setProduct(product);
                     listCartDisplay.add(helper);
-                }else{
+                } else {
                     List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
                     ProductVariant variant = null;
                     for (ProductVariant productVariant : listVariant) {
-                        if(cartItem.getVariantId() == productVariant.getId()){
+                        if (cartItem.getVariantId().equals(productVariant.getId())) {
                             variant = productVariant;
                         }
                     }
                     totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
-                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
+                    CartModelHelper cartModelHelper = new CartModelHelper(product, cartItem.getQuantity(), variant);
                     listCartDisplay.add(cartModelHelper);
                 }
-
             }
             System.out.println("After displaying: " + listCartDisplay);
         } catch (Exception e) {
