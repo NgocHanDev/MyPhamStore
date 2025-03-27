@@ -24,6 +24,9 @@ public interface IUserService {
     void detailUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void unlockUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void verifyOtp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+
+    void verifyOTP(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+
     void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void profile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
@@ -34,4 +37,6 @@ public interface IUserService {
     void uploadAvatar(HttpServletRequest request, HttpServletResponse response, Part filePart) throws IOException;
 
     void showAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException;
+
+    boolean forgotPassword(String email, String otp);
 }

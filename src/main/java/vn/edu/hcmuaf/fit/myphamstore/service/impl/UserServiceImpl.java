@@ -16,21 +16,16 @@ import vn.edu.hcmuaf.fit.myphamstore.dao.IAddressDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IOtpDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IRoleDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IUserDAO;
-import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.UserDAOImp;
 import vn.edu.hcmuaf.fit.myphamstore.exception.UserNotActiveException;
 import vn.edu.hcmuaf.fit.myphamstore.model.AddressModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.RoleModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -300,6 +295,23 @@ public class UserServiceImpl implements IUserService {
         }
         request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
     }
+    @Override
+    public void verifyOTP(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String email = request.getParameter("email");
+        String otp = request.getParameter("otp");
+        Boolean verify = otpDAO.verifyOtp(email.trim(), otp.trim());
+        if(verify) {
+            UserModel user = userDAO.getUserByEmail(email);
+            user.setStatus(UserStatus.ACTIVE);
+            roleDAO.setRoleToUser(RoleType.CUSTOMER, user.getId());
+            userDAO.update(user);
+            request.setAttribute("message", "Kích hoạt tài khoản thành công");
+        }else {
+            request.setAttribute("message", "Mã OTP không chính xác");
+            request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
+        }
+        request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
+    }
 
     @Override
     public void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -446,6 +458,21 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Override
+    public boolean forgotPassword(String email, String otp) {
+        UserModel user = userDAO.getUserByEmail(email);
+        if (user != null) {
+            otpDAO.saveOtp(email, otp);
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(() -> {
+                SendEmail.forgotPassword(email, otp);
+            });
+            executorService.shutdown();
+            return true;
+        }
+        return false;
+    }
+
     public Long authenticate(String email, String password) {
         UserModel user = userDAO.getUserByEmail(email);
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
@@ -453,4 +480,5 @@ public class UserServiceImpl implements IUserService {
         }
         return null;
     }
+
 }
