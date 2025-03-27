@@ -9,12 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.CouponDAOImpl;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
-import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
-
-import vn.edu.hcmuaf.fit.myphamstore.model;
+import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
@@ -37,8 +32,8 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
-        Long variantId = request.getParameter("variantId").isBlank() ? null : Long.parseLong(request.getParameter("variantId"));
-
+//        Long variantId = request.getParameter("variantId").isBlank() ? null : Long.parseLong(request.getParameter("variantId"));
+        Long variantId = (request.getParameter("variantId") == null || request.getParameter("variantId").isBlank()) ? null : Long.parseLong(request.getParameter("variantId"));
         int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
         ProductModel product = productService.findProductById(productId);
         Long brandId = product.getBrandId();

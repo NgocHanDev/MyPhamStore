@@ -8,10 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import vn.edu.hcmuaf.fit.myphamstore.common.Gender;
-import vn.edu.hcmuaf.fit.myphamstore.common.RoleType;
-import vn.edu.hcmuaf.fit.myphamstore.common.SendEmail;
-import vn.edu.hcmuaf.fit.myphamstore.common.UserStatus;
+import vn.edu.hcmuaf.fit.myphamstore.common.*;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IAddressDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IOtpDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IRoleDAO;
@@ -177,7 +174,7 @@ public class UserServiceImpl implements IUserService {
         if( savedUserId!= null && savedUserId  > 0){
             roleDAO.setRoleToUser(RoleType.CUSTOMER, savedUserId);
         }
-        String otp = otpDAO.generateOtp();
+        String otp = PasswordUtils.hashPassword(otpDAO.generateOtp()) ;
         otpDAO.saveOtp(email, otp);
         // Sử dụng ExecutorService để gửi email bất đồng bộ
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -296,21 +293,22 @@ public class UserServiceImpl implements IUserService {
         request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
     }
     @Override
-    public void verifyOTP(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public boolean verifyOTPHash(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String otp = request.getParameter("otp");
-        Boolean verify = otpDAO.verifyOtp(email.trim(), otp.trim());
-        if(verify) {
-            UserModel user = userDAO.getUserByEmail(email);
-            user.setStatus(UserStatus.ACTIVE);
-            roleDAO.setRoleToUser(RoleType.CUSTOMER, user.getId());
-            userDAO.update(user);
-            request.setAttribute("message", "Kích hoạt tài khoản thành công");
-        }else {
-            request.setAttribute("message", "Mã OTP không chính xác");
-            request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
-        }
-        request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
+        Boolean verify = otpDAO.verifyOtpHash(email.trim(), otp.trim());
+//        if(verify) {
+//            UserModel user = userDAO.getUserByEmail(email);
+//            user.setStatus(UserStatus.ACTIVE);
+//            roleDAO.setRoleToUser(RoleType.CUSTOMER, user.getId());
+//            userDAO.update(user);
+//            request.setAttribute("message", "Đặt lại mật khẩu thành công");
+//        }else {
+//            request.setAttribute("message", "Mã OTP không chính xác");
+//            request.getRequestDispatcher("/frontend/forgot-password.jsp").forward(request, response);
+//        }
+//        request.getRequestDispatcher("/frontend/forgot-password.jsp").forward(request, response);
+        return verify;
     }
 
     @Override
@@ -462,7 +460,7 @@ public class UserServiceImpl implements IUserService {
     public boolean forgotPassword(String email, String otp) {
         UserModel user = userDAO.getUserByEmail(email);
         if (user != null) {
-            otpDAO.saveOtp(email, otp);
+            otpDAO.saveOtp(email, PasswordUtils.hashPassword(otp));
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
                 SendEmail.forgotPassword(email, otp);

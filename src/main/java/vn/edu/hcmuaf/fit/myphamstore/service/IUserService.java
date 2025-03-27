@@ -24,8 +24,7 @@ public interface IUserService {
     void detailUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void unlockUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void verifyOtp(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
-
-    void verifyOTP(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+    boolean verifyOTPHash(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
     void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void profile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
