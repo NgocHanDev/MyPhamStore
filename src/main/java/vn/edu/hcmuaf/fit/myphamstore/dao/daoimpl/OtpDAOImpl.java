@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import vn.edu.hcmuaf.fit.myphamstore.common.JDBIConnector;
+import vn.edu.hcmuaf.fit.myphamstore.common.PasswordUtils;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IOtpDAO;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,26 @@ public class OtpDAOImpl implements IOtpDAO {
             e.printStackTrace();
         }
         return null;
+    }
+    @Override
+    public Boolean verifyOtpHash(String email, String otp) {
+        String sql = "SELECT otp FROM otp WHERE email = ?";
+        try {
+            String hashedOtp = JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind(0, email)
+                            .mapTo(String.class)
+                            .findFirst()
+                            .orElse(null)
+            );
+
+            if (hashedOtp != null) {
+                return PasswordUtils.verifyPassword(otp, hashedOtp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
