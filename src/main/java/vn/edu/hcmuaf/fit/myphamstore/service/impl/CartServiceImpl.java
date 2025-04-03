@@ -127,6 +127,7 @@ public class CartServiceImpl implements ICartService {
         if (listCartItems == null) {
             request.setAttribute("errorMessage", "Your cart is empty.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+            System.out.println("Cart session data: " + listCartItems);
             return;
         }
 
@@ -153,7 +154,11 @@ public class CartServiceImpl implements ICartService {
                             variant = productVariant;
                         }
                     }
-                    totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                    if (variant != null) {
+                        totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                    } else {
+                        System.out.println("Skipping variant price calculation due to null value.");
+                    }
                     CartModelHelper cartModelHelper = new CartModelHelper(product, cartItem.getQuantity(), variant);
                     listCartDisplay.add(cartModelHelper);
                 }
@@ -211,7 +216,7 @@ public class CartServiceImpl implements ICartService {
 
         System.out.println("Cart Session: " + (cart == null ? "null" : cart.size())); // Debug
 
-        int count = cart == null ? 0 : cart.size();
+        int count = (cart == null) ? 0 : cart.size();
         response.setContentType("application/json");
         response.getWriter().write("{\"count\":" + count + "}");
     }

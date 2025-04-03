@@ -174,45 +174,40 @@ Purchase:
               <div class="panel-heading checkout_panel_heading">
                 <h4 class="panel-title"><i class="fa fa-ticket"></i> Nhập mã giảm giá tại đây:</h4>
               </div>
-<%--              <div class="panel-body">--%>
-<%--                <form method="post" action="/gio-hang">--%>
-<%--                  <input type="hidden" name="action" value="applyDiscount" />--%>
-<%--                  <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" required />--%>
-<%--                  <button type="submit">Xác nhận</button>--%>
-<%--                </form>--%>
-<%--              </div>--%>
-              <div class="panel panel-default">
-                <div class="panel-heading checkout_panel_heading">
-                  <h4 class="panel-title"><i class="fa fa-ticket"></i> Mã giảm giá</h4>
-                </div>
-                <div class="panel-body">
-                  <c:if test="${empty availableCoupons}">
-                    <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
-                  </c:if>
-                  <c:forEach var="coupon" items="${availableCoupons}">
-                    <div class="coupon-card">
-                      <div class="coupon-header">
-                        <span class="coupon-code">${coupon.code}</span>
-                        <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">
-                          <i class="fa fa-copy"></i> Sao chép
-                        </button>
-                      </div>
-                      <div class="coupon-body">
-                        <p><strong>🔹 Số lượng còn lại:</strong> ${coupon.remainingQuantity}</p>
-                        <p><strong>🔹 Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</p>
-                        <p><strong>🔹 Số tiền giảm:</strong>
-                          <span class="discount-value">
-                              ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}
-                          </span>
-                        </p>
-                        <p><strong>🔹 Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</p>
-                        <p><strong>🔹 Ngày hết hạn:</strong> <span class="text-danger">${coupon.endDate}</span></p>
-                      </div>
-                    </div>
-                  </c:forEach>
-                </div>
+              <div class="panel-body">
+                <form method="post" action="/gio-hang">
+                  <input type="hidden" name="action" value="applyDiscount" />
+                  <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" required />
+                  <button type="submit">Xác nhận</button>
+                </form>
               </div>
-            </div>
+              <div class="panel-heading checkout_panel_heading">
+                <h4 class="panel-title"><i class="fa fa-ticket"></i> Mã giảm giá khả dụng</h4>
+              </div>
+              <div class="panel-body">
+                <c:choose>
+                  <c:when test="${empty discountCodes}">
+                    <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="voucher-container">
+                      <c:forEach items="${discountCodes}" var="coupon">
+                        <div class="voucher-card">
+                          <div class="voucher-header">
+                            <span class="voucher-code">${coupon.code}</span>
+                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép</button>
+                          </div>
+                          <div class="voucher-details">
+                            <p><strong>Giảm giá:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</p>
+                            <p><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</p>
+                            <p><strong>Hạn sử dụng:</strong> ${coupon.endDate}</p>
+                          </div>
+                        </div>
+                      </c:forEach>
+                    </div>
+                  </c:otherwise>
+                </c:choose>
+              </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <div class="shipping_Wrapper">

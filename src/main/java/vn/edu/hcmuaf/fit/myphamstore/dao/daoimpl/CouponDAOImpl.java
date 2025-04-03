@@ -40,6 +40,10 @@ public class CouponDAOImpl implements ICouponDAO {
         return null;
     }
 
+    @Override
+    public List<CouponModel> findAvailableCoupons() {
+        return List.of();
+    }
 
 
     @Override
@@ -182,7 +186,7 @@ public class CouponDAOImpl implements ICouponDAO {
         return null;
     }
     @Override
-    public List<CouponModel> findAvailableCoupons() {
+    public List<CouponModel> findAvailableCoupon() {
         String sql = "SELECT * FROM coupon WHERE is_available = true AND start_date <= NOW() AND end_date >= NOW()";
         try {
             return JDBIConnector.getJdbi().withHandle(handle ->
@@ -214,7 +218,7 @@ public class CouponDAOImpl implements ICouponDAO {
 
     @Override
     public CouponModel findByCode(String code) {
-        String sql = "SELECT * FROM coupons WHERE code = :code";
+        String sql = "SELECT * FROM coupon WHERE code = :code";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("code", code)
@@ -228,7 +232,7 @@ public class CouponDAOImpl implements ICouponDAO {
 
     @Override
     public int getRemainingQuantity(String code) {
-        String sql = "SELECT remaining_quantity FROM coupons WHERE code = :code";
+        String sql = "SELECT remaining_quantity FROM coupon WHERE code = :code";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("code", code)
@@ -242,7 +246,7 @@ public class CouponDAOImpl implements ICouponDAO {
 
     @Override
     public double getDiscount(String code) {
-        String sql = "SELECT discount FROM coupons WHERE code = :code";
+        String sql = "SELECT discount FROM coupon WHERE code = :code";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("code", code)
