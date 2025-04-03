@@ -174,7 +174,7 @@ public class UserServiceImpl implements IUserService {
         if( savedUserId!= null && savedUserId  > 0){
             roleDAO.setRoleToUser(RoleType.CUSTOMER, savedUserId);
         }
-        String otp = PasswordUtils.hashPassword(otpDAO.generateOtp()) ;
+        String otp = otpDAO.generateOtp();
         otpDAO.saveOtp(email, otp);
         // Sử dụng ExecutorService để gửi email bất đồng bộ
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -201,7 +201,6 @@ public class UserServiceImpl implements IUserService {
                 .filter(u -> u.getRoles().stream()
                         .anyMatch(r -> r.getName().equalsIgnoreCase(RoleType.CUSTOMER.toString())))
                 .collect(Collectors.toList());
-        System.out.println("Users: " + users);
         Long totalPages = this.userDAO.getTotalPage(pageSize);
         // Gửi danh sách sản phẩm đến trang JSP
         request.setAttribute("users", users);
@@ -296,8 +295,10 @@ public class UserServiceImpl implements IUserService {
     public boolean verifyOTPHash(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String otp = request.getParameter("otp");
-        Boolean verify = otpDAO.verifyOtpHash(email.trim(), otp.trim());
-//        if(verify) {
+        System.out.println(otp);
+        return otpDAO.verifyOtpHash(email.trim(), otp.trim());
+    }
+        //        if(verify) {
 //            UserModel user = userDAO.getUserByEmail(email);
 //            user.setStatus(UserStatus.ACTIVE);
 //            roleDAO.setRoleToUser(RoleType.CUSTOMER, user.getId());
@@ -308,8 +309,8 @@ public class UserServiceImpl implements IUserService {
 //            request.getRequestDispatcher("/frontend/forgot-password.jsp").forward(request, response);
 //        }
 //        request.getRequestDispatcher("/frontend/forgot-password.jsp").forward(request, response);
-        return verify;
-    }
+
+
 
     @Override
     public void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -387,9 +388,7 @@ public class UserServiceImpl implements IUserService {
         String district = request.getParameter("district");
         String ward = request.getParameter("ward");
         String note = request.getParameter("note");
-        System.out.println("setDefault parameter: " + request.getParameter("setDefault"));
         Boolean isDefault = Boolean.parseBoolean(request.getParameter("setDefault"));
-        System.out.println("isDefault parsed: " + isDefault);
 
         AddressModel address = AddressModel.builder()
                 .userId(user.getId())
@@ -458,12 +457,15 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean forgotPassword(String email, String otp) {
+        otp = otpDAO.generateOtp();
         UserModel user = userDAO.getUserByEmail(email);
+        String hashedOtp = PasswordUtils.hashPassword(otp.trim());
+        System.out.println("boolean so pass"+PasswordUtils.verifyPassword(otp.trim(), hashedOtp));
         if (user != null) {
-            otpDAO.saveOtp(email, PasswordUtils.hashPassword(otp));
+            otpDAO.saveOtp(email,otp.trim());
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
-                SendEmail.forgotPassword(email, otp);
+                SendEmail.forgotPassword(email, hashedOtp);
             });
             executorService.shutdown();
             return true;
@@ -478,5 +480,4 @@ public class UserServiceImpl implements IUserService {
         }
         return null;
     }
-
 }
