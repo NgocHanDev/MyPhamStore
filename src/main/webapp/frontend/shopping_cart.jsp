@@ -92,10 +92,6 @@ Purchase:
 <!-- Header Wrapper Start -->
 <%@include file="component/nav.jsp"%>
 <%@include file="component/header.jsp"%>
-<!-- Header Wrapper End -->
-<!-- Slider Wrapper Start -->
-<!-- Slider Wrapper End -->
-<!-- ss inner title Wrapper Start -->
 <div class="ss_inner_title_wrapper">
   <div class="container">
     <div class="row">
@@ -103,14 +99,14 @@ Purchase:
         <div class="ss_inner_title_cont_wrapper">
           <ul>
             <li>
-              <a href="<c:url value="/trang-chu" />"><i class="fa fa-home"></i></a>&nbsp;&nbsp; >
+              <a href="<c:url value='/trang-chu' />"><i class="fa fa-home"></i></a>&nbsp;&nbsp; >
             </li>
             <li>Sản phẩm&nbsp;&nbsp; >
-              <a href="<c:url value="/danh-muc" />"></a>&nbsp;&nbsp; >
+              <a href="<c:url value='/danh-muc' />"></a>&nbsp;&nbsp; >
             </li>
             <li>Mua sắm&nbsp;&nbsp; ></li>
             <li>Giỏ hàng
-              <a href="<c:url value="/gio-hang" />"></a>&nbsp;&nbsp; >
+              <a href="<c:url value='/gio-hang' />"></a>&nbsp;&nbsp; >
             </li>
           </ul>
         </div>
@@ -118,14 +114,11 @@ Purchase:
     </div>
   </div>
 </div>
-<!--cart product wrapper Wrapper Start -->
 <div class="cart_product_wrapper">
   <div class="container">
     <div class="row">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div
-                class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head"
-        >
+        <div class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head">
           <h1>Giỏ hàng của bạn</h1>
         </div>
       </div>
@@ -134,51 +127,25 @@ Purchase:
           <div class="shop_cart_page_wrapper">
             <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
               <div class="table-responsive cart-calculations">
-                <table class="table" >
+                <table class="table">
                   <thead class="cart_table_heading">
                   <tr>
                     <th>Sản phẩm</th>
-
                     <th>Tên sản phẩm</th>
-                    <th>&nbsp;</th>
                     <th>Loại</th>
                     <th>Giá</th>
-
                     <th>Số lượng</th>
-
-                    <th>Tổng cộng:</th>
-                    <th>&nbsp;    </th>
+                    <th>Tổng cộng</th>
+                    <th>&nbsp;</th>
                   </tr>
                   </thead>
                   <tbody>
                   <c:forEach var="i" items="${listCartDisplay}">
-                    <c:set var="variant" value="${i.variant}"/>
                     <tr>
-                      <td>
-                        <div class="table_cart_img">
-                          <figure>
-                            <img src="${i.product.thumbnail}" alt="${i.product.name}" style="max-height: 80px" />
-                          </figure>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="table_cart_cntnt">
-                          <h1>${i.product.name}</h1>
-                        </div>
-                      </td>
-                      <c:if test="${variant == null}">
-                       <td> sản phẩm gốc</td>
-                      </c:if>
-                      <c:if test="${variant != null}">
-                        <td>${variant.name}</td>
-                      </c:if>
-                      <td class="cart_page_price">
-                        <c:choose>
-                          <c:when test="${variant != null}">${variant.price}đ</c:when>
-                          <c:otherwise>${i.product.price}đ</c:otherwise>
-                        </c:choose>
-                      </td>
-                      <td>
+                      <td><img src="${i.product.thumbnail}" alt="${i.product.name}" style="max-height: 80px" /></td>
+                      <td>${i.product.name}</td>
+                      <td>${i.variant != null ? i.variant.name : 'sản phẩm gốc'}</td>
+                      <td>${i.variant != null ? i.variant.price : i.product.price}đ</td>
                       <td>
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="updateCart" />
@@ -186,123 +153,74 @@ Purchase:
                           <input type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
                         </form>
                       </td>
-                      <td class="cart_page_totl">
-                        <c:choose>
-                          <c:when test="${variant != null}">${variant.price * i.quantity}đ</c:when>
-                          <c:otherwise>${i.product.price * i.quantity}đ</c:otherwise>
-                        </c:choose>
-                      </td>
+                      <td>${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}đ</td>
                       <td>
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="remove" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
-                          <button type="submit" class="remove-btn">
-                            <i class="fa fa-trash"></i>
-                          </button>
+                          <button type="submit" class="remove-btn"><i class="fa fa-trash"></i></button>
                         </form>
                       </td>
                     </tr>
                   </c:forEach>
                   <tr>
-                    <td></td>
-                    <td class="shop_btn_wrapper shop_car_btn_wrapper">
-                      <ul>
-                        <li><a href="/trang-chu">Tiếp tục mua sắm</a></li>
-                      </ul>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td class="cart_btn_cntnt">
-                      Tổng cộng: <span>${totalAmount}đ</span>
-                    </td>
+                    <td colspan="5">Tổng cộng:</td>
+                    <td>${totalAmount}đ</td>
                     <td></td>
                   </tr>
                   </tbody>
-
                 </table>
               </div>
               <div class="panel-heading checkout_panel_heading">
-                <h4 class="panel-title">
-                  <i class="fa fa-ticket"></i> Nhập mã giảm giá tại đây:
-                </h4>
+                <h4 class="panel-title"><i class="fa fa-ticket"></i> Nhập mã giảm giá tại đây:</h4>
               </div>
               <div class="panel-body">
                 <form method="post" action="/gio-hang">
                   <input type="hidden" name="action" value="applyDiscount" />
-                  <div class="lr_nl_form_wrapper">
-                    <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" required />
-                    <button type="submit">Xác nhận</button>
-                  </div>
+                  <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" required />
+                  <button type="submit">Xác nhận</button>
                 </form>
               </div>
               <div class="panel-heading checkout_panel_heading">
-                <h4 class="panel-title">
-                  <i class="fa fa-ticket"></i> Mã giảm giá khả dụng
-                </h4>
+                <h4 class="panel-title"><i class="fa fa-ticket"></i> Mã giảm giá khả dụng</h4>
               </div>
               <div class="panel-body">
-                <div class="coupon-container">
-                  <c:forEach items="${availableCoupons}" var="coupon">
-                    <div class="coupon-card">
-                      <div class="coupon-code">
-                        <span>${coupon.code}</span>
-                        <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
-                      </div>
-                      <ul class="coupon-details">
-                        <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
-                        <li><strong>Loại giảm giá:</strong> ${coupon.type eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
-                        <li><strong>Số tiền giảm:</strong> ${coupon.type eq 'percentage' ? coupon.discount + '%' : coupon.discount + 'đ'}</li>
-                        <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
-                        <li><strong>Ngày hết hạn:</strong> ${coupon.expiryDate}</li>
-                      </ul>
+                <c:choose>
+                  <c:when test="${empty discountCodes}">
+                    <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="voucher-container">
+                      <c:forEach items="${discountCodes}" var="coupon">
+                        <div class="voucher-card">
+                          <div class="voucher-header">
+                            <span class="voucher-code">${coupon.code}</span>
+                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép</button>
+                          </div>
+                          <div class="voucher-details">
+                            <p><strong>Giảm giá:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</p>
+                            <p><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</p>
+                            <p><strong>Hạn sử dụng:</strong> ${coupon.endDate}</p>
+                          </div>
+                        </div>
+                      </c:forEach>
                     </div>
-                  </c:forEach>
-                </div>
-<%--              <div class="estimate_shiping_Wrapper_cntnt estimate_shiping_Wrapper_cntnt_2">--%>
-<%--                <div class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head related_pdt_shop_head_2">--%>
-<%--                  <h1>Nhập mã giảm giá tại đây:</h1>--%>
-<%--                  <form method="post" action="/gio-hang">--%>
-<%--                    <div class="lr_nl_form_wrapper">--%>
-<%--                      <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" />--%>
-<%--                      <button type="submit">Xác nhận</button>--%>
-<%--                    </div>--%>
-<%--                  </form>--%>
-
-<%--                  <c:if test="${not empty discountCodes}">--%>
-<%--                    <h2>Các mã giảm giá:</h2>--%>
-<%--                    <ul id="discountCodesList">--%>
-<%--                      <c:forEach var="code" items="${discountCodes}" varStatus="status">--%>
-<%--                        <c:if test="${status.index < 3}">--%>
-<%--                          <li>${code.code} - ${code.discountValue}</li>--%>
-<%--                        </c:if>--%>
-<%--                      </c:forEach>--%>
-<%--                    </ul>--%>
-<%--                    <c:if test="${discountCodes.size() > 3}">--%>
-<%--                      <button id="seeMoreBtn" onclick="showMoreCodes()">Xem thêm</button>--%>
-<%--                    </c:if>--%>
-<%--                  </c:if>--%>
-
-
-<%--                </div>--%>
+                  </c:otherwise>
+                </c:choose>
               </div>
-
             </div>
-
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
               <div class="shipping_Wrapper">
-                <table class="table">
-                  <tbody>
-                  <div class="cart-summary">
-                    <p>Tổng giá: ${totalAmount}đ</p>
-                    <c:if test="${discountAmount > 0}">
-                      <p>Giảm giá: -${discountAmount}đ</p>
-                    </c:if>
-                    <p>Thành tiền: ${finalAmount}đ</p>
-                  </div>
-                </table>
+                <div class="cart-summary">
+                  <p>Tổng giá: ${totalAmount}đ</p>
+                  <c:if test="${discountAmount > 0}">
+                    <p>Giảm giá: -${discountAmount}đ</p>
+                  </c:if>
+                  <p>Thành tiền: ${finalAmount}đ</p>
+                </div>
                 <div class="shop_btn_wrapper shop_btn_wrapper_shipping">
                   <ul>
-                    <li><a href="<c:url value="/checkout?action=display"/> ">Thanh toán</a></li>
+                    <li><a href="<c:url value='/checkout?action=display' />">Thanh toán</a></li>
                   </ul>
                 </div>
               </div>
@@ -311,22 +229,17 @@ Purchase:
         </c:when>
         <c:otherwise>
           <h1>Giỏ hàng của bạn đang trống!</h1>
-          <td class="shop_btn_wrapper shop_car_btn_wrapper">
+          <div class="shop_btn_wrapper shop_car_btn_wrapper">
             <ul>
-              <li><a href="/trang-chu"><h3>>Tiếp tục mua sắm</h3></a></li>
+              <li><a href="/trang-chu"><h3>Tiếp tục mua sắm</h3></a></li>
             </ul>
-          </td>
+          </div>
         </c:otherwise>
       </c:choose>
     </div>
   </div>
 </div>
-</div>
-<!-- cart product wrapper end -->
-<!-- Footer Wrapper Start -->
 <%@include file="component/footer.jsp"%>
-<!-- Footer Wrapper End -->
-
 <script>
   const header = document.getElementById("header");
   const footer = document.getElementById("footer");
@@ -354,7 +267,6 @@ Purchase:
             nav.innerHTML = data;
           });
 </script>
-
 <script>
   function showMoreCodes() {
     const list = document.getElementById('discountCodesList');
@@ -365,8 +277,6 @@ Purchase:
     document.getElementById('seeMoreBtn').style.display = 'none';
   }
 </script>
-
-<!--main js file start-->
 <script src="../static/js/jquery_min.js"></script>
 <script src="../static/js/wow.js"></script>
 <script src="../static/js/bootstrap.js"></script>
@@ -392,6 +302,15 @@ Purchase:
     wow.init();
   });
 </script>
-<!--main js file end-->
+<script>
+  function copyCoupon(code) {
+    navigator.clipboard.writeText(code).then(() => {
+      alert("Đã sao chép mã giảm giá: " + code);
+    }).catch(err => {
+      console.error('Lỗi sao chép mã:', err);
+    });
+  }
+</script>
+
 </body>
 </html>

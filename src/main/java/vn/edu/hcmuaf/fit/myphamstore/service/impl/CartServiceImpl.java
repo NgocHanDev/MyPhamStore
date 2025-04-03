@@ -9,12 +9,8 @@ import jakarta.servlet.http.HttpSession;
 
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.CouponDAOImpl;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
-import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.*;
 
-import vn.edu.hcmuaf.fit.myphamstore.model;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
@@ -34,15 +30,16 @@ public class CartServiceImpl implements ICartService {
     private ICouponDAO couponDAO;
     @Inject
     private CouponDAOImpl couponDAOImpl;
+
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
-        Long variantId = request.getParameter("variantId").isBlank() ? null : Long.parseLong(request.getParameter("variantId"));
+        String variantIdParam = request.getParameter("variantId");
+        Long variantId = (variantIdParam == null || variantIdParam.isBlank()) ? null : Long.parseLong(variantIdParam);
 
         int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
         ProductModel product = productService.findProductById(productId);
         Long brandId = product.getBrandId();
-
 
         CartModel item = CartModel.builder()
                 .productId(productId)
@@ -69,7 +66,6 @@ public class CartServiceImpl implements ICartService {
         session.setAttribute("cart", listCartItems);
         response.sendRedirect(request.getHeader("referer"));
     }
-
     @Override
     public void updateCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -122,6 +118,7 @@ public class CartServiceImpl implements ICartService {
 
     }
 
+
     @Override
     public void displayCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
@@ -130,6 +127,7 @@ public class CartServiceImpl implements ICartService {
         if (listCartItems == null) {
             request.setAttribute("errorMessage", "Your cart is empty.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+            System.out.println("Cart session data: " + listCartItems);
             return;
         }
 
@@ -142,25 +140,28 @@ public class CartServiceImpl implements ICartService {
                     request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
                     request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
                     return;
-                }else if(cartItem.getVariantId() == null){
+                } else if (cartItem.getVariantId() == null) {
                     totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
                     CartModelHelper helper = new CartModelHelper();
-                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setQuantity(cartItem.getQuantity());
                     helper.setProduct(product);
                     listCartDisplay.add(helper);
-                }else{
+                } else {
                     List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
                     ProductVariant variant = null;
                     for (ProductVariant productVariant : listVariant) {
-                        if(cartItem.getVariantId() == productVariant.getId()){
+                        if (cartItem.getVariantId().equals(productVariant.getId())) {
                             variant = productVariant;
                         }
                     }
-                    totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
-                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
+                    if (variant != null) {
+                        totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                    } else {
+                        System.out.println("Skipping variant price calculation due to null value.");
+                    }
+                    CartModelHelper cartModelHelper = new CartModelHelper(product, cartItem.getQuantity(), variant);
                     listCartDisplay.add(cartModelHelper);
                 }
-
             }
             System.out.println("After displaying: " + listCartDisplay);
         } catch (Exception e) {
@@ -176,10 +177,14 @@ public class CartServiceImpl implements ICartService {
                     map.put("code", coupon.getCode());
                     map.put("discountType", coupon.getDiscountType());
                     map.put("discountValue", coupon.getDiscountValue());
+                    map.put("minOrderValue", coupon.getMinOrderValue()); // Thêm dòng này
+                    map.put("endDate", coupon.getEndDate()); // Thêm dòng này
                     return map;
                 })
                 .collect(Collectors.toList());
         request.setAttribute("discountCodes", simplifiedDiscountCodes);
+        // Thay thế đoạn code trên bằng:
+//        request.setAttribute("discountCodes", discountCodes);
 
         String discountCode = (String) session.getAttribute("discountCode");
         long discountAmount = 0;
@@ -215,14 +220,14 @@ public class CartServiceImpl implements ICartService {
 
         System.out.println("Cart Session: " + (cart == null ? "null" : cart.size())); // Debug
 
-        int count = cart == null ? 0 : cart.size();
+        int count = (cart == null) ? 0 : cart.size();
         response.setContentType("application/json");
         response.getWriter().write("{\"count\":" + count + "}");
     }
     @Override
     public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
         HttpSession session = request.getSession();
-        CouponModel coupon = couponDAO.findByCode(discountCode);
+        CouponModel coupon = couponDAO.findCouponByCode(discountCode);
         if (coupon != null && couponDAOImpl.getRemainingQuantity(discountCode) > 0) {
             session.setAttribute("discountAmount", couponDAOImpl.getDiscount(discountCode));
             session.setAttribute("discountCode", discountCode);
