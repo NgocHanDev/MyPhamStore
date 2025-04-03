@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class OtpDAOImpl implements IOtpDAO {
     @Override
     public void saveOtp(String email, String otp) {
+        System.out.println(otp);
         String sql = "INSERT INTO otp (email, otp, time_expire) VALUES (?, ?, ?)";
         try{
             JDBIConnector.getJdbi().useHandle(handle -> {
@@ -42,10 +43,12 @@ public class OtpDAOImpl implements IOtpDAO {
         }
         return null;
     }
+
     @Override
     public Boolean verifyOtpHash(String email, String otp) {
         String sql = "SELECT otp FROM otp WHERE email = ?";
         try {
+
             String hashedOtp = JDBIConnector.getJdbi().withHandle(handle ->
                     handle.createQuery(sql)
                             .bind(0, email)
@@ -53,9 +56,11 @@ public class OtpDAOImpl implements IOtpDAO {
                             .findFirst()
                             .orElse(null)
             );
-
+            System.out.println(hashedOtp);
+            System.out.println(otp);
+            System.out.println("Hihi"+PasswordUtils.verifyPassword(otp.trim(),hashedOtp.trim()));
             if (hashedOtp != null) {
-                return PasswordUtils.verifyPassword(otp, hashedOtp);
+                return PasswordUtils.verifyPassword(hashedOtp.trim(),otp.trim());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,6 +75,7 @@ public class OtpDAOImpl implements IOtpDAO {
         for (int i = 0; i < 6; i++) {
             otp += (int) (Math.random() * 10);
         }
+        System.out.println("otp moi tao ne"+otp);
         return otp;
     }
 }
