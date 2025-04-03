@@ -348,7 +348,7 @@
                     "            <p>Xin chào,</p>\n" +
                     "            <p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình.</p>\n" +
                     "            <p>Vui lòng nhấn vào nút bên dưới để đặt lại mật khẩu:</p>\n" +
-                    "            <a class=\"reset-link\" href=\"http://localhost:8080/reset-password?otp=" + PasswordUtils.hashPassword(otp) + "&email=" + to + "\">Đặt lại mật khẩu</a>\n" +
+                    "            <a class=\"reset-link\" href=\"http://localhost:8080/reset-password?otp=" + otp + "&email=" + to + "\">Đặt lại mật khẩu</a>\n" +
                     "            <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>\n" +
                     "        </div>\n" +
                     "        <div class=\"email-footer\">\n" +
