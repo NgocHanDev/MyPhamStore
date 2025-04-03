@@ -42,7 +42,17 @@ public class CouponDAOImpl implements ICouponDAO {
 
     @Override
     public List<CouponModel> findAvailableCoupons() {
-        return List.of();
+        String sql = "SELECT * FROM coupon WHERE is_available = 1 AND start_date <= NOW() AND end_date >= NOW()";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .mapToBean(CouponModel.class)
+                            .list()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
 
@@ -63,7 +73,7 @@ public class CouponDAOImpl implements ICouponDAO {
                         .bind("end_date", entity.getEndDate())
                         .bind("current_usage", entity.getCurrentUsage())
                         .bind("max_usage", entity.getMaxUsage())
-                        .bind("createdAt", LocalDateTime.now())
+                        .bind("created_at", LocalDateTime.now())
                         .executeAndReturnGeneratedKeys("id") // Lấy giá trị khóa chính tự động sinh
                         .mapTo(Long.class) // Ánh xạ giá trị trả về thành Long
                         .one();
@@ -185,20 +195,6 @@ public class CouponDAOImpl implements ICouponDAO {
 
         return null;
     }
-    @Override
-    public List<CouponModel> findAvailableCoupon() {
-        String sql = "SELECT * FROM coupon WHERE is_available = true AND start_date <= NOW() AND end_date >= NOW()";
-        try {
-            return JDBIConnector.getJdbi().withHandle(handle ->
-                    handle.createQuery(sql)
-                            .mapToBean(CouponModel.class)
-                            .list()
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-    }
 
     @Override
     public CouponModel findCouponByCode(String code) {
@@ -215,24 +211,9 @@ public class CouponDAOImpl implements ICouponDAO {
             return null;
         }
     }
-
-    @Override
-    public CouponModel findByCode(String code) {
-        String sql = "SELECT * FROM coupon WHERE code = :code";
-        try {
-            return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
-                    .bind("code", code)
-                    .mapToBean(CouponModel.class)
-                    .one());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     @Override
     public int getRemainingQuantity(String code) {
-        String sql = "SELECT remaining_quantity FROM coupon WHERE code = :code";
+        String sql = "SELECT max_usage - current_usage FROM coupon WHERE code = :code";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("code", code)
@@ -246,7 +227,7 @@ public class CouponDAOImpl implements ICouponDAO {
 
     @Override
     public double getDiscount(String code) {
-        String sql = "SELECT discount FROM coupon WHERE code = :code";
+        String sql = "SELECT discount_value FROM coupon WHERE code = :code";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("code", code)

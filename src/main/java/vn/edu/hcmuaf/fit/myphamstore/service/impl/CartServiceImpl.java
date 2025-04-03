@@ -177,10 +177,14 @@ public class CartServiceImpl implements ICartService {
                     map.put("code", coupon.getCode());
                     map.put("discountType", coupon.getDiscountType());
                     map.put("discountValue", coupon.getDiscountValue());
+                    map.put("minOrderValue", coupon.getMinOrderValue()); // Thêm dòng này
+                    map.put("endDate", coupon.getEndDate()); // Thêm dòng này
                     return map;
                 })
                 .collect(Collectors.toList());
         request.setAttribute("discountCodes", simplifiedDiscountCodes);
+        // Thay thế đoạn code trên bằng:
+//        request.setAttribute("discountCodes", discountCodes);
 
         String discountCode = (String) session.getAttribute("discountCode");
         long discountAmount = 0;
@@ -223,7 +227,7 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
         HttpSession session = request.getSession();
-        CouponModel coupon = couponDAO.findByCode(discountCode);
+        CouponModel coupon = couponDAO.findCouponByCode(discountCode);
         if (coupon != null && couponDAOImpl.getRemainingQuantity(discountCode) > 0) {
             session.setAttribute("discountAmount", couponDAOImpl.getDiscount(discountCode));
             session.setAttribute("discountCode", discountCode);
