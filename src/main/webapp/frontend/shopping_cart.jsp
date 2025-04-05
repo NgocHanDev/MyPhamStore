@@ -1,95 +1,48 @@
-
-<%--
-Created by IntelliJ IDEA.
-User: cucsh
-Date: 12/7/2024
-Time: 10:10 AM
-To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@include file="/common/tablib.jsp"%>
 <!DOCTYPE html>
-<!--
-Template Name: big basket
-Version: 1.0.0
-Author:
-Website:
-Purchase:
--->
-<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
-<!--[if !IE]><!-->
 <html lang="en">
-<!--<![endif]-->
-
 <head>
   <meta charset="utf-8" />
   <title>Giỏ hàng</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <meta name="description" content="big basket" />
-  <meta
-          name="keywords"
-          content="big basket, Ecommerce, Store, Mall, online Shopping"
-  />
+  <meta name="keywords" content="big basket, Ecommerce, Store, Mall, online Shopping" />
   <meta name="author" content="" />
   <meta name="MobileOptimized" content="320" />
-  <!--srart theme style -->
-  <link rel="stylesheet" type="text/css" href="../static/css/animate.css" />
-  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
-  <link
-          rel="stylesheet"
-          type="text/css"
-          href="../static/css/font-awesome.css"
-  />
-  <link
-          rel="stylesheet"
-          type="text/css"
-          href="../static/css/owl.carousel.css"
-  />
-  <link
-          rel="stylesheet"
-          type="text/css"
-          href="../static/css/owl.theme.default.css"
-  />
-  <link
-          rel="stylesheet"
-          type="text/css"
-          href="../static/css/magnific-popup.css"
-  />
-  <link rel="stylesheet" type="text/css" href="../static/css/fonts.css" />
-  <link rel="stylesheet" type="text/css" href="../static/css/dl-menu.css" />
-  <link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
-  <link rel="stylesheet" type="text/css" href="../static/css/camera.css" />
-  <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
-  <link
-          rel="stylesheet"
-          type="text/css"
-          href="../static/css/responsive.css"
-  />
-  <link rel="stylesheet" type="text/css" href="../static/css/sidebar.css" />
-  <!-- favicon links -->
-  <link
-          rel="shortcut icon"
-          type="image/png"
-          href="../static/images/header/favicon.png"
-  />
-</head>
-
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/animate.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/font-awesome.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/owl.carousel.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/owl.theme.default.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/magnific-popup.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/fonts.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/dl-menu.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/reset.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/camera.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/style.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/responsive.css" />
+  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/sidebar.css" />
+  <script src="${pageContext.request.contextPath}/static/js/jquery_min.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/wow.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/bootstrap.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/owl.carousel.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/modernizr.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/jquery.magnific-popup.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/jquery.dlmenu.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/jquery.sticky.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/jquery.menu-aim.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/camera.min.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/jquery.easing.1.3.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/jquery.inview.min.js"></script>
+  <script src="${pageContext.request.contextPath}/static/js/custom.js"></script></head>
 <body>
-<!-- preloader Start -->
 <div id="preloader">
-  <div id="status">
-<%--    <img--%>
-<%--            src="images/header/preloader.gif"--%>
-<%--            id="preloader_image"--%>
-<%--            alt="loader"--%>
-<%--    />--%>
-  </div>
+  <div id="status"></div>
 </div>
-<!-- Top Scroll Start -->
 <a href="javascript:" id="return-to-top"><i class="fa fa-angle-up"></i></a>
-<!-- Top Scroll End -->
-<!-- Header Wrapper Start -->
 <%@include file="component/nav.jsp"%>
 <%@include file="component/header.jsp"%>
 <div class="ss_inner_title_wrapper">
@@ -98,16 +51,10 @@ Purchase:
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="ss_inner_title_cont_wrapper">
           <ul>
-            <li>
-              <a href="<c:url value='/trang-chu' />"><i class="fa fa-home"></i></a>&nbsp;&nbsp; >
-            </li>
-            <li>Sản phẩm&nbsp;&nbsp; >
-              <a href="<c:url value='/danh-muc' />"></a>&nbsp;&nbsp; >
-            </li>
-            <li>Mua sắm&nbsp;&nbsp; ></li>
-            <li>Giỏ hàng
-              <a href="<c:url value='/gio-hang' />"></a>&nbsp;&nbsp; >
-            </li>
+            <li><a href="<c:url value='/trang-chu' />"><i class="fa fa-home"></i></a> > </li>
+            <li>Sản phẩm > <a href="<c:url value='/danh-muc' />"></a> > </li>
+            <li>Mua sắm > </li>
+            <li>Giỏ hàng <a href="<c:url value='/gio-hang' />"></a> > </li>
           </ul>
         </div>
       </div>
@@ -136,14 +83,14 @@ Purchase:
                     <th>Giá</th>
                     <th>Số lượng</th>
                     <th>Tổng cộng</th>
-                    <th>&nbsp;</th>
+                    <th></th>
                   </tr>
                   </thead>
                   <tbody>
                   <c:forEach var="i" items="${listCartDisplay}">
                     <tr>
-                      <td><img src="${i.product.thumbnail}" alt="${i.product.name}" style="max-height: 80px" /></td>
-                      <td>${i.product.name}</td>
+                      <td><img src="${not empty i.product.thumbnail ? i.product.thumbnail : ''}" alt="${i.product.name}" style="max-height: 80px" /></td>
+                      <td>${not empty i.product.name ? i.product.name : 'Không có tên'}</td>
                       <td>${i.variant != null ? i.variant.name : 'sản phẩm gốc'}</td>
                       <td>${i.variant != null ? i.variant.price : i.product.price}đ</td>
                       <td>
@@ -190,21 +137,21 @@ Purchase:
                     <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
                   </c:when>
                   <c:otherwise>
-                    <div class="voucher-container">
-                      <c:forEach items="${discountCodes}" var="coupon">
-                        <div class="voucher-card">
-                          <div class="voucher-header">
-                            <span class="voucher-code">${coupon.code}</span>
-                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép</button>
-                          </div>
-                          <div class="voucher-details">
-                            <p><strong>Giảm giá:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</p>
-                            <p><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</p>
-                            <p><strong>Hạn sử dụng:</strong> ${coupon.endDate}</p>
-                          </div>
+                    <c:forEach items="${discountCodes}" var="coupon">
+                      <div class="coupon-card">
+                        <div class="coupon-code">
+                          <span>${coupon.code}</span>
+                          <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
                         </div>
-                      </c:forEach>
-                    </div>
+                        <ul class="coupon-details">
+                          <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
+                          <li><strong>Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
+                          <li><strong>Số tiền giảm:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</li>
+                          <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
+                          <li><strong>Ngày hết hạn:</strong> ${coupon.endDate}</li>
+                        </ul>
+                      </div>
+                    </c:forEach>
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -240,56 +187,19 @@ Purchase:
   </div>
 </div>
 <%@include file="component/footer.jsp"%>
-<script>
-  const header = document.getElementById("header");
-  const footer = document.getElementById("footer");
-  const nav = document.getElementById("nav");
-
-  fetch("./header.jsp")
-          .then((response) => {
-            return response.text();
-          })
-          .then((data) => {
-            header.innerHTML = data;
-          });
-  fetch("./footer.jsp")
-          .then((response) => {
-            return response.text();
-          })
-          .then((data) => {
-            footer.innerHTML = data;
-          });
-  fetch("./nav.jsp")
-          .then((response) => {
-            return response.text();
-          })
-          .then((data) => {
-            nav.innerHTML = data;
-          });
-</script>
-<script>
-  function showMoreCodes() {
-    const list = document.getElementById('discountCodesList');
-    list.innerHTML = '';
-    <c:forEach var="code" items="${discountCodes}">
-    list.innerHTML += `<li>${code.code} - ${code.description}</li>`;
-    </c:forEach>
-    document.getElementById('seeMoreBtn').style.display = 'none';
-  }
-</script>
-<script src="../static/js/jquery_min.js"></script>
-<script src="../static/js/wow.js"></script>
-<script src="../static/js/bootstrap.js"></script>
-<script src="../static/js/owl.carousel.js"></script>
-<script src="../static/js/modernizr.js"></script>
-<script src="../static/js/jquery.magnific-popup.js"></script>
-<script src="../static/js/jquery.dlmenu.js"></script>
-<script src="../static/js/jquery.sticky.js"></script>
-<script src="../static/js/jquery.menu-aim.js"></script>
-<script src="../static/js/camera.min.js"></script>
-<script src="../static/js/jquery.easing.1.3.js"></script>
-<script src="../static/js/jquery.inview.min.js"></script>
-<script src="../static/js/custom.js"></script>
+<%--<script src="../static/js/jquery_min.js"></script>--%>
+<%--<script src="../static/js/wow.js"></script>--%>
+<%--<script src="../static/js/bootstrap.js"></script>--%>
+<%--<script src="../static/js/owl.carousel.js"></script>--%>
+<%--<script src="../static/js/modernizr.js"></script>--%>
+<%--<script src="../static/js/jquery.magnific-popup.js"></script>--%>
+<%--<script src="../static/js/jquery.dlmenu.js"></script>--%>
+<%--<script src="../static/js/jquery.sticky.js"></script>--%>
+<%--<script src="../static/js/jquery.menu-aim.js"></script>--%>
+<%--<script src="../static/js/camera.min.js"></script>--%>
+<%--<script src="../static/js/jquery.easing.1.3.js"></script>--%>
+<%--<script src="../static/js/jquery.inview.min.js"></script>--%>
+<%--<script src="../static/js/custom.js"></script>--%>
 <script>
   $(window).on("load", function () {
     var wow = new WOW({
@@ -311,6 +221,5 @@ Purchase:
     });
   }
 </script>
-
 </body>
 </html>
