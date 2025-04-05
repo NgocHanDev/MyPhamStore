@@ -16,6 +16,7 @@ import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -124,10 +125,9 @@ public class CartServiceImpl implements ICartService {
         HttpSession session = request.getSession();
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
         System.out.println("Before displaying: " + listCartItems);
-        if (listCartItems == null) {
-            request.setAttribute("errorMessage", "Your cart is empty.");
+        if (listCartItems == null || listCartItems.isEmpty()) {
+            request.setAttribute("errorMessage", "Giỏ hàng của bạn đang trống.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
-            System.out.println("Cart session data: " + listCartItems);
             return;
         }
 
@@ -137,58 +137,40 @@ public class CartServiceImpl implements ICartService {
             for (CartModel cartItem : listCartItems) {
                 ProductModel product = productService.findProductById(cartItem.getProductId());
                 if (product == null) {
-                    request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
-                    request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
-                    return;
-                } else if (cartItem.getVariantId() == null) {
+                    System.out.println("Product not found: " + cartItem.getProductId());
+                    continue;
+                }
+                if (cartItem.getVariantId() == null) {
                     totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
-                    CartModelHelper helper = new CartModelHelper();
-                    helper.setQuantity(cartItem.getQuantity());
-                    helper.setProduct(product);
-                    listCartDisplay.add(helper);
+                    listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), null));
                 } else {
                     List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
-                    ProductVariant variant = null;
-                    for (ProductVariant productVariant : listVariant) {
-                        if (cartItem.getVariantId().equals(productVariant.getId())) {
-                            variant = productVariant;
-                        }
-                    }
+                    ProductVariant variant = listVariant.stream()
+                            .filter(v -> v.getId().equals(cartItem.getVariantId()))
+                            .findFirst()
+                            .orElse(null);
                     if (variant != null) {
                         totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                        listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), variant));
                     } else {
-                        System.out.println("Skipping variant price calculation due to null value.");
+                        System.out.println("Variant not found for product: " + cartItem.getProductId());
                     }
-                    CartModelHelper cartModelHelper = new CartModelHelper(product, cartItem.getQuantity(), variant);
-                    listCartDisplay.add(cartModelHelper);
                 }
             }
-            System.out.println("After displaying: " + listCartDisplay);
         } catch (Exception e) {
-            request.setAttribute("errorMessage", "An error occurred while processing your cart.");
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Lỗi khi xử lý giỏ hàng: " + e.getMessage());
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
 
         List<CouponModel> discountCodes = couponService.findAvailableCoupons();
-        List<Map<String, Object>> simplifiedDiscountCodes = discountCodes.stream()
-                .map(coupon -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("code", coupon.getCode());
-                    map.put("discountType", coupon.getDiscountType());
-                    map.put("discountValue", coupon.getDiscountValue());
-                    map.put("minOrderValue", coupon.getMinOrderValue()); // Thêm dòng này
-                    map.put("endDate", coupon.getEndDate()); // Thêm dòng này
-                    return map;
-                })
-                .collect(Collectors.toList());
-        request.setAttribute("discountCodes", simplifiedDiscountCodes);
-        // Thay thế đoạn code trên bằng:
-//        request.setAttribute("discountCodes", discountCodes);
+        System.out.println("Discount codes: " + discountCodes);
+        request.setAttribute("discountCodes", discountCodes);
 
         String discountCode = (String) session.getAttribute("discountCode");
         long discountAmount = 0;
-        if (discountCode != null) {
+        if (discountCode != null && !discountCodes.isEmpty()) {
             for (CouponModel coupon : discountCodes) {
                 if (coupon.getCode().equals(discountCode)) {
                     discountAmount = calculateDiscount(totalAmount.get(), coupon);
@@ -199,10 +181,10 @@ public class CartServiceImpl implements ICartService {
 
         request.setAttribute("listCartDisplay", listCartDisplay);
         request.setAttribute("totalAmount", totalAmount.get());
-        long finalAmount = totalAmount.get() - discountAmount;
         request.setAttribute("discountAmount", discountAmount);
-        request.setAttribute("finalAmount", finalAmount);
+        request.setAttribute("finalAmount", totalAmount.get() - discountAmount);
 
+        System.out.println("Forwarding to /frontend/shopping_cart.jsp");
         request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
     }
 
@@ -227,15 +209,82 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
         HttpSession session = request.getSession();
-        CouponModel coupon = couponDAO.findCouponByCode(discountCode);
-        if (coupon != null && couponDAOImpl.getRemainingQuantity(discountCode) > 0) {
-            session.setAttribute("discountAmount", couponDAOImpl.getDiscount(discountCode));
-            session.setAttribute("discountCode", discountCode);
+
+        // Lấy thông tin giỏ hàng để kiểm tra điều kiện
+        List<CartModel> cartItems = (List<CartModel>) session.getAttribute("cart");
+        if (cartItems == null || cartItems.isEmpty()) {
+            session.setAttribute("discountError", "Giỏ hàng trống, không thể áp dụng voucher");
             response.sendRedirect("/gio-hang");
-        } else {
-            session.setAttribute("discountError", "Mã giảm giá không hợp lệ hoặc đã hết hạn.");
-            response.sendRedirect("/gio-hang");
+            return;
         }
+
+        // Tính tổng giá trị giỏ hàng
+        long totalAmount = calculateTotalAmount(cartItems);
+
+        CouponModel coupon = couponDAO.findCouponByCode(discountCode);
+        if (coupon == null) {
+            session.setAttribute("discountError", "Mã giảm giá không tồn tại");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        // Kiểm tra các điều kiện
+        if (!coupon.getIsAvailable()) {
+            session.setAttribute("discountError", "Mã giảm giá không khả dụng");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        if (LocalDateTime.now().isBefore(coupon.getStartDate())) {
+            session.setAttribute("discountError", "Mã giảm giá chưa có hiệu lực");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        if (LocalDateTime.now().isAfter(coupon.getEndDate())) {
+            session.setAttribute("discountError", "Mã giảm giá đã hết hạn");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        if (totalAmount < coupon.getMinOrderValue()) {
+            session.setAttribute("discountError", "Đơn hàng chưa đạt giá trị tối thiểu để áp dụng voucher");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        if (couponDAOImpl.getRemainingQuantity(discountCode) <= 0) {
+            session.setAttribute("discountError", "Mã giảm giá đã hết lượt sử dụng");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        // Nếu tất cả điều kiện đều hợp lệ
+        session.setAttribute("discountCode", discountCode);
+        session.removeAttribute("discountError"); // Xóa thông báo lỗi nếu có
+
+        response.sendRedirect("/gio-hang");
+    }
+
+    private long calculateTotalAmount(List<CartModel> cartItems) {
+        long total = 0;
+        for (CartModel item : cartItems) {
+            ProductModel product = productService.findProductById(item.getProductId());
+            if (product != null) {
+                if (item.getVariantId() == null) {
+                    total += product.getPrice() * item.getQuantity();
+                } else {
+                    List<ProductVariant> variants = productService.getProductVariantsByProductId(item.getProductId());
+                    for (ProductVariant variant : variants) {
+                        if (variant.getId().equals(item.getVariantId())) {
+                            total += variant.getPrice() * item.getQuantity();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return total;
     }
 }
 
