@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.edu.hcmuaf.fit.myphamstore.common.PasswordUtils;
+import vn.edu.hcmuaf.fit.myphamstore.dao.IOtpDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 
@@ -16,6 +18,8 @@ import java.io.IOException;
 public class ResetPasswordController extends HttpServlet {
     @Inject
     private IUserService userService;
+    @Inject
+    private IOtpDAO otpDAO;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,13 +40,14 @@ public class ResetPasswordController extends HttpServlet {
         }
 
         // Kiểm tra OTP trong database hoặc cache
-//        boolean isValidOTP = userService.verifyOTP(request, response);
-//
-//        if (!isValidOTP) {
-//            request.setAttribute("errorMessage", "OTP không hợp lệ hoặc đã hết hạn!");
-//            request.getRequestDispatcher("reset-password.jsp").forward(request, response);
-//            return;
-//        }
+        boolean isValidOTP = userService.verifyOTPHash(request, response);
+        System.out.println(isValidOTP);
+
+        if (!isValidOTP) {
+            request.setAttribute("errorMessage", "OTP không hợp lệ hoặc đã hết hạn!");
+            request.getRequestDispatcher("/frontend/reset-password.jsp").forward(request, response);
+            return;
+        }
 
         // Cập nhật mật khẩu mới
         UserModel user = userService.findUserByEmail(email);

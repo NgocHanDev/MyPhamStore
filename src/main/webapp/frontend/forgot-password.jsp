@@ -27,51 +27,37 @@ Purchase:
     <!--srart theme style -->
     <link rel="stylesheet" type="text/css" href="../static/css/animate.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../static/css/font-awesome.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../static/css/owl.carousel.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../static/css/owl.theme.default.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../static/css/magnific-popup.css"
-    />
+    <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/owl.carousel.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/owl.theme.default.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/magnific-popup.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/fonts.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/dl-menu.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/camera.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../static/css/responsive.css"
-    />
+    <link rel="stylesheet" type="text/css" href="../static/css/responsive.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/sidebar.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/profile.css" />
+<%--    <link rel="stylesheet" type="text/css" href="../static/css/change-pass.css" />--%>
+    <!-- favicon links -->
+    <link rel="shortcut icon" type="image/png" href="../static/images/header/favicon.png" />
     <link
-      rel="stylesheet"
-      type="text/css"
-      href="../static/css/change-pass.css"
+            rel="stylesheet"
+            type="text/css"
+            href="../static/css/responsive.css"
     />
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
     <!-- favicon links -->
     <link
-      rel="shortcut icon"
-      type="image/png"
-      href="../static/images/header/favicon.png"
+            rel="shortcut icon"
+            type="image/png"
+            href="../static/images/header/favicon.png"
     />
   </head>
 
   <body>
+
     <!-- preloader Start -->
     <div id="preloader">
       <div id="status">
@@ -87,35 +73,57 @@ Purchase:
     <!-- Top Scroll End -->
     <div id="nav"><%@include file="component/nav.jsp"%></div>
     <!-- Main Content -->
-    <!-- Main Content -->
-    <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-        <div class="card-body">
-          <h2 class="text-center mb-4">Quên mật khẩu</h2>
-          <form action="forgot-password" method="post">
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" name="email" id="email" class="form-control" placeholder="Nhập email của bạn" required />
-            </div>
+    <div class="container">
+      <div class="row">
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4" style="position: static">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="text-center">
+                  <h3><i class="fa fa-lock fa-4x"></i></h3>
+                  <h2 class="text-center">Quên Mật Khẩu?</h2>
+                  <p>Bạn có thể đặt lại mật khẩu tại đây.</p>
+                  <div class="panel-body">
 
-            <div class="d-grid">
-              <input type="submit" value="Gửi mail cho tôi" class="btn btn-success" />
-            </div>
-          </form>
+                    <form action="forgot-password" method="post">
+                      <% String successMessage = (String) request.getAttribute("successMessage"); %>
+                      <% if (successMessage != null) { %>
+                      <div class="alert alert-success">
+                        <%= successMessage %>
+                      </div>
+                      <% } %>
 
-          <!-- Hiển thị thông báo từ server -->
-          <c:if test="${not empty errorMessage}">
-            <div class="alert alert-danger mt-3">${errorMessage}</div>
-          </c:if>
-          <c:if test="${not empty successMessage}">
-            <div class="alert alert-success mt-3">${successMessage}</div>
-          </c:if>
+                      <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
+                      <% if (errorMessage != null) { %>
+                      <div class="alert alert-danger">
+                        <%= errorMessage %>
+                      </div>
+                      <% } %>
+                      <fieldset>
+                        <div class="form-group">
+                          <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope color-blue"></i></span>
+
+                            <input id="email" name="email" placeholder="Địa chỉ email" class="form-control" type="email" oninvalid="setCustomValidity('Vui lòng nhập email hợp lệ!')" onchange="try{setCustomValidity('')}catch(e){}" required="">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <input class="btn btn-lg btn-primary btn-block" value="Gửi cho tôi email" type="submit">
+                        </div>
+                      </fieldset>
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <!-- Brandlogo Wrapper End -->
 
-    <div id="footer"><%@include file="component/footer.jsp"%></div>
+    <%@include file="component/footer.jsp"%>
     
     <!--main js file start-->
     <script src="../static/js/jquery_min.js"></script>
@@ -131,20 +139,5 @@ Purchase:
     <script src="../static/js/jquery.easing.1.3.js"></script>
     <script src="../static/js/jquery.inview.min.js"></script>
     <script src="../static/js/custom.js"></script>
-    <!-- Include JS files dynamically using JSP -->
-    <script src="<%= request.getContextPath() %>/static/js/jquery_min.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/wow.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/bootstrap.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/owl.carousel.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/modernizr.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/jquery.magnific-popup.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/jquery.dlmenu.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/jquery.sticky.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/jquery.menu-aim.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/camera.min.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/jquery.easing.1.3.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/jquery.inview.min.js"></script>
-    <script src="<%= request.getContextPath() %>/static/js/custom.js"></script>
-
   </body>
 </html>

@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import vn.edu.hcmuaf.fit.myphamstore.common.JDBIConnector;
+import vn.edu.hcmuaf.fit.myphamstore.common.PasswordUtils;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IOtpDAO;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 public class OtpDAOImpl implements IOtpDAO {
     @Override
     public void saveOtp(String email, String otp) {
+        System.out.println(otp);
         String sql = "INSERT INTO otp (email, otp, time_expire) VALUES (?, ?, ?)";
         try{
             JDBIConnector.getJdbi().useHandle(handle -> {
@@ -43,12 +45,37 @@ public class OtpDAOImpl implements IOtpDAO {
     }
 
     @Override
+    public Boolean verifyOtpHash(String email, String otp) {
+        String sql = "SELECT otp FROM otp WHERE email = ?";
+        try {
+
+            String hashedOtp = JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind(0, email)
+                            .mapTo(String.class)
+                            .findFirst()
+                            .orElse(null)
+            );
+            System.out.println(hashedOtp);
+            System.out.println(otp);
+            System.out.println("Hihi"+PasswordUtils.verifyPassword(otp.trim(),hashedOtp.trim()));
+            if (hashedOtp != null) {
+                return PasswordUtils.verifyPassword(hashedOtp.trim(),otp.trim());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public String generateOtp() {
         //tao ra chuoi ngau nhien 6 ky tu
         String otp = "";
         for (int i = 0; i < 6; i++) {
             otp += (int) (Math.random() * 10);
         }
+        System.out.println("otp moi tao ne"+otp);
         return otp;
     }
 }
