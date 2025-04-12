@@ -163,7 +163,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
                 .updatedAt(LocalDateTime.now())
                 .paymentMethod(PaymentMethod.COD)
                 .orderDate(LocalDateTime.now())
-                .shippingFee(0)
+                .shippingFee(Integer.parseInt(request.getParameter("submit-fee-cost")))
                 .status(OrderStatus.PENDING)
                 .build();
         Long orderId = orderDAO.saveOrder(order);

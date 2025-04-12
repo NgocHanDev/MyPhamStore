@@ -226,7 +226,8 @@
                     "            <table>\n" +
                     "                <tr><td><strong>Ghi Chú:</strong></td><td>"+order.getNote()+"</td></tr>\n" +
                     "                <tr><td><strong>Phương Thức Thanh Toán:</strong></td><td>"+order.getPaymentMethod().name()+"</td></tr>\n" +
-                    "                <tr><td><strong>Tổng Tiền:</strong></td><td>"+numberFormat.format(order.getTotalPrice())+" VNĐ</td></tr>\n" +
+                    "                <tr><td><strong>Phí Vận Chuyển:</strong></td><td>"+numberFormat.format(order.getShippingFee())+" VNĐ</td></tr>\n" +
+                    "                <tr><td><strong>Tổng Tiền:</strong></td><td>"+numberFormat.format(order.getTotalPrice() + order.getShippingFee())+" VNĐ</td></tr>\n" +
                     "                <tr><td><strong>Ngày Đặt Hàng:</strong></td><td>"+order.getOrderDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))+"</td></tr>\n" +
                     "            </table>\n" +
                     "        </div>\n" +
