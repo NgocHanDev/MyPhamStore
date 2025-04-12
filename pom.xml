@@ -17,7 +17,14 @@
     <junit.version>5.9.2</junit.version>
   </properties>
 
-  <dependencies>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
 
       <!--      Gson-->
       <dependency>
@@ -102,6 +109,25 @@
           <artifactId>jakarta.servlet.jsp.jstl</artifactId>
           <version>3.0.1</version>
       </dependency>
+
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>fluent-hc</artifactId>
+          <version>4.5.13</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.5.13</version>
+      </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.14</version>
+        </dependency>
+
 
 
       <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
