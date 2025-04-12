@@ -192,19 +192,19 @@
   </div>
 </div>
 <%@include file="component/footer.jsp"%>
-<%--<script src="../static/js/jquery_min.js"></script>--%>
-<%--<script src="../static/js/wow.js"></script>--%>
-<%--<script src="../static/js/bootstrap.js"></script>--%>
-<%--<script src="../static/js/owl.carousel.js"></script>--%>
-<%--<script src="../static/js/modernizr.js"></script>--%>
-<%--<script src="../static/js/jquery.magnific-popup.js"></script>--%>
-<%--<script src="../static/js/jquery.dlmenu.js"></script>--%>
-<%--<script src="../static/js/jquery.sticky.js"></script>--%>
-<%--<script src="../static/js/jquery.menu-aim.js"></script>--%>
-<%--<script src="../static/js/camera.min.js"></script>--%>
-<%--<script src="../static/js/jquery.easing.1.3.js"></script>--%>
-<%--<script src="../static/js/jquery.inview.min.js"></script>--%>
-<%--<script src="../static/js/custom.js"></script>--%>
+<script src="../static/js/jquery_min.js"></script>
+<script src="../static/js/wow.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+<script src="../static/js/owl.carousel.js"></script>
+<script src="../static/js/modernizr.js"></script>
+<script src="../static/js/jquery.magnific-popup.js"></script>
+<script src="../static/js/jquery.dlmenu.js"></script>
+<script src="../static/js/jquery.sticky.js"></script>
+<script src="../static/js/jquery.menu-aim.js"></script>
+<script src="../static/js/camera.min.js"></script>
+<script src="../static/js/jquery.easing.1.3.js"></script>
+<script src="../static/js/jquery.inview.min.js"></script>
+<script src="../static/js/custom.js"></script>
 <script>
   $(window).on("load", function () {
     var wow = new WOW({

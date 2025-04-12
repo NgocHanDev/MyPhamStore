@@ -253,6 +253,7 @@
             <td>${cart.quantity}</td>
           </tr>
         </c:forEach>
+        </c:forEach>
         </tbody>
         <tfoot>
         <tr>
@@ -454,5 +455,4 @@
   })
 </script>
 </body>
-
 </html>
