@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author CTT VNPAY
  */
+@WebServlet("/vnpay/ajaxServlet")
 public class ajaxServlet extends HttpServlet {
 
     @Override
@@ -37,7 +39,6 @@ public class ajaxServlet extends HttpServlet {
         String orderType = "other";
         long amount = Integer.parseInt(req.getParameter("amount"))*100;
         String bankCode = req.getParameter("bankCode");
-        
         String vnp_TxnRef = Config.getRandomNumber(8);
         String vnp_IpAddr = Config.getIpAddress(req);
 

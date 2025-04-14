@@ -1,6 +1,6 @@
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.nio.charset.StandardCharsets"%>
-<%@page import="com.vnpay.common.Config"%>
+<%@page import="vn.edu.hcmuaf.fit.myphamstore.vnpay.Config"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -25,8 +25,8 @@
         <!-- Bootstrap core CSS -->
         <link href="/vnpay_jsp/assets/bootstrap.min.css" rel="stylesheet"/>
         <!-- Custom styles for this template -->
-        <link href="/vnpay_jsp/assets/jumbotron-narrow.css" rel="stylesheet"> 
-        <script src="/vnpay_jsp/assets/jquery-1.11.3.min.js"></script>
+        <link href="/vnpay_jsp/assets/jumbotron-narrow.css" rel="stylesheet">
+        <script src="/static/js/jquery.min.js"></script>
     </head>
     <body>
         <%

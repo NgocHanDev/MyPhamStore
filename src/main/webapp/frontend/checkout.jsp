@@ -412,15 +412,18 @@
         </div>
 
       </div>
+
       <div class="lower-box text-right">
         <div class="shop_btn_wrapper checkout_btn">
           <ul>
-            <li><a id="submit-order" href="#">Đặt hàng </a>
+            <li><a id="submit-order" href="/vnpay/ajaxServlet">Đặt hàng </a>
             </li>
           </ul>
         </div>
       </div>
+
     </div>
+
     <!--End Payment Box-->
 
   </div>
@@ -471,28 +474,51 @@
 <%--<script src="../static/js/demo/checkout.js"></script>--%>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script>
-  document.getElementById("submit-order").addEventListener("click", (e)=>{
-    e.preventDefault();
-    console.log("submit order");
-    Toastify({
-      text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",
-      duration: 5000,
-      newWindow: true,
-      close: true,
-      gravity: "top", // `top` or `bottom`
-      position: "center", // `left`, `center` or `right`
-      stopOnFocus: true, // Prevents dismissing of toast on hover
-      style: {
-        //   background: "linear-gradient(to right, #00b09b, #96c93d)",
-      },
-      onClick: function(){} // Callback after click
-    }).showToast();
-    setTimeout(()=>{
-      //submit form
-        document.querySelector(".checkout-form").submit();
-    }, 1000);
-  })
-</script>
+<%--<script>--%>
+<%--  document.getElementById("submit-order").addEventListener("click", async function (e) {--%>
+<%--    e.preventDefault();--%>
+
+<%--    const vnpayChecked = document.getElementById("payment-4").checked;--%>
+
+<%--    if (vnpayChecked) {--%>
+<%--      // Gọi API lấy URL thanh toán VNPAY--%>
+<%--      const amount = ${totalAmount}; // tổng tiền thanh toán đã có ở dưới table--%>
+<%--      const language = "vn"; // hoặc 'en' nếu cần--%>
+<%--      const bankCode = "NCB"; // có thể thêm option cho user chọn ngân hàng nếu cần--%>
+
+<%--      const response = await fetch("/vnpay/ajaxServlet", {--%>
+<%--        method: "POST",--%>
+<%--        headers: {--%>
+<%--          "Content-Type": "application/x-www-form-urlencoded"--%>
+<%--        },--%>
+<%--        body: new URLSearchParams({--%>
+<%--          amount: amount,--%>
+<%--          language: language,--%>
+<%--          // bankCode: bankCode--%>
+<%--        })--%>
+<%--      });--%>
+
+<%--      const result = await response.json();--%>
+<%--      if (result.code === "00") {--%>
+<%--        window.location.href = result.data; // chuyển sang trang thanh toán--%>
+<%--      } else {--%>
+<%--        alert("Có lỗi xảy ra khi tạo liên kết thanh toán VNPAY!");--%>
+<%--      }--%>
+
+<%--    } else {--%>
+<%--      // Thanh toán khác -> submit form như cũ--%>
+<%--      Toastify({--%>
+<%--        text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",--%>
+<%--        duration: 5000,--%>
+<%--        gravity: "top",--%>
+<%--        position: "center",--%>
+<%--        close: true,--%>
+<%--      }).showToast();--%>
+<%--      setTimeout(() => {--%>
+<%--        document.querySelector(".checkout-form").submit();--%>
+<%--      }, 1000);--%>
+<%--    }--%>
+<%--  });--%>
+<%--</script>--%>
 </body>
 </html>
