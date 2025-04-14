@@ -280,6 +280,74 @@
      </div>
      <!--End Order Box-->
  <%--    <!-- Coupons Section -->--%>
+              <input type="text" name="ward"  placeholder="nhập tên phường/xã" value="${address.ward}"  required>
+            </div>
+
+            <!--Form Group-->
+            <div class="form-group col-md-6 col-sm-6 col-xs-12">
+              <div class="field-label">Chi tiết địa chỉ </div>
+              <input type="text" name="note"  placeholder="nhập chi tiết địa chỉ" value="${address.note}" required >
+            </div>
+
+            <div class="form-group col-md-6 col-sm-6 col-xs-12">
+              <div class="field-label">Ghi chú của khách hàng </div>
+              <input type="text" name="customerNote"  placeholder="ghi chú của bạn" required >
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <!--End Checkout Details-->
+
+    <!--Order Box-->
+    <div class="order-box">
+      <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">
+        <h1>Sản phẩm đã đặt hàng của bạn </h1>
+      </div>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Loại</th>
+          <th>Giá</th>
+          <th>Số lượng</th>
+        </tr>
+        </thead>
+        <tbody>
+
+          <c:forEach items="${listCart}" var="cart">
+        <c:forEach items="${listCartDisplay}" var="cart">
+          <c:set var="variant" value="${cart.variant}"/>
+          <tr>
+            <td>${cart.product.name}</td>
+            <td>
+              <c:choose>
+                <c:when test="${variant != null}">${variant.name}</c:when>
+                <c:otherwise>Sản phẩm gốc</c:otherwise>
+              </c:choose>
+            </td>
+            <td>
+              <c:choose>
+                <c:when test="${variant != null}">${variant.price}đ</c:when>
+                <c:otherwise>${cart.product.price}đ</c:otherwise>
+              </c:choose>
+            </td>
+            <td>${cart.quantity}</td>
+          </tr>
+        </c:forEach>
+        </c:forEach>
+        </tbody>
+        <tfoot>
+        <tr>
+          <td>Tổng: </td>
+          <td>${totalAmount}đ</td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+    <!--End Order Box-->
+<%--    <!-- Coupons Section -->--%>
 <%--    <div class="coupons-section">--%>
 <%--      <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">--%>
 <%--        <h1>Available Coupons</h1>--%>
@@ -427,5 +495,4 @@
   })
 </script>
 </body>
-
 </html>
