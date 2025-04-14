@@ -41,13 +41,13 @@
         </div> 
         <script>
              function pay() {
-              window.location.href = "/vnpay_jsp/vnpay_pay.jsp";
+              window.location.href = "/vnpay/vnpay_pay.jsp";
             }
             function querydr() {
-              window.location.href = "/vnpay_jsp/vnpay_querydr.jsp";
+              window.location.href = "/vnpay/vnpay_querydr.jsp";
             }
              function refund() {
-              window.location.href = "/vnpay_jsp/vnpay_refund.jsp";
+              window.location.href = "/vnpay/vnpay_refund.jsp";
             }
         </script>
     </body>
