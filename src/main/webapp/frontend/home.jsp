@@ -161,7 +161,7 @@ To change this template use File | Settings | File Templates.
 ;
     padding-top: 15px;
     justify-content: center;">
-													<form method="post" action="/gio-hang">
+													<form method="post" action="<c:url value='/gio-hang' />">
 														<input type="hidden" name="action" value="add">
 														<input type="hidden" name="productId" value="${product.id}">
 														<button type="submit" class="ss_btn">Thêm vào giỏ</button>
@@ -229,7 +229,7 @@ To change this template use File | Settings | File Templates.
 												</div>
 												<div class="ss_featured_products_box_footer">
 													<ul style="display: flex; padding-top: 15px; justify-content: center;">
-														<form method="post" action="/gio-hang">
+														<form method="post" action="<c:url value='/gio-hang' />">
 															<input type="hidden" name="action" value="add">
 															<input type="hidden" name="productId" value="${product.id}">
 															<button type="submit" class="ss_btn">Thêm vào giỏ</button>
@@ -272,7 +272,7 @@ To change this template use File | Settings | File Templates.
 												</div>
 												<div class="ss_featured_products_box_footer">
 													<ul style="display: flex; padding-top: 15px; justify-content: center;">
-														<form method="post" action="/gio-hang">
+														<form method="post" action="<c:url value='/gio-hang' />">
 															<input type="hidden" name="action" value="add">
 															<input type="hidden" name="productId" value="${product.id}">
 															<button type="submit" class="ss_btn">Thêm vào giỏ</button>
@@ -315,7 +315,7 @@ To change this template use File | Settings | File Templates.
 												</div>
 												<div class="ss_featured_products_box_footer">
 													<ul style="display: flex; padding-top: 15px; justify-content: center;">
-														<form method="post" action="/gio-hang">
+														<form method="post" action="<c:url value='/gio-hang' />">
 															<input type="hidden" name="action" value="add">
 															<input type="hidden" name="productId" value="${product.id}">
 															<button type="submit" class="ss_btn">Thêm vào giỏ</button>
@@ -369,7 +369,7 @@ To change this template use File | Settings | File Templates.
 ;
     padding-top: 15px;
     justify-content: center;">
-													<form method="post" action="/gio-hang">
+													<form method="post" action="<c:url value='/gio-hang' />">
 														<input type="hidden" name="action" value="add">
 														<input type="hidden" name="productId" value="${product.id}">
 														<button type="submit" class="ss_btn">Thêm vào giỏ</button>

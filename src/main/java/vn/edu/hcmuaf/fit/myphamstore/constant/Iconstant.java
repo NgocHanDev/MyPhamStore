@@ -5,7 +5,7 @@ public interface Iconstant {
 
     public static final String GOOGLE_CLIENT_SECRET = "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";
 
-    public static final String GOOGLE_REDIRECT_URI = "http://localhost:8080/MyPhamStore/login";
+    public static final String GOOGLE_REDIRECT_URI = "http://localhost:8080/MyPhamStore/trang-chu";
 
     public static final String GOOGLE_GRANT_TYPE = "authorization_code";
 
