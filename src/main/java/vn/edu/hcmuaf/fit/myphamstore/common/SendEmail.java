@@ -23,6 +23,7 @@
     
         public static boolean sendEmail(String to, String otp) {
             log.info("Sending email to: {}",to);
+            System.out.println("Sending email to: " + to);
             String tieuDe = "Email xác nhận tài khoản";
             String noiDung = "<!DOCTYPE html>\n" +
                     "<html lang=\"en\">\n" +

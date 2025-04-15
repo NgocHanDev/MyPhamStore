@@ -7,6 +7,7 @@ import vn.edu.hcmuaf.fit.myphamstore.dao.IReviewDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.ReviewModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.IReviewService;
+import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.List;
 public class ReviewServiceImpl implements IReviewService {
     @Inject
     private IReviewDAO reviewDAO;
+    @Inject
+    private LoggingService log;
+    private final String CLASS_NAME = "REVIEW-SERVICE";
 
     @Override
     public ReviewModel findReviewById(Long id) {
@@ -37,6 +41,7 @@ public class ReviewServiceImpl implements IReviewService {
 
     @Override
     public void addReview(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.info(CLASS_NAME, "Thêm đánh giá sản phẩm");
         UserModel user = (UserModel) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect(request.getContextPath() + "/login");
@@ -55,6 +60,7 @@ public class ReviewServiceImpl implements IReviewService {
         review.setComment(comment);
 
         reviewDAO.saveReview(review,Long.parseLong(userId),Long.parseLong(productId));
+        log.info(CLASS_NAME, "Thêm đánh giá sản phẩm thành công cho sản phẩm có id: " + productId);
 
         response.sendRedirect(request.getContextPath() + "/product-detail?id=" + productId);
     }

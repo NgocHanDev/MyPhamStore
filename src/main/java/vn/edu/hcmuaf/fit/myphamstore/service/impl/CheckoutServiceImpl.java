@@ -15,6 +15,7 @@ import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICheckoutService;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
+import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -30,8 +31,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @ApplicationScoped
 public class CheckoutServiceImpl implements ICheckoutService {
     @Inject
-    private ICheckoutService checkoutService;
-    @Inject
     private IProductService productService;
     @Inject
     private IAddressDAO addressDAO;
@@ -39,9 +38,13 @@ public class CheckoutServiceImpl implements ICheckoutService {
     private IOrderDAO orderDAO;
     @Inject
     private ICouponService couponService;
+    @Inject
+    private LoggingService  log;
+    private final String CLASS_NAME = "CHECKOUT-SERVICE";
 
     @Override
     public void displayCheckout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.info(CLASS_NAME, "hiển thị trang checkout");
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
@@ -77,7 +80,6 @@ public class CheckoutServiceImpl implements ICheckoutService {
                     CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
                     listCartDisplay.add(cartModelHelper);
                 }
-
             }
         } catch (Exception e) {
             request.setAttribute("errorMessage", "An error occurred while processing your cart.");
@@ -99,6 +101,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
 
     @Override
     public void checkout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.info(CLASS_NAME, "thực hiện thanh toán");
         HttpSession session = request.getSession();
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
         if (listCartItems == null) {
@@ -137,11 +140,13 @@ public class CheckoutServiceImpl implements ICheckoutService {
             }
             System.out.println("After displaying: " + listCartDisplay);
         } catch (Exception e) {
+
             request.setAttribute("errorMessage", "An error occurred while processing your cart.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
         String couponCode = request.getParameter("couponCode");
+        log.info(CLASS_NAME, "Mã giảm giá: " + couponCode);
         if (couponCode != null && !couponCode.isEmpty()) {
             CouponModel coupon = couponService.applyCoupon(couponCode, totalAmount);
             if (coupon != null) {
@@ -194,6 +199,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
         // Sử dụng ExecutorService để gửi email bất đồng bộ
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
+            log.info(CLASS_NAME, "Gửi email thông báo đơn hàng cho: " + user.getEmail());
             SendEmail.notifyOrderToUser(user.getEmail(), order, listCartDisplay, address);
         });
         executorService.shutdown(); // Đóng ExecutorService sau khi gửi
@@ -222,6 +228,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
         boolean addressExist  = addressDAO.checkAddressIsExist(address, userId);
         Long addressId = null;
         if (!addressExist) {
+            log.info(CLASS_NAME, "Địa chỉ không tồn tại, thêm mới địa chỉ Id:" + addressId);
             addressId = addressDAO.save(address);
         }else {
            List<AddressModel> listAddress = addressDAO.findByUserId((long) Integer.parseInt(userId.toString()));
