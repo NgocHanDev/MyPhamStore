@@ -11,6 +11,7 @@ import vn.edu.hcmuaf.fit.myphamstore.dao.IContactDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.BrandModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.ContactModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.IContactService;
+import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +21,10 @@ public class ContactServiceImpl implements IContactService {
     //CDI container dependency injection (tiêm phụ thuộc) -> java servlet weld
     @Inject
     private IContactDAO contactDAO;
+
+    @Inject
+    private LoggingService log;
+    private final String CLASS_NAME = "CONTACT-SERVICE";
 
     @Override
     public ContactModel findContactById(Long id) {
@@ -31,6 +36,7 @@ public class ContactServiceImpl implements IContactService {
         if (keyword != null && !keyword.isEmpty()) {
             keyword = keyword.trim();
         }
+        log.info(CLASS_NAME, "Lấy danh sách liên");
         return this.contactDAO.findAll(keyword, currentPage, pageSize, orderBy);
     }
 
@@ -45,6 +51,7 @@ public class ContactServiceImpl implements IContactService {
         List<ContactModel> contacts = this.getContactsWithPaging(keyword, currentPage, pageSize, orderBy);
         Long totalPages = this.contactDAO.getTotalPage(5);
 
+        log.info(CLASS_NAME, "Hiển thị danh sách liên hệ");
         request.setAttribute("contacts", contacts);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", currentPage);
@@ -63,8 +70,10 @@ public class ContactServiceImpl implements IContactService {
         ContactModel isSuccess = contactDAO.update(contactModel);
         if (isSuccess == null) {
             request.setAttribute("message", "Có lỗi xảy ra");
+            log.error(CLASS_NAME, "Không thể cập nhật trạng thái liên hệ id: " + id);
         } else {
             request.setAttribute("message", "Cập nhật thành công id: " + id);
+            log.info(CLASS_NAME, "Cập nhật trạng thái liên hệ thành công id: " + id);
             this.displayContact(request, response);
         }
     }
@@ -78,8 +87,10 @@ public class ContactServiceImpl implements IContactService {
         ContactModel isSuccess = contactDAO.update(contactModel);
         if (isSuccess == null) {
             request.setAttribute("message", "Có lỗi xảy ra");
+            log.error(CLASS_NAME, "Không thể cập nhật trạng thái liên hệ id: " + id);
         } else {
             request.setAttribute("message", "Cập nhật thành công id: " + id);
+            log.info(CLASS_NAME, "Cập nhật trạng thái liên hệ thành công id: " + id);
             this.displayContact(request, response);
         }
     }

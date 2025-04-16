@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import vn.edu.hcmuaf.fit.myphamstore.common.*;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IAddressDAO;
@@ -17,6 +18,7 @@ import vn.edu.hcmuaf.fit.myphamstore.exception.UserNotActiveException;
 import vn.edu.hcmuaf.fit.myphamstore.model.AddressModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
+import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
-
+@Slf4j
 public class UserServiceImpl implements IUserService {
     @Inject
     private IUserDAO userDAO;
@@ -38,6 +40,8 @@ public class UserServiceImpl implements IUserService {
     private IOtpDAO otpDAO;
     @Inject
     private IAddressDAO addressDAO;
+    @Inject
+    LoggingService logger;
 
 
     @Override
@@ -55,6 +59,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean checkLogin(String email, String password) {
+
         return userDAO.checkLogin(email, password);
     }
 
@@ -92,6 +97,7 @@ public class UserServiceImpl implements IUserService {
         try {
             boolean isAuthenticated = this.checkLogin(email, password);
             if (isAuthenticated) {
+                logger.info("USER-SERVICE", String.format("Login %s successfully", email));
                 UserModel user = this.findUserByEmail(email); // Gọi thêm phương thức này
                 if (user != null) {
                     request.getSession().setAttribute("user", user);
@@ -102,6 +108,8 @@ public class UserServiceImpl implements IUserService {
                     }
                 }
             } else {
+                logger.warn( "USER-SERVICE", String.format("Login %s fails", email));
+
                 request.setAttribute("message", "Sai email hoặc mật khẩu!");
                 request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
             }
@@ -181,6 +189,7 @@ public class UserServiceImpl implements IUserService {
         String finalEmail = email;
         executorService.submit(() -> {
             SendEmail.sendEmail(finalEmail, otp);
+            log.info("USER-SERVICE", String.format("Gửi email thành công: %s", finalEmail));
         });
         executorService.shutdown(); // Đóng ExecutorService sau khi gửi
 

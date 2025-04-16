@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import vn.edu.hcmuaf.fit.myphamstore.dao.*;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
+import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -36,6 +37,9 @@ public class ProductServiceImpl implements IProductService {
     private ICategoryDAO categoryDAO;
     @Inject
     private IProductVariantDAO productVariantDAO;
+    @Inject
+    private LoggingService log;
+    private final String CLASS_NAME = "PRODUCT-SERVICE";
 
 
 
@@ -48,47 +52,60 @@ public class ProductServiceImpl implements IProductService {
         if (keyword != null && !keyword.isEmpty()) {
             keyword = keyword.trim();
         }
+        log.info(CLASS_NAME, "lấy danh sách sản phẩm");
         return productDAO.findAll(keyword, currentPage, pageSize, orderBy);
     }
 
     @Override
     public Long getTotalProduct() {
+        log.info(CLASS_NAME, "lấy tổng số sản phẩm");
         return productDAO.countAllProducts();
     }
 
     @Override
     public List<ProductModel> getProductsByCategory(long l) {
+        log.info(CLASS_NAME, "lấy danh sách sản phẩm theo danh mục id: " + l );
         return productDAO.getProductsByCategory(l);
     }
 
     @Override
     public List<ProductModel> getLatestProducts() {
+        log.info(CLASS_NAME, "lấy danh sách sản phẩm mới nhất");
         return productDAO.getLatestProducts();
     }
 
     @Override
     public ProductModel findProductById(Long id) {
+        log.info(CLASS_NAME, "lấy sản phẩm theo id: " + id);
         return productDAO.getProductDetail(id);
     }
 
     @Override
     public ProductModel getProductDetail(Long id) {
         ProductModel product = productDAO.getProductDetail(id);
+        if (product == null) {
+            return null;
+        }
+        log.info(CLASS_NAME, "lấy chi tiết sản phẩm theo id: " + id);
         return productDAO.getProductDetail(id);
     }
 
     @Override
     public BrandModel getBrandById(Long brandId) {
+        log.info(CLASS_NAME, "lấy thương hiệu theo id: " + brandId);
         return brandDAO.findBrandById(brandId);
     }
 
     @Override
     public List<ProductImageModel> getProductImageById(Long id) {
+        log.info(CLASS_NAME, "lấy danh sách ảnh sản phẩm theo id: " + id);
         return productImageDAO.getProductImageById(id);
+
     }
 
     @Override
     public List<ReviewModel> getReviewsByProductId(Long id) {
+        log.info(CLASS_NAME, "lấy danh sách đánh giá sản phẩm theo id: " + id);
         return reviewDAO.getAllReviewsByProductId(id);
     }
 
@@ -104,6 +121,7 @@ public class ProductServiceImpl implements IProductService {
         String costPrice = request.getParameter("costPrice");
         String brandId = request.getParameter("brandId");
         String categoryId = request.getParameter("categoryId");
+        log.info(CLASS_NAME, "thêm sản phẩm mới");
 
         ProductModel productModel = ProductModel.builder()
                 .name(name)
@@ -119,6 +137,7 @@ public class ProductServiceImpl implements IProductService {
         try{
             Long isSuccess = productDAO.save(productModel);
             if (isSuccess == null || isSuccess == 0) {
+                log.error(CLASS_NAME, "thêm sản phẩm thất bại");
                 request.setAttribute("message", "Có lỗi xảy ra");
             } else {
                 //tiến hành lưu ảnh sản phẩm
@@ -129,10 +148,12 @@ public class ProductServiceImpl implements IProductService {
                             .build();
                     productImageDAO.save(productImageModel);
                 }
+                log.info(CLASS_NAME, "thêm sản phẩm thành công với id: " + isSuccess);
                 request.setAttribute("message", "Thêm sản phẩm thành công");
                 this.displayProduct(request, response);
             }
         }catch (Exception e){
+            log.error(CLASS_NAME, "thêm sản phẩm thất bại");
             e.printStackTrace();
         }
     }
@@ -149,6 +170,7 @@ public class ProductServiceImpl implements IProductService {
         String costPrice = request.getParameter("costPrice");
         String brandId = request.getParameter("brandId");
         String categoryId = request.getParameter("categoryId");
+        log.info(CLASS_NAME, "cập nhật sản phẩm với id: " + id);
 
         // phần get data products variant ở đây
         String[] variantNames = request.getParameterValues("variantName");
@@ -173,6 +195,7 @@ public class ProductServiceImpl implements IProductService {
                         .price(variantPrice)
                         .isAvailable(true)
                         .build();
+                log.info(CLASS_NAME, "cập nhật sản phẩm variant với id: " + id);
                 productVariantDAO.save(productVariant);
             }
         }
@@ -195,6 +218,7 @@ public class ProductServiceImpl implements IProductService {
             ProductModel isSuccess = productDAO.update(productModel);
             if (isSuccess == null) {
                 request.setAttribute("message", "Có lỗi xảy ra");
+                log.error(CLASS_NAME, "cập nhật sản phẩm thất bại với id: " + id);
             } else {
                 //xóa ảnh cũ
                 List<ProductImageModel> oldImages = productImageDAO.getProductImageById(id);
@@ -207,6 +231,7 @@ public class ProductServiceImpl implements IProductService {
                             .productId(id)
                             .url(image)
                             .build();
+                    log.info(CLASS_NAME, "cập nhật ảnh sản phẩm với id: " + id);
                     productImageDAO.save(productImageModel);
                 }
                 request.setAttribute("message", "Cập nhật sản phẩm thành công");
@@ -214,6 +239,7 @@ public class ProductServiceImpl implements IProductService {
                 this.displayProduct(request, response);
             }
         }catch (Exception e){
+            log.error(CLASS_NAME, "cập nhật sản phẩm thất bại với id: " + id);
             e.printStackTrace();
         }
     }
@@ -222,12 +248,14 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductModel> getFilteredProducts(String keyword, List<String> categories, List<String> brands, String priceRange, int currentPage, int pageSize, String orderBy) {
         String[] categoriesArray = categories != null ? categories.toArray(new String[0]) : new String[0];
         String[] brandsArray = brands != null ? brands.toArray(new String[0]) : new String[0];
+        log.info(CLASS_NAME, "lấy danh sách sản phẩm theo bộ lọc");
         return productDAO.getFilteredProducts(keyword, categoriesArray, brandsArray, priceRange, currentPage, pageSize, orderBy);
     }
 
     @Override
     public List<ProductVariant> getProductVariantsByProductId(Long id) {
         try{
+            log.info(CLASS_NAME, "lấy danh sách sản phẩm variant theo id: " + id);
             return productVariantDAO.findAllByProduct(ProductModel.builder().id(id).build());
         }catch (Exception e){
             e.printStackTrace();
@@ -237,11 +265,13 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<ProductModel> findProduct(Long productId) {
+        log.info(CLASS_NAME, "lấy danh sách sản phẩm theo id: " + productId);
         return productDAO.findProduct(productId);
     }
 
     @Override
     public void stopBuying(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm với id: " + request.getParameter("id"));
         Long id = Long.parseLong(request.getParameter("id"));
         //tến hành cập nhật trạng thái sản phẩm
         ProductModel productModel = ProductModel.builder().id(id).build();
@@ -250,8 +280,10 @@ public class ProductServiceImpl implements IProductService {
         ProductModel isSuccess = productDAO.update(productModel);
         if (isSuccess == null) {
             request.setAttribute("message", "Có lỗi xảy ra");
+            log.error(CLASS_NAME, "cập nhật trạng thái sản phẩm thất bại với id: " + id);
         } else {
             request.setAttribute("message", "Cập nhật thành công id: " + id);
+            log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm thành công với id: " + id);
             this.displayProduct(request, response);
         }
     }
@@ -259,6 +291,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public void startBuying(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long id = Long.parseLong(request.getParameter("id"));
+        log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm với id: " + id);
         //tến hành cập nhật trạng thái sản phẩm
         ProductModel productModel = ProductModel.builder().id(id).build();
         productModel.setIsAvailable(true);
@@ -266,8 +299,10 @@ public class ProductServiceImpl implements IProductService {
         ProductModel isSuccess = productDAO.update(productModel);
         if (isSuccess == null) {
             request.setAttribute("message", "Có lỗi xảy ra");
+            log.error(CLASS_NAME, "cập nhật trạng thái sản phẩm thất bại với id: " + id);
         } else {
             request.setAttribute("message", "Cập nhật thành công id: " + id);
+            log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm thành công với id: " + id);
             this.displayProduct(request, response);
         }
     }
@@ -282,6 +317,7 @@ public class ProductServiceImpl implements IProductService {
 
         List<ProductModel> products = this.getProductsWithPaging(keyword, currentPage, pageSize, orderBy);
         Long totalPages = this.productDAO.getTotalPage(pageSize);
+        log.info(CLASS_NAME, "lấy danh sách sản phẩm");
         // Gửi danh sách sản phẩm đến trang JSP
         request.setAttribute("products", products);
         request.setAttribute("totalPages", totalPages);
@@ -299,6 +335,7 @@ public class ProductServiceImpl implements IProductService {
         RequestDispatcher dispatcher = request.getRequestDispatcher("/admin/product/add-product.jsp");
         List<BrandModel> brands = brandDAO.getAllBrands();
         List<CategoryModel> categories = categoryDAO.getAllCategories();
+        log.info(CLASS_NAME, "lấy danh sách thương hiệu và danh mục sản phẩm");
         request.setAttribute("brands", brands);
         request.setAttribute("categories", categories);
         dispatcher.forward(request, response);
@@ -313,6 +350,7 @@ public class ProductServiceImpl implements IProductService {
         List<BrandModel> brands = brandDAO.getAllBrands();
         List<CategoryModel> categories = categoryDAO.getAllCategories();
         List<ProductVariant> productVariants = productVariantDAO.findAllByProduct(product);
+        log.info(CLASS_NAME, "lấy danh sách thương hiệu và danh mục sản phẩm");
 
         request.setAttribute("variants", productVariants);
         request.setAttribute("brands", brands);
