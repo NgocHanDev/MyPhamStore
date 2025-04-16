@@ -25,7 +25,7 @@
   </div>
 
   <div class="login_form">
-    <div class="container-fluid">
+    <div class="container-fluid" style="text-align: center">
       <h1>Đăng nhập</h1>
 
       <c:if test="${!empty message}">
@@ -40,7 +40,7 @@
       </form>
 
       <hr>
-      <p style="text-align: center">
+      <p style="text-align: center; font-size: 16px; font-weight: bold; color: #555; margin-bottom: 20px;">
         Hoặc đăng nhập bằng
       </p>
       <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
@@ -51,7 +51,7 @@
 <%--    <i class="fa fa-google"></i> Google--%>
 <%--  </a>--%>
   <form action="<c:url value='/login?action=googleLogin' />" method="post" style="display: inline;">
-    <button type="submit" class="btn btn-social btn-google">
+    <button type="submit" class="btn btn-social btn-google" style="margin-left: 30px;">
       <i class="fa fa-google"></i> Google
     </button>
   </form>
