@@ -13,13 +13,9 @@ import java.io.IOException;
 public class FaceBookLogin {
     public static String getToken(String code) throws ClientProtocolException, IOException
     {
-
         String response = Request.Post(Iconstant.FACEBOOK_LINK_GET_TOKEN)
-
                 .bodyForm(
-
                         Form.form()
-
                                 .add("client_id", Iconstant.FACEBOOK_CLIENT_ID)
 
                                 .add("client_secret", Iconstant.FACEBOOK_CLIENT_SECRET)

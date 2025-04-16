@@ -33,9 +33,7 @@ public class RoleDAOImpl implements IRoleDAO {
 
     @Override
     public void setRoleToUser(String roleType, Long userId) {
-        System.out.println(userId);
         RoleModel roleModel = this.findRoleByName(roleType);
-        System.out.println(roleModel);
         String sql = "INSERT INTO user_has_role (role_id, user_id) VALUES (:role_id, :user_id)";
         try{
             JDBIConnector.getJdbi().useHandle(handle ->{

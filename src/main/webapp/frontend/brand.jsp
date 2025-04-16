@@ -74,7 +74,7 @@ Purchase:
                         <div class="row" style="margin-top: 50px;">
                             <div class="row" style="margin-top: 50px;">
                                 <c:forEach var="brand" items="${brands}">
-                                    <a class="col-md-2 col-sm-3 col-xs-4" href="#" style="margin-top: 20px;">
+                                    <a class="col-md-2 col-sm-3 col-xs-4" href="${pageContext.request.contextPath}/danh-muc?selectedBrands=${brand.id}" style="margin-top: 20px;">
                                         <img src="${brand.logo}" alt="${brand.name}" class="img-responsive">
                                     </a>
                                 </c:forEach>
