@@ -40,6 +40,10 @@ public class CartServiceImpl implements ICartService {
 
         int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
         ProductModel product = productService.findProductById(productId);
+        if (product == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
+            return;
+        }
         Long brandId = product.getBrandId();
 
         CartModel item = CartModel.builder()
@@ -50,16 +54,22 @@ public class CartServiceImpl implements ICartService {
                 .build();
 
         HttpSession session = request.getSession();
-        List<CartModel> listCartItems = session.getAttribute("cart") == null ? new ArrayList<>() : (List<CartModel>) session.getAttribute("cart");
+        @SuppressWarnings("unchecked")
+        List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
+        if (listCartItems == null) {
+            listCartItems = new ArrayList<>();
+            session.setAttribute("cart", listCartItems);
+        }
         System.out.println("Before adding: " + listCartItems);
-        listCartItems.forEach(cartItem -> {
-            if (cartItem.equals(item)) { // Check if the product is already in the cart
+        boolean itemExists = false;
+        for (CartModel cartItem : listCartItems) {
+            if (cartItem.equals(item)) {
                 cartItem.setQuantity(cartItem.getQuantity() + quantity);
-                return;
+                itemExists = true;
+                break;
             }
-        });
-        // If the product is not in the cart, add it
-        if (!listCartItems.contains(item)) {
+        }
+        if (!itemExists) {
             listCartItems.add(item);
         }
 
@@ -80,8 +90,13 @@ public class CartServiceImpl implements ICartService {
         Long productId = Long.parseLong(request.getParameter("productId"));
         Integer quantity = Integer.parseInt(request.getParameter("quantity"));
 
-        if (quantity < 1) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Quantity must be at least 1");
+        try {
+            if (quantity < 1) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Quantity must be at least 1");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid quantity format");
             return;
         }
 
@@ -125,6 +140,7 @@ public class CartServiceImpl implements ICartService {
         HttpSession session = request.getSession();
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
         System.out.println("Before displaying: " + listCartItems);
+
         if (listCartItems == null || listCartItems.isEmpty()) {
             request.setAttribute("errorMessage", "Giỏ hàng của bạn đang trống.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
@@ -133,6 +149,7 @@ public class CartServiceImpl implements ICartService {
 
         List<CartModelHelper> listCartDisplay = new ArrayList<>();
         AtomicLong totalAmount = new AtomicLong(0);
+
         try {
             for (CartModel cartItem : listCartItems) {
                 ProductModel product = productService.findProductById(cartItem.getProductId());
@@ -180,8 +197,9 @@ public class CartServiceImpl implements ICartService {
         }
 
         request.setAttribute("listCartDisplay", listCartDisplay);
-        request.setAttribute("totalAmount", totalAmount.get());
+        request.setAttribute("totalAmount", totalAmount);
         request.setAttribute("discountAmount", discountAmount);
+        request.setAttribute("discountCodes", discountCodes);
         request.setAttribute("finalAmount", totalAmount.get() - discountAmount);
 
         System.out.println("Forwarding to /frontend/shopping_cart.jsp");

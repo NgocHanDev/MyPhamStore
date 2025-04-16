@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Checkout</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta name="description" content="Big Basket" />
+  <meta name="keywords" content="Big Basket, E-commerce, Shop, Mall, Online Shopping" />
+  <meta name="author" content="" />
+  <meta name="MobileOptimized" content="320" />
+  <!-- Theme styles -->
+  <link rel="stylesheet" type="text/css" href="../static/css/animate.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/font-awesome.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/owl.carousel.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/owl.theme.default.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/magnific-popup.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/fonts.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/dl-menu.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/camera.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/style.css" />
+  <link rel="stylesheet" type="text/css" href="../static/css/responsive.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/sidebar.css" />
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/png" href="../static/images/header/favicon.png" />
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div id="status">
+      <img src="../static/images/header/preloader.gif" id="preloader_image" alt="loader">
+    </div>
+  </div>
+  <!-- Top Scroll -->
+  <a href="javascript:" id="return-to-top"><i class="fa fa-angle-up"></i></a>
+  <!-- Header (Static) -->
+  <header>
+    <nav class="navbar">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="#" class="navbar-brand"><img src="../static/images/header/logo.png" alt="Big Basket"></a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Shop</a></li>
+          <li><a href="#">Cart</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <!-- Inner Title -->
+  <div class="ss_inner_title_wrapper">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="ss_inner_title_cont_wrapper">
+            <ul>
+              <li><a href="#"><i class="fa fa-home"></i></a> &nbsp; > </li>
+              <li>Products &nbsp; > </li>
+              <li>Shopping &nbsp; > </li>
+              <li>Checkout</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Checkout Page -->
+  <div class="checkout-page">
+    <div class="container">
+      <div class="panel-group" id="accordionFourLeft">
+        <!-- Coupon Section -->
+        <div class="panel panel-default panel-checkout">
+          <div class="panel-heading checkout_panel_heading">
+            <h4 class="panel-title">
+              <i class="fa fa-ticket"></i> Available Coupons
+            </h4>
+          </div>
+          <div class="panel-body">
+            <div class="coupon-container">
+              <!-- Fake Coupon Data -->
+              <div class="coupon-card">
+                <div class="coupon-code">
+                  <span>SAVE20</span>
+                  <button class="copy-btn" onclick="copyCoupon('SAVE20')">Copy Code</button>
+                </div>
+                <ul class="coupon-details">
+                  <li><strong>Remaining Quantity:</strong> 50</li>
+                  <li><strong>Discount Type:</strong> Percentage</li>
+                  <li><strong>Discount Amount:</strong> 20%</li>
+                  <li><strong>Minimum Order Value:</strong> 500,000đ</li>
+                  <li><strong>Expiry Date:</strong> 2025-12-31</li>
+                </ul>
+              </div>
+              <div class="coupon-card">
+                <div class="coupon-code">
+                  <span>FIXED500</span>
+                  <button class="copy-btn" onclick="copyCoupon('FIXED500')">Copy Code</button>
+                </div>
+                <ul class="coupon-details">
+                  <li><strong>Remaining Quantity:</strong> 30</li>
+                  <li><strong>Discount Type:</strong> Fixed</li>
+                  <li><strong>Discount Amount:</strong> 50,000đ</li>
+                  <li><strong>Minimum Order Value:</strong> 300,000đ</li>
+                  <li><strong>Expiry Date:</strong> 2025-11-30</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Login Section (Collapsed by default) -->
+        <div class="panel panel-default panel-checkout panel-checkout-2">
+          <div id="collapseFiveLefttwo" class="panel-collapse collapse" aria-expanded="false" role="tablist">
+            <div class="panel-body">
+              <div class="text-accordion">
+                <div class="estimate_shiping_Wrapper_cntnt estimate_shiping_Wrapper_cntnt_3">
+                  <div class="btc_shop_single_prod_right_section shop_product_single_head related_pdt_shop_head related_pdt_shop_head_2">
+                    <h1>Login with your account:</h1>
+                    <div class="shop_pdt_form login_form ckeckpot_form_clr_wrapper">
+                      <div class="row">
+                        <div class="form-group col-md-6 col-sm-6 col-xs-12">
+                          <div class="contect2_form1">
+                            <input type="text" placeholder="Username*"><i class="fa fa-user"></i>
+                          </div>
+                          <div class="contect2_form1">
+                            <input type="password" placeholder="Password*"><i class="fa fa-lock"></i>
+                          </div>
+                          <div class="remember_box">
+                            <label class="control control--checkbox">Remember me
+                              <input type="checkbox">
+                              <span class="control__indicator"></span>
+                            </label>
+                          </div>
+                          <div class="shop_btn_wrapper chackout_login_btn">
+                            <ul>
+                              <li><a href="#">Login</a></li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Checkout Form -->
+      <form class="checkout-form" action="#" method="post">
+        <div class="row clearfix">
+          <div class="column col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">
+              <h1>BILLING DETAILS</h1>
+            </div>
+            <div class="row clearfix">
+              <!-- Fake User Data -->
+              <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                <div class="field-label">Recipient Name</div>
+                <input type="text" name="recipientName" placeholder="Enter recipient name" value="John Doe" required>
+              </div>
+              <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                <div class="field-label">Recipient Phone <sup>*</sup></div>
+                <input type="text" name="recipientPhone" placeholder="Enter recipient phone" value="0123456789" required>
+              </div>
+              <div class="form-group col-md-6 col-sm-12 col-xs-12">
+                <div class="field-label">City/Province</div>
+                <select name="city" id="city" required >
+                  <option value="" selected>Vui lòng chọn Tỉnh/thành phố</option>
+                </select>
+              </div>
+              <div class="form-group col-md-6 col-sm-12 col-xs-12">
+                <div class="field-label">District</div>
+                <select name="city" id="district" required disabled>
+                  <option value="" selected>Vui lòng chọn  Quận/huyện</option>
+                </select>
+              </div>
+              <div class="form-group col-md-6 col-sm-6 col-xs-12">
+                <div class="field-label">Ward</div>
+                <select name="city" id="ward" required disabled>
+                  <option value="" selected>Vui lòng chọn  Phường/xã</option>
+                </select>
+              </div>
+              <div class="form-group col-md-6 col-sm-6 col-xs-12">
+                <div class="field-label">Address Details</div>
+                <input type="text" name="note" placeholder="Enter address details" value="123 Main Street" required>
+              </div>
+              <div class="form-group col-md-6 col-sm-6 col-xs-12">
+                <div class="field-label">Customer Note</div>
+                <input type="text" name="customerNote" placeholder="Your note" required>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <!-- Order Box -->
+      <div class="order-box">
+        <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">
+          <h1>Your Ordered Products</h1>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Variant</th>
+              <th>Price</th>
+              <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Fake Cart Data -->
+            <tr>
+              <td>Wireless Headphones</td>
+              <td>Black</td>
+              <td>1,200,000đ</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>Smartphone</td>
+              <td>Original</td>
+              <td>15,000,000đ</td>
+              <td>1</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total:</td>
+              <td>17,400,000đ</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <!-- Payment Box -->
+      <div class="payment-box">
+        <div class="upper-box">
+          <div class="payment-options">
+            <ul>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-2" checked>
+                  <label for="payment-2"><strong>Bank Transfer</strong><span class="small-text">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</span></label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-1">
+                  <label for="payment-1"><strong>COD</strong><span class="small-text">Pay upon delivery. Please use your Order ID as the payment reference.</span></label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-3">
+                  <label for="payment-3"><strong>MOMO</strong><span class="small-text">Pay via MOMO mobile app.</span></label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-4">
+                  <label for="payment-4"><strong>VnPay</strong><span class="small-text">Pay via VnPay gateway.</span></label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-5">
+                  <label for="payment-5"><strong>PayPal</strong><span class="small-text">Pay via PayPal.</span></label>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="lower-box text-right">
+          <div class="shop_btn_wrapper checkout_btn">
+            <ul>
+              <li><a id="submit-order" href="#">Place Order</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer (Static) -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h3>About Us</h3>
+          <p>Big Basket is your one-stop shop for all your needs.</p>
+        </div>
+        <div class="col-md-4">
+          <h3>Contact</h3>
+          <p>Email: support@bigbasket.com</p>
+          <p>Phone: 0123-456-789</p>
+        </div>
+        <div class="col-md-4">
+          <h3>Follow Us</h3>
+          <ul>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- Scripts -->
+  <script>
+    function copyCoupon(code) {
+      navigator.clipboard.writeText(code).then(function() {
+        alert("Coupon code copied: " + code);
+      }).catch(function(error) {
+        console.error("Error copying coupon: ", error);
+      });
+    }
+  </script>
+  <script src="../static/js/jquery_min.js"></script>
+  <script src="../static/js/wow.js"></script>
+  <script src="../static/js/bootstrap.js"></script>
+  <script src="../static/js/owl.carousel.js"></script>
+  <script src="../static/js/modernizr.js"></script>
+  <script src="../static/js/jquery.magnific-popup.js"></script>
+  <script src="../static/js/jquery.dlmenu.js"></script>
+  <script src="../static/js/jquery.sticky.js"></script>
+  <script src="../static/js/jquery.menu-aim.js"></script>
+  <script src="../static/js/camera.min.js"></script>
+  <script src="../static/js/jquery.easing.1.3.js"></script>
+  <script src="../static/js/jquery.inview.min.js"></script>
+  <script src="../static/js/custom.js"></script>
+  <script src="../static/js/address.js"></script>
+  <script>
+    $(window).on("load", function() {
+      var wow = new WOW({
+        boxClass: 'wow',
+        animateClass: 'animated',
+        offset: 0,
+        mobile: true,
+        live: true
+      });
+      wow.init();
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script>
+    document.getElementById("submit-order").addEventListener("click", (e) => {
+      e.preventDefault();
+      Toastify({
+        text: "Order placed successfully!\nYour order will be delivered soon!",
+        duration: 5000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "center",
+        stopOnFocus: true,
+        onClick: function(){}
+      }).showToast();
+      setTimeout(() => {
+        document.querySelector(".checkout-form").submit();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

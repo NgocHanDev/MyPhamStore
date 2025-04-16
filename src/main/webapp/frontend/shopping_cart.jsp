@@ -89,10 +89,12 @@
                   <tbody>
                   <c:forEach var="i" items="${listCartDisplay}">
                     <tr>
-                      <td><img src="${not empty i.product.thumbnail ? i.product.thumbnail : ''}" alt="${i.product.name}" style="max-height: 80px" /></td>
-                      <td>${not empty i.product.name ? i.product.name : 'Không có tên'}</td>
+                      <img src="${not empty i.product and not empty i.product.thumbnail ? i.product.thumbnail : ''}"
+                           alt="${i.product.name}" style="max-height: 80px" /></td>
+                      <td>${not empty i.product and not empty i.product.name ? i.product.name : 'Không có tên'}</td>
                       <td>${i.variant != null ? i.variant.name : 'sản phẩm gốc'}</td>
-                      <td>${i.variant != null ? i.variant.price : i.product.price}đ</td>
+                      <td>${i.variant != null ? i.variant.price : (i.product != null ? i.product.price : 0)}đ</td>
+
                       <td>
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="updateCart" />
@@ -138,22 +140,25 @@
                   </c:when>
                   <c:otherwise>
                     <c:forEach items="${discountCodes}" var="coupon">
-                      <div class="coupon-card">
-                        <div class="coupon-code">
-                          <span>${coupon.code}</span>
-                          <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
+                      <c:if test="${not empty coupon}">
+                        <div class="coupon-card">
+                          <div class="coupon-code">
+                            <span>${coupon.code}</span>
+                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
+                          </div>
+                          <ul class="coupon-details">
+                            <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
+                            <li><strong>Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
+                            <li><strong>Số tiền giảm:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</li>
+                            <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
+                            <li><strong>Ngày hết hạn:</strong> ${coupon.endDate}</li>
+                          </ul>
                         </div>
-                        <ul class="coupon-details">
-                          <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
-                          <li><strong>Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
-                          <li><strong>Số tiền giảm:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</li>
-                          <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
-                          <li><strong>Ngày hết hạn:</strong> ${coupon.endDate}</li>
-                        </ul>
-                      </div>
+                      </c:if>
                     </c:forEach>
                   </c:otherwise>
                 </c:choose>
+
               </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -187,19 +192,19 @@
   </div>
 </div>
 <%@include file="component/footer.jsp"%>
-<%--<script src="../static/js/jquery_min.js"></script>--%>
-<%--<script src="../static/js/wow.js"></script>--%>
-<%--<script src="../static/js/bootstrap.js"></script>--%>
-<%--<script src="../static/js/owl.carousel.js"></script>--%>
-<%--<script src="../static/js/modernizr.js"></script>--%>
-<%--<script src="../static/js/jquery.magnific-popup.js"></script>--%>
-<%--<script src="../static/js/jquery.dlmenu.js"></script>--%>
-<%--<script src="../static/js/jquery.sticky.js"></script>--%>
-<%--<script src="../static/js/jquery.menu-aim.js"></script>--%>
-<%--<script src="../static/js/camera.min.js"></script>--%>
-<%--<script src="../static/js/jquery.easing.1.3.js"></script>--%>
-<%--<script src="../static/js/jquery.inview.min.js"></script>--%>
-<%--<script src="../static/js/custom.js"></script>--%>
+<script src="../static/js/jquery_min.js"></script>
+<script src="../static/js/wow.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+<script src="../static/js/owl.carousel.js"></script>
+<script src="../static/js/modernizr.js"></script>
+<script src="../static/js/jquery.magnific-popup.js"></script>
+<script src="../static/js/jquery.dlmenu.js"></script>
+<script src="../static/js/jquery.sticky.js"></script>
+<script src="../static/js/jquery.menu-aim.js"></script>
+<script src="../static/js/camera.min.js"></script>
+<script src="../static/js/jquery.easing.1.3.js"></script>
+<script src="../static/js/jquery.inview.min.js"></script>
+<script src="../static/js/custom.js"></script>
 <script>
   $(window).on("load", function () {
     var wow = new WOW({

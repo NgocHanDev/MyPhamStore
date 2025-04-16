@@ -185,18 +185,101 @@
             <!--Form Group-->
             <div class="form-group col-md-6 col-sm-12 col-xs-12">
               <div class="field-label">Thành phố/Tỉnh thành </div>
-              <input type="text" name="city"  placeholder="nhập tên thành phố/tỉnh thành" value="${address.city}" required >
+<%--              <input type="text" name="city"  placeholder="nhập tên thành phố/tỉnh thành" value="${address.city}" required >--%>
+              <select name="city" id="city" required >
+                <option value="" selected>Vui lòng chọn Tỉnh/thành phố</option>
+              </select>
             </div>
 
             <!--Form Group-->
             <div class="form-group col-md-6 col-sm-12 col-xs-12">
               <div class="field-label">Quận/huyện </div>
-              <input type="text" name="district"   placeholder="nhập tên quận/huyện" value="${address.district}" required >
+             <%-- <input type="text" name="district"   placeholder="nhập tên quận/huyện" value="${address.district}" required > --%>
+              <select name="district" id="district" required disabled>
+                <option value="" selected>Vui lòng chọn  Quận/huyện</option>
+              </select>
             </div>
 
             <!--Form Group-->
             <div class="form-group col-md-6 col-sm-6 col-xs-12">
               <div class="field-label">Phường/xã</div>
+              <%-- <input type="text" name="ward"  placeholder="nhập tên phường/xã" value="${address.ward}"  required>--%>
+              <select name="ward" id="ward" required disabled>
+                <option value="" selected>Vui lòng chọn  Phường/xã</option>
+              </select>
+             </div>
+
+             <!--Form Group-->
+             <div class="form-group col-md-6 col-sm-6 col-xs-12">
+               <div class="field-label">Chi tiết địa chỉ </div>
+               <input type="text" name="note"  placeholder="nhập chi tiết địa chỉ" value="${address.note}" required >
+             </div>
+
+             <div class="form-group col-md-6 col-sm-6 col-xs-12">
+               <div class="field-label">Ghi chú của khách hàng </div>
+               <input type="text" name="customerNote"  placeholder="ghi chú của bạn" required >
+             </div>
+           </div>
+         </div>
+       </div>
+      <input type="hidden" id="submit-fee-cost" name="submit-fee-cost">
+
+     </form>
+     <!--End Checkout Details-->
+
+     <!--Order Box-->
+     <div class="order-box">
+       <div class="btc_shop_single_prod_right_section related_pdt_shop_head checkout_heading">
+         <h1>Sản phẩm đã đặt hàng của bạn </h1>
+       </div>
+       <table class="table">
+         <thead>
+         <tr>
+           <th>Sản phẩm</th>
+           <th>Loại</th>
+           <th>Giá</th>
+           <th>Số lượng</th>
+         </tr>
+         </thead>
+         <tbody>
+
+         <c:forEach items="${listCartDisplay}" var="cart">
+           <c:set var="variant" value="${cart.variant}"/>
+           <tr>
+             <td>${cart.product.name}</td>
+             <td>
+               <c:choose>
+                 <c:when test="${variant != null}">${variant.name}</c:when>
+                 <c:otherwise>Sản phẩm gốc</c:otherwise>
+               </c:choose>
+             </td>
+             <td>
+               <c:choose>
+                 <c:when test="${variant != null}">${variant.price}đ</c:when>
+                 <c:otherwise>${cart.product.price}đ</c:otherwise>
+               </c:choose>
+             </td>
+             <td class="total-quantity">${cart.quantity}</td>
+           </tr>
+         </c:forEach>
+         <tr>
+           <td>Phí Vận Chuyển</td>
+           <td></td>
+           <td id="fee-cost"></td>
+         </tr>
+         </tbody>
+         <tfoot>
+         <tr>
+           <td>Tổng: </td>
+           <td></td>
+           <input id="sub-total-amount" type="hidden" value="${totalAmount}">
+           <td id="total-amount" ></td>
+         </tr>
+         </tfoot>
+       </table>
+     </div>
+     <!--End Order Box-->
+ <%--    <!-- Coupons Section -->--%>
               <input type="text" name="ward"  placeholder="nhập tên phường/xã" value="${address.ward}"  required>
             </div>
 
@@ -252,6 +335,7 @@
             </td>
             <td>${cart.quantity}</td>
           </tr>
+        </c:forEach>
         </c:forEach>
         </tbody>
         <tfoot>
@@ -328,15 +412,18 @@
         </div>
 
       </div>
+
       <div class="lower-box text-right">
         <div class="shop_btn_wrapper checkout_btn">
           <ul>
-            <li><a id="submit-order" href="#">Đặt hàng </a>
+            <li><a id="submit-order" href="/vnpay/ajaxServlet">Đặt hàng </a>
             </li>
           </ul>
         </div>
       </div>
+
     </div>
+
     <!--End Payment Box-->
 
   </div>
@@ -344,51 +431,7 @@
 </div>
 <!--End CheckOut Page-->
 <%@include file="component/footer.jsp"%>
-<script>
-  const province = document.getElementById("province");
-  const district = document.getElementById("district");
-  const ward = document.getElementById("ward");
 
-  fetch('https://provinces.open-api.vn/api/')
-          .then(response => {
-            return response.json()
-          })
-          .then(data => {
-            data.forEach(element => {
-              let option = document.createElement("option");
-              option.text = element.name;
-              option.value = element.code;
-              province.add(option);
-            });
-          });
-
-  province.addEventListener("change", async (e)=>{
-    let code = e.target.value
-    const response = await fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`);
-    const data = await response.json();
-    district.innerHTML = "<option value='#' selected disabled>Chọn quận huyện</option>";
-    data.districts.forEach(element => {
-      let option = document.createElement("option");
-      option.text = element.name;
-      option.value = element.code;
-      district.add(option);
-    });
-  });
-
-  district.addEventListener("change", async (e)=>{
-    let code = e.target.value
-    const response = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`);
-    const data = await response.json();
-    ward.innerHTML = "<option value='#' selected disabled>Chọn phường xã</option>";
-    data.wards.forEach(element => {
-      let option = document.createElement("option");
-      option.text = element.name;
-      option.value = element.code;
-      ward.add(option);
-    });
-  });
-
-</script>
 <script>
   function copyCoupon(code) {
     navigator.clipboard.writeText(code).then(function() {
@@ -414,6 +457,7 @@
 <script src="../static/js/jquery.easing.1.3.js"></script>
 <script src="../static/js/jquery.inview.min.js"></script>
 <script src="../static/js/custom.js"></script>
+<script src="../static/js/address.js"></script>
 <script>
   $(window).on("load", function() {
     var wow = new WOW({
@@ -427,32 +471,54 @@
   });
 </script>
 <!--main js file end-->
-<script src="../static/js/demo/checkout.js"></script>
+<%--<script src="../static/js/demo/checkout.js"></script>--%>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script>
-  document.getElementById("submit-order").addEventListener("click", (e)=>{
-    e.preventDefault();
-    console.log("submit order");
-    Toastify({
-      text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",
-      duration: 5000,
-      newWindow: true,
-      close: true,
-      gravity: "top", // `top` or `bottom`
-      position: "center", // `left`, `center` or `right`
-      stopOnFocus: true, // Prevents dismissing of toast on hover
-      style: {
-        //   background: "linear-gradient(to right, #00b09b, #96c93d)",
-      },
-      onClick: function(){} // Callback after click
-    }).showToast();
-    setTimeout(()=>{
-      //submit form
-        document.querySelector(".checkout-form").submit();
-    }, 1000);
-  })
-</script>
-</body>
+<%--<script>--%>
+<%--  document.getElementById("submit-order").addEventListener("click", async function (e) {--%>
+<%--    e.preventDefault();--%>
 
+<%--    const vnpayChecked = document.getElementById("payment-4").checked;--%>
+
+<%--    if (vnpayChecked) {--%>
+<%--      // Gọi API lấy URL thanh toán VNPAY--%>
+<%--      const amount = ${totalAmount}; // tổng tiền thanh toán đã có ở dưới table--%>
+<%--      const language = "vn"; // hoặc 'en' nếu cần--%>
+<%--      const bankCode = "NCB"; // có thể thêm option cho user chọn ngân hàng nếu cần--%>
+
+<%--      const response = await fetch("/vnpay/ajaxServlet", {--%>
+<%--        method: "POST",--%>
+<%--        headers: {--%>
+<%--          "Content-Type": "application/x-www-form-urlencoded"--%>
+<%--        },--%>
+<%--        body: new URLSearchParams({--%>
+<%--          amount: amount,--%>
+<%--          language: language,--%>
+<%--          // bankCode: bankCode--%>
+<%--        })--%>
+<%--      });--%>
+
+<%--      const result = await response.json();--%>
+<%--      if (result.code === "00") {--%>
+<%--        window.location.href = result.data; // chuyển sang trang thanh toán--%>
+<%--      } else {--%>
+<%--        alert("Có lỗi xảy ra khi tạo liên kết thanh toán VNPAY!");--%>
+<%--      }--%>
+
+<%--    } else {--%>
+<%--      // Thanh toán khác -> submit form như cũ--%>
+<%--      Toastify({--%>
+<%--        text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",--%>
+<%--        duration: 5000,--%>
+<%--        gravity: "top",--%>
+<%--        position: "center",--%>
+<%--        close: true,--%>
+<%--      }).showToast();--%>
+<%--      setTimeout(() => {--%>
+<%--        document.querySelector(".checkout-form").submit();--%>
+<%--      }, 1000);--%>
+<%--    }--%>
+<%--  });--%>
+<%--</script>--%>
+</body>
 </html>

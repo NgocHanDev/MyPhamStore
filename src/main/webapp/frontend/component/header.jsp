@@ -568,7 +568,7 @@
 										<li>
 											<div class="ss_cart_inner_main_section">
 												<div class="ss_cart_img_wrapper">
-													<img src="../static/images/header/cart_img.jpg" alt="cart_img">
+<%--													<img src="../static/images/header/cart_img.jpg" alt="cart_img">--%>
 												</div>
 												<div class="ss_cart_img_cont_wrapper">
 													<h3><a href="#">Product item</a></h3>
