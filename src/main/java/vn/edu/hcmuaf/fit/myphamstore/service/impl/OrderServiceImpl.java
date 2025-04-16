@@ -13,6 +13,7 @@ import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.IOrderService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
+import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,6 +31,9 @@ public class OrderServiceImpl implements IOrderService {
     private IAddressDAO addressDAO;
     @Inject
     private IProductService productService;
+    @Inject
+    private LoggingService log;
+    private final String CLASS_NAME = "ORDER-SERVICE";
 
     @Override
     public void displayOrders(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
@@ -48,6 +52,7 @@ public class OrderServiceImpl implements IOrderService {
 
         Long totalPages = getTotalPage(pageSize);
 
+        log.info(CLASS_NAME, "Lấy danh sách đơn hàng thành công");
         // Gửi danh sách order đến trang JSP
         request.setAttribute("orderUserMap", orderUserMap);
         request.setAttribute("totalPages", totalPages);
@@ -73,6 +78,7 @@ public class OrderServiceImpl implements IOrderService {
             ProductModel product = productService.findProductById(orderDetail.getProductId());
             orderDetails.put(orderDetail, product);
         }
+        log.info(CLASS_NAME, "Lấy chi tiết đơn hàng thành công");
 
         req.setAttribute("order", order);
         req.setAttribute("orderDetails", orderDetails);
@@ -101,26 +107,31 @@ public class OrderServiceImpl implements IOrderService {
         if (keyword != null && !keyword.isEmpty()) {
             keyword = keyword.trim();
         }
+
         return orderDAO.findAll(keyword, currentPage, pageSize, orderBy);
     }
 
     @Override
     public List<OrderDetailModel> getOrderDetailsByOrderId(Long orderId) {
+        log.info(CLASS_NAME, "Lấy danh sách chi tiết đơn hàng thành công id: " + orderId);
         return orderDAO.findOrderDetailByOrderId(orderId);
     }
 
 
     @Override
     public List<OrderModel> getOrderHistoryByUserId(Long userId, int currentPage, int pageSize) {
+
         return orderDAO.findByUserId(userId, currentPage, pageSize);
     }
 
     @Override
     public void changeStatus(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        log.info(CLASS_NAME, "Thay đổi trạng thái đơn hàng");
         Long orderId = Long.parseLong(req.getParameter("id"));
         OrderStatus status = OrderStatus.valueOf(req.getParameter("status"));
         orderDAO.changeStatus(orderId, status);
         if(status == OrderStatus.CONFIRMED){
+            log.info(CLASS_NAME, "Xác nhận đơn hàng thành công id: " + orderId);
             OrderModel order = orderDAO.findOrderById(orderId);
             order.setConfirmedAt(LocalDateTime.now());
             orderDAO.update(order);
@@ -130,14 +141,17 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public List<ProductModel> getProductByOrderDetail(OrderDetailModel orderDetail) {
+        log.info(CLASS_NAME, "Lấy sản phẩm trong đơn hàng thành công id: " + orderDetail.getId());
         return productService.findProduct(orderDetail.getProductId());
     }
 
     public List<OrderModel> getOrdersByUserId(Long userId) {
+        log.info(CLASS_NAME, "Lấy danh sách đơn hàng của người dùng thành công id: " + userId);
         return orderDAO.findByUserId(userId, 1, 10);
     }
 
     public OrderModel getOrderDetails(Long orderId) {
+        log.info(CLASS_NAME, "Lấy chi tiết đơn hàng thành công id: " + orderId);
         return orderDAO.findOrderById(orderId);
     }
 }
