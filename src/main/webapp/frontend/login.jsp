@@ -44,11 +44,11 @@
         Hoặc đăng nhập bằng
       </p>
       <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;">
-        <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/MyPhamStore/login&response_type=code&client_id=39478411393-b755esrk8a9suhtqv16o3onsl0p8qd9a.apps.googleusercontent.com&approval_prompt=force" class="btn btn-social btn-google">
+        <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/trang-chu&response_type=code&client_id=39478411393-b755esrk8a9suhtqv16o3onsl0p8qd9a.apps.googleusercontent.com&approval_prompt=force" class="btn btn-social btn-google">
           <i class="fa fa-google"></i> Google
         </a>
 
-        <a href="<c:url value='/login-facebook' />" class="btn btn-social btn-facebook">
+        <a href="https://www.facebook.com/v22.0/dialog/oauth?client_id=550897517632396&redirect_uri=http://localhost:8080/trang-chu" class="btn btn-social btn-facebook">
           <i class="fa fa-facebook"></i> Facebook
         </a>
       </div>
