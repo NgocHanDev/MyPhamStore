@@ -107,7 +107,6 @@
             <artifactId>weld-servlet-shaded</artifactId>
             <version>4.0.3.Final</version>
         </dependency>
-
         <!-- Spring Security Core -->
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -162,6 +161,96 @@
             <artifactId>fluent-hc</artifactId>
             <version>4.5.14</version>
         </dependency>
+      <!--      Gson-->
+      <dependency>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+          <version>2.12.1</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+      <dependency>
+          <groupId>jakarta.mail</groupId>
+          <artifactId>jakarta.mail-api</artifactId>
+          <version>2.1.0</version>
+          <scope>provided</scope>
+      </dependency>
+      <!-- https://github.com/eclipse-ee4j/angus-mail -->
+      <dependency>
+          <groupId>org.eclipse.angus</groupId>
+          <artifactId>jakarta.mail</artifactId>
+          <version>1.0.0</version>
+      </dependency>
+
+      <!--https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload-->
+      <dependency>
+          <groupId>commons-fileupload</groupId>
+          <artifactId>commons-fileupload</artifactId>
+          <version>1.5</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+      <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <version>2.14.0</version>
+      </dependency>
+      <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+          <version>1.4.11</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.zaxxer</groupId>
+          <artifactId>HikariCP</artifactId>
+          <version>6.2.1</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jdbi</groupId>
+          <artifactId>jdbi3-core</artifactId>
+          <version>3.47.0</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.jboss.weld.servlet/weld-servlet -->
+
+      <dependency>
+          <groupId>org.jboss.weld.servlet</groupId>
+          <artifactId>weld-servlet-shaded</artifactId>
+          <version>4.0.3.Final</version> <!-- Kiểm tra phiên bản mới nhất -->
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+      <dependency>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-core</artifactId>
+          <version>6.3.5</version>
+      </dependency>
+      <dependency>
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+          <version>1.18.36</version>
+          <scope>provided</scope>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/jakarta.servlet.jsp/jakarta.servlet.jsp-api -->
+      <dependency>
+          <groupId>jakarta.servlet.jsp</groupId>
+          <artifactId>jakarta.servlet.jsp-api</artifactId>
+          <version>4.0.0</version>
+      </dependency>
+      <dependency>
+          <groupId>jakarta.servlet.jsp.jstl</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+          <version>3.0.2</version>
+      </dependency>
+      <dependency>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+          <version>3.0.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>fluent-hc</artifactId>
+          <version>4.5.13</version>
+      </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
