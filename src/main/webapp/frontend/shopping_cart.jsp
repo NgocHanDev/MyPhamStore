@@ -77,33 +77,41 @@
                 <table class="table">
                   <thead class="cart_table_heading">
                   <tr>
-                    <th>Sản phẩm</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Loại</th>
-                    <th>Giá</th>
-                    <th>Số lượng</th>
-                    <th>Tổng cộng</th>
-                    <th></th>
+                    <th style="background: #2e9ad0; text-align: center; padding: 10px;">
+                      <input type="checkbox" id="select-all" />
+                    </th>
+                    <th style="background: #2e9ad0; text-align: left; padding: 10px;">Sản phẩm</th>
+                    <th style="background: #2e9ad0; text-align: center; padding: 10px;">Giá</th>
+                    <th style="background: #2e9ad0; text-align: center; padding: 10px;">Số lượng</th>
+                    <th style="background: #2e9ad0; text-align: center; padding: 10px;">Tổng cộng</th>
+                    <th style="background: #2e9ad0; text-align: center; padding: 10px;">Hành động</th>
                   </tr>
                   </thead>
                   <tbody>
                   <c:forEach var="i" items="${listCartDisplay}">
                     <tr>
-                      <img src="${not empty i.product and not empty i.product.thumbnail ? i.product.thumbnail : ''}"
-                           alt="${i.product.name}" style="max-height: 80px" /></td>
-                      <td>${not empty i.product and not empty i.product.name ? i.product.name : 'Không có tên'}</td>
-                      <td>${i.variant != null ? i.variant.name : 'sản phẩm gốc'}</td>
-                      <td>${i.variant != null ? i.variant.price : (i.product != null ? i.product.price : 0)}đ</td>
-
-                      <td>
+                      <td style="text-align: center; padding: 10px;">
+                        <input type="checkbox" class="product-checkbox" data-price="${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}" />
+                      </td>
+                      <td style="text-align: left; padding: 10px;">
+                        <img src="${not empty i.product and not empty i.product.thumbnail ? i.product.thumbnail : ''}"
+                             alt="${i.product.name}" style="max-height: 80px; margin-right: 10px;" />
+                        <span class="product-name">${not empty i.product and not empty i.product.name ? i.product.name : 'Không có tên'}</span>
+                      </td>
+                      <td style="text-align: center; padding: 10px;" class="price">
+                          ${i.variant != null ? i.variant.price : (i.product != null ? i.product.price : 0)}đ
+                      </td>
+                      <td style="text-align: center; padding: 10px;">
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="updateCart" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
-                          <input type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
+                          <input style="height: auto; text-align: center;" type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
                         </form>
                       </td>
-                      <td>${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}đ</td>
-                      <td>
+                      <td style="text-align: center; padding: 10px;" class="price">
+                          ${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}đ
+                      </td>
+                      <td style="text-align: center; padding: 10px;">
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="remove" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
@@ -113,10 +121,41 @@
                     </tr>
                   </c:forEach>
                   <tr>
-                    <td colspan="5">Tổng cộng:</td>
-                    <td>${totalAmount}đ</td>
-                    <td></td>
+                    <td colspan="5" style="padding: 20px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold;">
+                        <div>
+                          <p style="margin: 5px 0;">Tổng cộng: <span id="total-amount" class="price">0đ</span></p>
+                        </div>
+                        <div>
+                          <a href="<c:url value='/checkout?action=display' />" class="btn btn-primary" style="padding: 10px 20px; font-size: 16px; text-transform: uppercase;">Thanh toán</a>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
+                  <script>
+                    function updateTotalAmount() {
+                      let total = 0;
+                      $(".product-checkbox:checked").each(function () {
+                        total += parseInt($(this).data("price"));
+                      });
+                      $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
+                    }
+
+                    $(document).ready(function () {
+                      $("#select-all").on("change", function () {
+                        $(".product-checkbox").prop("checked", $(this).is(":checked"));
+                        updateTotalAmount();
+                      });
+                      $(".product-checkbox").on("change", function () {
+                        let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
+                        $("#select-all").prop("checked", allChecked);
+                        updateTotalAmount();
+                      });
+
+                      updateTotalAmount();
+                    });
+                  </script>
+
                   </tbody>
                 </table>
               </div>
@@ -138,43 +177,27 @@
                   <c:when test="${empty discountCodes}">
                     <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
                   </c:when>
-                  <c:otherwise>
-                    <c:forEach items="${discountCodes}" var="coupon">
-                      <c:if test="${not empty coupon}">
-                        <div class="coupon-card">
-                          <div class="coupon-code">
-                            <span>${coupon.code}</span>
-                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>
-                          </div>
-                          <ul class="coupon-details">
-                            <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>
-                            <li><strong>Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>
-                            <li><strong>Số tiền giảm:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</li>
-                            <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>
-                            <li><strong>Ngày hết hạn:</strong> ${coupon.endDate}</li>
-                          </ul>
-                        </div>
-                      </c:if>
-                    </c:forEach>
-                  </c:otherwise>
+<%--                  <c:otherwise>--%>
+<%--                    <c:forEach items="${discountCodes}" var="coupon">--%>
+<%--                      <c:if test="${not empty coupon}">--%>
+<%--                        <div class="coupon-card">--%>
+<%--                          <div class="coupon-code">--%>
+<%--                            <span>${coupon.code}</span>--%>
+<%--                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>--%>
+<%--                          </div>--%>
+<%--                          <ul class="coupon-details">--%>
+<%--                            <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>--%>
+<%--                            <li><strong>Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>--%>
+<%--                            <li><strong>Số tiền giảm:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</li>--%>
+<%--                            <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>--%>
+<%--                            <li><strong>Ngày hết hạn:</strong> ${coupon.endDate}</li>--%>
+<%--                          </ul>--%>
+<%--                        </div>--%>
+<%--                      </c:if>--%>
+<%--                    </c:forEach>--%>
+<%--                  </c:otherwise>--%>
                 </c:choose>
 
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-              <div class="shipping_Wrapper">
-                <div class="cart-summary">
-                  <p>Tổng giá: ${totalAmount}đ</p>
-                  <c:if test="${discountAmount > 0}">
-                    <p>Giảm giá: -${discountAmount}đ</p>
-                  </c:if>
-                  <p>Thành tiền: ${finalAmount}đ</p>
-                </div>
-                <div class="shop_btn_wrapper shop_btn_wrapper_shipping">
-                  <ul>
-                    <li><a href="<c:url value='/checkout?action=display' />">Thanh toán</a></li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
@@ -225,6 +248,28 @@
       console.error('Lỗi sao chép mã:', err);
     });
   }
+</script>
+<script>
+  function formatPrice(price, currencySymbol, delimiter) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, delimiter) + ' ' + currencySymbol;
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".price").forEach(function(element) {
+      let price = parseFloat(element.textContent.replace(/[^0-9.-]+/g,""));
+      element.textContent = formatPrice(price, "VND", ".");
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".product-name").forEach(function (element) {
+      const maxLength = 20;
+      if (element.textContent.length > maxLength) {
+        element.textContent = element.textContent.substring(0, maxLength) + "...";
+      }
+    });
+  });
 </script>
 </body>
 </html>
