@@ -4968,6 +4968,31 @@ a.navbar-brand img {
   border-radius: 100%;
   background: #02d155;
 }
+.product-name {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+}
+.btn-primary {
+  background-color: #2e9ad0;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1c7bbf;
+}
+
+.price {
+  color: #222;
+  font-weight: bold;
+}
 .cc_pc_color_accordion
   .cc_pc_color5
   input[type="checkbox"]:checked
@@ -7272,7 +7297,7 @@ a.navbar-brand img {
 
 .cart_table_heading {
   font-size: 16px;
-  color: #fff;
+  color: #000000;
   background: #0091dc;
   font-weight: 400 !important;
   text-transform: capitalize;
@@ -7916,7 +7941,6 @@ a.navbar-brand img {
 
 .shop_btn_wrapper li a {
   display: inline-block;
-  padding: 10px 20px;
   background: #ff5722;
   color: white;
   text-decoration: none;
