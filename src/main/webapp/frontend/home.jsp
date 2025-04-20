@@ -198,8 +198,8 @@ To change this template use File | Settings | File Templates.
 						<div class="ss_heading">
 							<h3>Danh Mục Hot</h3>
 						</div>
-						<ul class="nav nav-tabs" role="tablist">
-							<li role="presentation" class="active"><a href="#best" aria-controls="best" role="tab" data-toggle="tab">Da Mặt</a></li>
+						<ul class="nav nav-tabs"  role="tablist">
+							<li role="presentation" class="active"><a href="#best" aria-controls="best" role="tab" data-toggle="tab" >Da Mặt</a></li>
 							<li role="presentation"><a href="#hot" aria-controls="hot" role="tab" data-toggle="tab">Body</a></li>
 							<li role="presentation"><a href="#trand" aria-controls="trand" role="tab" data-toggle="tab">Trang Điểm</a></li>
 						</ul>
