@@ -8,38 +8,56 @@ version = '1.0.0'
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.eclipse.org/content/repositories/ee4j/' }
+    maven { url 'https://repo.maven.apache.org/maven2' }
 }
 
 dependencies {
-    // Servlet API
-    providedCompile 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-    // JSP API
-    providedCompile 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
-
-    // JDBI
-    implementation 'org.jdbi:jdbi3-core:3.38.0'
-
+    implementation 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    // SLF4J API
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    // Logback Classic
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+    // Logback Core
+    implementation 'ch.qos.logback:logback-core:1.4.14'
+    // Gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+    // Jakarta Mail API
+    providedCompile 'jakarta.mail:jakarta.mail-api:2.1.0'
+    // Jakarta Mail
+    implementation 'org.eclipse.angus:jakarta.mail:1.0.0'
+    // Commons FileUpload
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+    // Commons IO
+    implementation 'commons-io:commons-io:2.14.0'
     // HikariCP
     implementation 'com.zaxxer:HikariCP:5.0.1'
-
-    // Mail
-    implementation 'com.sun.mail:jakarta.mail:2.0.1'
-
-    // BCrypt (Spring Security Core)
-    implementation 'org.springframework.security:spring-security-crypto:6.1.4'
-
+    // JDBI Core
+    implementation 'org.jdbi:jdbi3-core:3.45.0'
+    // JDBI SQLObject
+    implementation 'org.jdbi:jdbi3-sqlobject:3.45.0'
+    // Weld Servlet
+    implementation 'org.jboss.weld.servlet:weld-servlet-shaded:4.0.3.Final'
+    // Spring Security Core
+    implementation 'org.springframework.security:spring-security-core:6.3.5'
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-    // SLF4J + Logback
-    implementation 'ch.qos.logback:logback-classic:1.4.14'
-
-    // JSON (Gson)
-    implementation 'com.google.code.gson:gson:2.10.1'
-
-    // Apache HttpClient Fluent (đang dùng cho OAuth)
-    implementation 'org.apache.httpcomponents.client5:httpclient5-fluent:5.2.1'
+    providedCompile 'org.projectlombok:lombok:1.18.36'
+    // Jakarta Servlet API
+    providedCompile 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    // Jakarta JSP API
+    providedCompile 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
+    // JSTL
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
+    // Apache HttpClient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'org.apache.httpcomponents:fluent-hc:4.5.14'
+    // MySQL Connector
+    implementation 'com.mysql:mysql-connector-j:8.2.0'
+    // JUnit
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
 tasks.withType(JavaCompile).configureEach {

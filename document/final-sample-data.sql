@@ -189,6 +189,14 @@ CREATE TABLE otp (
                      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Thời gian cập nhật (tự động cập nhật)
 );
 
+CREATE TABLE logs (
+                     id BIGINT AUTO_INCREMENT PRIMARY KEY, 
+                     log_level VARCHAR(255) NOT NULL, 
+                     logger_name VARCHAR(255) NOT NULL,          
+                     message VARCHAR(255) NOT NULL,            
+                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP 
+);
+
 ALTER TABLE `user_has_role` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 
 ALTER TABLE `user_has_role` ADD FOREIGN KEY (`role_id`) REFERENCES `role` (`id`);
