@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group = 'vn.edu.hcmuaf.fit'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Servlet API
+    providedCompile 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+    // JSP API
+    providedCompile 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
+
+    // JDBI
+    implementation 'org.jdbi:jdbi3-core:3.38.0'
+
+    // HikariCP
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+
+    // Mail
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+    // BCrypt (Spring Security Core)
+    implementation 'org.springframework.security:spring-security-crypto:6.1.4'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // SLF4J + Logback
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+
+    // JSON (Gson)
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Apache HttpClient Fluent (đang dùng cho OAuth)
+    implementation 'org.apache.httpcomponents.client5:httpclient5-fluent:5.2.1'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+war {
+    archiveFileName = 'myphamstore.war'
+}
