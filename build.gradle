@@ -38,17 +38,17 @@ task docker_app_start {
 task docker_upload_file_to_server {
     doLast {
         println 'begin docker_upload_file_to_server'
-        def warFile = file("${project.projectDir}/build/libs/myphamstore.war")
+        def warFile = file("${project.projectDir}/build/libs/ROOT.war")
         if (!warFile.exists()) {
             throw new GradleException("WAR file not found at ${warFile}")
         }
         ssh.run {
             session(remotes.host) {
                 execute 'mkdir -p /usr/deploy', ignoreError: true
-                remove '/usr/deploy/myphamstore.war'
+                remove '/usr/deploy/ROOT.war'
                 remove '/usr/deploy/myphamstore/'
-                put from: "${project.projectDir}/build/libs/myphamstore.war",
-                        into: "/usr/deploy/myphamstore.war"
+                put from: "${project.projectDir}/build/libs/ROOT.war",
+                        into: "/usr/deploy/ROOT.war"
             }
         }
     }
@@ -122,5 +122,5 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 war {
-    archiveFileName = 'myphamstore.war'
+    archiveFileName = 'ROOT.war'
 }
