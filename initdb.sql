@@ -16,8 +16,8 @@ CREATE TABLE `user` (
                         `created_at` datetime DEFAULT (now()),
                         `updated_at` datetime DEFAULT (now())
 );
-                  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+
+
 
 
 CREATE TABLE `role` (

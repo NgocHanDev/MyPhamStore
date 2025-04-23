@@ -1,10 +1,65 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'org.hidetake.ssh' version '2.11.2'
     id 'war'
 }
 
 group = 'vn.edu.hcmuaf.fit'
 version = '1.0.0'
+
+apply plugin: 'org.hidetake.ssh'
+remotes {
+    host {
+        host= '192.168.102.21'
+        user= 'ngochan'
+        password= 'ngochan'
+    }
+}
+ssh.settings {
+    knownHosts = allowAnyHosts
+}
+task docker_app_start {
+    doLast {
+        println 'begin docker_app_start'
+        ssh.run {
+            session(remotes.host) {
+                execute 'docker stop myphamstore-app', ignoreError: true
+                execute 'docker rm myphamstore-app', ignoreError: true
+                execute 'docker run --rm -d ' +
+                        '--name myphamstore-app ' +
+                        '-v /usr/deploy:/usr/local/tomcat/webapps ' +
+                        '-p 8080:8080 ' +
+                        'tomcat:10.0-jdk17-temurin'
+            }
+        }
+    }
+}
+task docker_upload_file_to_server {
+    doLast {
+        println 'begin docker_upload_file_to_server'
+        def warFile = file("${project.projectDir}/build/libs/myphamstore.war")
+        if (!warFile.exists()) {
+            throw new GradleException("WAR file not found at ${warFile}")
+        }
+        ssh.run {
+            session(remotes.host) {
+                execute 'mkdir -p /usr/deploy', ignoreError: true
+                remove '/usr/deploy/myphamstore.war'
+                remove '/usr/deploy/myphamstore/'
+                put from: "${project.projectDir}/build/libs/myphamstore.war",
+                        into: "/usr/deploy/myphamstore.war"
+            }
+        }
+    }
+}
+
+task docker_deploy {
+    dependsOn build
+    dependsOn docker_upload_file_to_server
+    dependsOn docker_app_start
+    tasks.getByName('docker_app_start').mustRunAfter docker_upload_file_to_server
+}
 
 repositories {
     mavenCentral()
