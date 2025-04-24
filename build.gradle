@@ -11,9 +11,9 @@ version = '1.0.0'
 apply plugin: 'org.hidetake.ssh'
 remotes {
     host {
-        host= '192.168.102.21'
-        user= 'ngochan'
-        password= 'ngochan'
+        host= '192.168.1.20'
+        user= 'root'
+        password= 'root'
     }
 }
 ssh.settings {
@@ -53,11 +53,39 @@ task docker_upload_file_to_server {
         }
     }
 }
+task docker_setup_database {
+    doLast {
+        println 'begin docker_setup_database'
+        def composeFile = file("${project.projectDir}/docker-compose.yml")
+        def sqlFile = file("${project.projectDir}/initdb.sql")
+
+        if (!composeFile.exists() || !sqlFile.exists()) {
+            throw new GradleException("Missing docker-compose.yml or initdb.sql in project directory.")
+        }
+
+        ssh.run {
+            session(remotes.host) {
+                // Tạo thư mục chứa nếu chưa có
+                execute 'mkdir -p /usr/deploy', ignoreError: true
+
+                // Upload file docker-compose.yml và initdb.sql
+                put from: "${composeFile}", into: "/usr/deploy/docker-compose.yml"
+                put from: "${sqlFile}", into: "/usr/deploy/initdb.sql"
+
+                // Chạy docker-compose
+                execute 'cd /usr/deploy && docker-compose down', ignoreError: true
+                execute 'cd /usr/deploy && docker-compose up -d'
+            }
+        }
+    }
+}
 
 task docker_deploy {
     dependsOn build
+    dependsOn docker_setup_database
     dependsOn docker_upload_file_to_server
     dependsOn docker_app_start
+    tasks.getByName('docker_upload_file_to_server').mustRunAfter docker_setup_database
     tasks.getByName('docker_app_start').mustRunAfter docker_upload_file_to_server
 }
 
@@ -68,9 +96,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-    // SLF4J API
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'// SLF4J API
     implementation 'org.slf4j:slf4j-api:2.0.9'
     // Logback Classic
     implementation 'ch.qos.logback:logback-classic:1.4.14'
@@ -96,8 +124,6 @@ dependencies {
     implementation 'org.jboss.weld.servlet:weld-servlet-shaded:4.0.3.Final'
     // Spring Security Core
     implementation 'org.springframework.security:spring-security-core:6.3.5'
-    // Lombok
-    providedCompile 'org.projectlombok:lombok:1.18.36'
     // Jakarta Servlet API
     providedCompile 'jakarta.servlet:jakarta.servlet-api:5.0.0'
     // Jakarta JSP API
