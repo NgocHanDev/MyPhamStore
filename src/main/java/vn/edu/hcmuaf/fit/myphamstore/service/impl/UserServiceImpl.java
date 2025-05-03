@@ -186,7 +186,7 @@ public class UserServiceImpl implements IUserService {
         otpDAO.saveOtp(email, otp);
         // Sử dụng ExecutorService để gửi email bất đồng bộ
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        String finalEmail = email;
+        String finalEmail = email.trim();
         executorService.submit(() -> {
             SendEmail.sendEmail(finalEmail, otp);
             log.info("USER-SERVICE", String.format("Gửi email thành công: %s", finalEmail));

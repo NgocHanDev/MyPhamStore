@@ -1,5 +1,5 @@
 
-package vn.edu.hcmuaf.fit.myphamstore.vnpay;
+package vn.edu.hcmuaf.fit.myphamstore.common;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;

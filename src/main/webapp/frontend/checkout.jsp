@@ -187,7 +187,7 @@
               <div class="field-label">Thành phố/Tỉnh thành </div>
               <%--              <input type="text" name="city"  placeholder="nhập tên thành phố/tỉnh thành" value="${address.city}" required >--%>
               <select name="city" id="city" required >
-                <option value="" selected>Vui lòng chọn Tỉnh/thành phố</option>
+                <option value="${address.city}" selected>Vui lòng chọn Tỉnh/thành phố</option>
               </select>
             </div>
 
@@ -196,7 +196,7 @@
               <div class="field-label">Quận/huyện </div>
               <%-- <input type="text" name="district"   placeholder="nhập tên quận/huyện" value="${address.district}" required > --%>
               <select name="district" id="district" required disabled>
-                <option value="" selected>Vui lòng chọn  Quận/huyện</option>
+                <option value="${address.district}" selected>Vui lòng chọn  Quận/huyện</option>
               </select>
             </div>
 
@@ -205,7 +205,7 @@
               <div class="field-label">Phường/xã</div>
               <%-- <input type="text" name="ward"  placeholder="nhập tên phường/xã" value="${address.ward}"  required>--%>
               <select name="ward" id="ward" required disabled>
-                <option value="" selected>Vui lòng chọn  Phường/xã</option>
+                <option value="address.ward" selected>Vui lòng chọn  Phường/xã</option>
               </select>
             </div>
 
@@ -303,56 +303,59 @@
     <%--      </div>--%>
     <%--    </div>--%>
     <!--Payment Box-->
-    <div class="payment-box">
-      <div class="upper-box">
-
-        <!--Payment Options-->
-        <div class="payment-options">
-          <ul>
-            <li>
-              <div class="radio-option">
-                <input type="radio" name="payment-group" id="payment-2" checked>
-                <label for="payment-2"><strong>Thanh toán chuyển khoản </strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
-              </div>
-            </li>
-            <li>
-              <div class="radio-option">
-                <input type="radio" name="payment-group" id="payment-1">
-                <label for="payment-1"><strong>Cod</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
-              </div>
-            </li>
-
-            <li>
-              <div class="radio-option">
-                <input type="radio" name="payment-group" id="payment-3">
-                <label for="payment-3"><strong>MOMO</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
-              </div>
-            </li>
-            <li>
-              <div class="radio-option">
-                <input type="radio" name="payment-group" id="payment-4">
-                <label for="payment-4"><strong>VnPay</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
-              </div>
-            </li>
-            <li>
-              <div class="radio-option">
-                <input type="radio" name="payment-group" id="payment-5">
-                <label for="payment-5"><strong>PayPal</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
-              </div>
-            </li>
-          </ul>
+    <form id="checkout-form" action="/submit-order" method="post">
+      <!--Payment Box-->
+      <div class="payment-box">
+        <div class="upper-box">
+          <!--Payment Options-->
+          <div class="payment-options">
+            <ul>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-2" value="bank" checked>
+                  <label for="payment-2"><strong>Thanh toán chuyển khoản</strong>
+                    <span class="small-text">Thực hiện thanh toán trực tiếp...</span>
+                  </label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-1" value="cod">
+                  <label for="payment-1"><strong>Cod</strong>
+                    <span class="small-text">Thực hiện thanh toán khi nhận hàng...</span>
+                  </label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-3" value="momo">
+                  <label for="payment-3"><strong>MOMO</strong></label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-4" value="vnpay">
+                  <label for="payment-4"><strong>VnPay</strong></label>
+                </div>
+              </li>
+              <li>
+                <div class="radio-option">
+                  <input type="radio" name="payment-group" id="payment-5" value="paypal">
+                  <label for="payment-5"><strong>PayPal</strong></label>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
 
-      </div>
-      <div class="lower-box text-right">
-        <div class="shop_btn_wrapper checkout_btn">
-          <ul>
-            <li><a id="submit-order" href="#">Đặt hàng </a>
-            </li>
-          </ul>
+        <div class="lower-box text-right">
+          <div class="shop_btn_wrapper checkout_btn">
+            <button type="submit" class="btn btn-fill-out btn-block" id="submit-order">Đặt hàng</button>
+          </div>
         </div>
       </div>
-    </div>
+    </form>
+
     <!--End Payment Box-->
 
   </div>
@@ -403,29 +406,76 @@
 <%--<script src="../static/js/demo/checkout.js"></script>--%>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+<%--<script>--%>
+<%--  document.getElementById("submit-order").addEventListener("click", (e)=>{--%>
+<%--    e.preventDefault();--%>
+<%--    console.log("submit order");--%>
+<%--    Toastify({--%>
+<%--      text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",--%>
+<%--      duration: 5000,--%>
+<%--      newWindow: true,--%>
+<%--      close: true,--%>
+<%--      gravity: "top", // `top` or `bottom`--%>
+<%--      position: "center", // `left`, `center` or `right`--%>
+<%--      stopOnFocus: true, // Prevents dismissing of toast on hover--%>
+<%--      style: {--%>
+<%--        //   background: "linear-gradient(to right, #00b09b, #96c93d)",--%>
+<%--      },--%>
+<%--      onClick: function(){} // Callback after click--%>
+<%--    }).showToast();--%>
+<%--    setTimeout(()=>{--%>
+<%--      //submit form--%>
+<%--      document.querySelector(".checkout-form").submit();--%>
+<%--    }, 1000);--%>
+<%--  })--%>
+<%--</script>--%>
 <script>
-  document.getElementById("submit-order").addEventListener("click", (e)=>{
-    e.preventDefault();
-    console.log("submit order");
-    Toastify({
-      text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",
-      duration: 5000,
-      newWindow: true,
-      close: true,
-      gravity: "top", // `top` or `bottom`
-      position: "center", // `left`, `center` or `right`
-      stopOnFocus: true, // Prevents dismissing of toast on hover
-      style: {
-        //   background: "linear-gradient(to right, #00b09b, #96c93d)",
-      },
-      onClick: function(){} // Callback after click
-    }).showToast();
-    setTimeout(()=>{
-      //submit form
-      document.querySelector(".checkout-form").submit();
-    }, 1000);
-  })
+  document.addEventListener("DOMContentLoaded", function () {
+    const orderForm = document.getElementById("checkout-form");
+
+    orderForm.addEventListener("submit", function (e) {
+      e.preventDefault(); // Ngăn submit mặc định
+
+      const selectedPayment = document.querySelector('input[name="payment-group"]:checked')?.value;
+
+      if (!selectedPayment) {
+        alert("Vui lòng chọn phương thức thanh toán.");
+        return;
+      }
+
+      if (selectedPayment === "cod") {
+        Toastify({
+          text: "Đặt hàng thành công (COD)",
+          duration: 2000,
+          style: { background: "linear-gradient(to right, #00b09b, #96c93d)" }
+        }).showToast();
+
+        setTimeout(() => {
+          document.querySelector(".checkout-form").submit();
+        }, 2000);
+      }
+      else if (selectedPayment === "vnpay") {
+        Toastify({
+          text: "Đang chuyển hướng đến VNPAY...",
+          duration: 2000,
+          style: { background: "linear-gradient(to right, #0077ff, #00d2ff)" }
+        }).showToast();
+
+        setTimeout(() => {
+          window.location.href = "/vnpay/ajaxServlet";
+        }, 2000);
+      }
+      else {
+        Toastify({
+          text: `Phương thức "${selectedPayment}" hiện chưa hỗ trợ.`,
+          duration: 2000,
+          style: { background: "linear-gradient(to right, #f12711, #f5af19)" }
+        }).showToast();
+      }
+    });
+  });
 </script>
+
 </body>
 
 </html>
