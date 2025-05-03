@@ -177,25 +177,6 @@
                   <c:when test="${empty discountCodes}">
                     <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
                   </c:when>
-<%--                  <c:otherwise>--%>
-<%--                    <c:forEach items="${discountCodes}" var="coupon">--%>
-<%--                      <c:if test="${not empty coupon}">--%>
-<%--                        <div class="coupon-card">--%>
-<%--                          <div class="coupon-code">--%>
-<%--                            <span>${coupon.code}</span>--%>
-<%--                            <button class="copy-btn" onclick="copyCoupon('${coupon.code}')">Sao chép mã</button>--%>
-<%--                          </div>--%>
-<%--                          <ul class="coupon-details">--%>
-<%--                            <li><strong>Số lượng còn lại:</strong> ${coupon.remainingQuantity}</li>--%>
-<%--                            <li><strong>Loại giảm giá:</strong> ${coupon.discountType eq 'percentage' ? 'Phần trăm' : 'Cố định'}</li>--%>
-<%--                            <li><strong>Số tiền giảm:</strong> ${coupon.discountType eq 'percentage' ? coupon.discountValue + '%' : coupon.discountValue + 'đ'}</li>--%>
-<%--                            <li><strong>Giá trị đơn hàng tối thiểu:</strong> ${coupon.minOrderValue}đ</li>--%>
-<%--                            <li><strong>Ngày hết hạn:</strong> ${coupon.endDate}</li>--%>
-<%--                          </ul>--%>
-<%--                        </div>--%>
-<%--                      </c:if>--%>
-<%--                    </c:forEach>--%>
-<%--                  </c:otherwise>--%>
                 </c:choose>
 
               </div>
