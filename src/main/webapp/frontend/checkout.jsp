@@ -247,6 +247,10 @@
           <c:set var="variant" value="${cart.variant}"/>
           <tr>
             <td>${cart.product.name}</td>
+              <td>
+                  <input type="checkbox" name="selectedItems" value="${cart.product.id}-${variant != null ? variant.id : 'null'}" />
+                      ${cart.product.name}
+              </td>
             <td>
               <c:choose>
                 <c:when test="${variant != null}">${variant.name}</c:when>
