@@ -4,6 +4,8 @@
     import jakarta.mail.internet.InternetAddress;
     import jakarta.mail.internet.MimeMessage;
     import lombok.extern.slf4j.Slf4j;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
     import vn.edu.hcmuaf.fit.myphamstore.model.AddressModel;
     import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
     import vn.edu.hcmuaf.fit.myphamstore.model.OrderModel;
@@ -20,7 +22,7 @@
     public class SendEmail {
         private static final String EMAIL = "hanrepository@gmail.com";
         private static final String PASSWORD = "nfssbtsafpmatbaq";
-    
+
         public static boolean sendEmail(String to, String otp) {
             log.info("Sending email to: {}",to);
             System.out.println("Sending email to: " + to);

@@ -21,21 +21,21 @@ To change this template use File | Settings | File Templates.
 	<meta name="author" content="" />
 	<meta name="MobileOptimized" content="320" />
 	<!--srart theme style -->
-	<link rel="stylesheet" type="text/css" href="../static/css/animate.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/font-awesome.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/owl.carousel.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/owl.theme.default.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/magnific-popup.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/fonts.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/dl-menu.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/reset.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/camera.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/style.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/responsive.css" />
-	<link rel="stylesheet" type="text/css" href="../static/css/sidebar.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/animate.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/owl.carousel.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/owl.theme.default.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/magnific-popup.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/fonts.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/dl-menu.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/reset.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/camera.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/responsive.css" />
+	<link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/static/css/sidebar.css" />
 	<!-- favicon links -->
-	<link rel="shortcut icon" type="image/png" href="../static/images/header/favicon.png" />
+	<link rel="shortcut icon" type="image/png" href="<%= request.getContextPath() %>/static/images/header/favicon.png" />
 
 </head>
 <style>
@@ -43,7 +43,7 @@ To change this template use File | Settings | File Templates.
 		display: -webkit-box; /* Sử dụng flexbox ẩn nội dung */
 		-webkit-box-orient: vertical; /* Đặt hướng box theo chiều dọc */
 		overflow: hidden; /* Ẩn phần văn bản bị tràn */
-		text-overflow: ellipsis; /* Thêm dấu "..." */
+		text-overflow: ellipsis; /* Thêm dấu "<%= request.getContextPath() %>." */
 		-webkit-line-clamp: 2; /* Giới hạn số dòng hiển thị */
 		line-height: 1.5; /* Đặt chiều cao dòng để tính dòng */
 		max-height: calc(1.5em * 2); /* Chiều cao tối đa tương ứng với 2 dòng */
@@ -55,7 +55,7 @@ To change this template use File | Settings | File Templates.
 	<!-- preloader Start -->
 	<div id="preloader">
 		<div id="status">
-			<img src="../static/images/header/preloader.gif" id="preloader_image" alt="loader">
+			<img src="<%= request.getContextPath() %>/static/images/header/preloader.gif" id="preloader_image" alt="loader">
 		</div>
 	</div>
 	<!-- Top Scroll Start -->
@@ -71,7 +71,7 @@ To change this template use File | Settings | File Templates.
 	<!-- Slider Wrapper End -->
 	<!-- <div class="ss_top_slider_wrapper">
 		<div id="theme-main-banner">
-				<div data-src="../static/images/slider/slider1.jpg">
+				<div data-src="<%= request.getContextPath() %>/static/images/slider/slider1.jpg">
 				</div>
 		</div>
 	</div> -->
@@ -198,8 +198,8 @@ To change this template use File | Settings | File Templates.
 						<div class="ss_heading">
 							<h3>Danh Mục Hot</h3>
 						</div>
-						<ul class="nav nav-tabs" role="tablist">
-							<li role="presentation" class="active"><a href="#best" aria-controls="best" role="tab" data-toggle="tab">Da Mặt</a></li>
+						<ul class="nav nav-tabs"  role="tablist">
+							<li role="presentation" class="active"><a href="#best" aria-controls="best" role="tab" data-toggle="tab" >Da Mặt</a></li>
 							<li role="presentation"><a href="#hot" aria-controls="hot" role="tab" data-toggle="tab">Body</a></li>
 							<li role="presentation"><a href="#trand" aria-controls="trand" role="tab" data-toggle="tab">Trang Điểm</a></li>
 						</ul>
@@ -432,22 +432,22 @@ To change this template use File | Settings | File Templates.
 	<!-- Brandlogo Wrapper End -->
 	<%@include file="component/footer.jsp"%>
 	<!--main js file start-->
-	<script src="../static/js/jquery_min.js"></script>
-	<script src="../static/js/wow.js"></script>
-	<script src="../static/js/bootstrap.js"></script>
-	<script src="../static/js/owl.carousel.js"></script>
-	<script src="../static/js/modernizr.js"></script>
-	<script src="../static/js/jquery.magnific-popup.js"></script>
-	<script src="../static/js/jquery.dlmenu.js"></script>
-	<script src="../static/js/jquery.sticky.js"></script>
-	<script src="../static/js/jquery.menu-aim.js"></script>
-	<script src="../static/js/camera.min.js"></script>
-	<script src="../static/js/jquery.easing.1.3.js"></script>
-	<script src="../static/js/jquery.inview.min.js"></script>
-	<script src="../static/js/custom.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery_min.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/wow.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/bootstrap.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/owl.carousel.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/modernizr.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery.magnific-popup.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery.dlmenu.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery.sticky.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery.menu-aim.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/camera.min.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery.easing.1.3.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/jquery.inview.min.js"></script>
+	<script src="<%= request.getContextPath() %>/static/js/custom.js"></script>
 	<!--main js file end-->
 	<!-- demo feature -->
-	 <script src="../static/js/demo/login-label.js"></script>
+	 <script src="<%= request.getContextPath() %>/static/js/demo/login-label.js"></script>
 
 	<script>
 		function formatPrice(price, currencySymbol, delimiter) {

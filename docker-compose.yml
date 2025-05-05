@@ -5,19 +5,43 @@ services:
     image: mysql:8.0
     container_name: mysql
     cap_add:
-      - SYS_NICE  # Cho phép điều chỉnh mức ưu tiên tiến trình
+      - SYS_NICE
     restart: always
     environment:
-      MYSQL_DATABASE: myphamstoredb  # Đổi từ 'root' thành tên DB thực tế
+      MYSQL_DATABASE: myphamstoredb
       MYSQL_ROOT_PASSWORD: admin
     ports:
       - '3306:3306'
     volumes:
-      - mysql_data:/var/lib/mysql  # Lưu trữ dữ liệu DB
-      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql  # File SQL khởi tạo
+      - mysql_data:/var/lib/mysql
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
     networks:
       - app-network
-    command: --default-authentication-plugin=mysql_native_password  # Đảm bảo tương thích driver cũ
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: java-servlet-app
+    ports:
+      - '8080:8080'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=myphamstoredb
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=admin
+    networks:
+      - app-network
+    restart: always
 
 volumes:
   mysql_data:

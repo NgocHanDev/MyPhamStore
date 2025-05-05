@@ -1,6 +1,10 @@
-create database myphamstoredb;
+# create database myphamstoredb;
 
 use myphamstoredb;
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET COLLATION_CONNECTION = 'utf8mb4_unicode_ci';
 
 CREATE TABLE `user` (
                         `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -16,8 +20,8 @@ CREATE TABLE `user` (
                         `created_at` datetime DEFAULT (now()),
                         `updated_at` datetime DEFAULT (now())
 );
-                  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+
+
 
 
 CREATE TABLE `role` (

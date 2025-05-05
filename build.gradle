@@ -1,0 +1,152 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'org.hidetake.ssh' version '2.11.2'
+    id 'war'
+}
+
+group = 'vn.edu.hcmuaf.fit'
+version = '1.0.0'
+
+apply plugin: 'org.hidetake.ssh'
+remotes {
+    host {
+        host= '192.168.1.20'
+        user= 'root'
+        password= 'root'
+    }
+}
+ssh.settings {
+    knownHosts = allowAnyHosts
+}
+task docker_app_start {
+    doLast {
+        println 'begin docker_app_start'
+        ssh.run {
+            session(remotes.host) {
+                execute 'docker stop myphamstore-app', ignoreError: true
+                execute 'docker rm myphamstore-app', ignoreError: true
+                execute 'docker run --rm -d ' +
+                        '--name myphamstore-app ' +
+                        '-v /usr/deploy:/usr/local/tomcat/webapps ' +
+                        '-p 8080:8080 ' +
+                        'tomcat:10.0-jdk17-temurin'
+            }
+        }
+    }
+}
+task docker_upload_file_to_server {
+    doLast {
+        println 'begin docker_upload_file_to_server'
+        def warFile = file("${project.projectDir}/build/libs/ROOT.war")
+        if (!warFile.exists()) {
+            throw new GradleException("WAR file not found at ${warFile}")
+        }
+        ssh.run {
+            session(remotes.host) {
+                execute 'mkdir -p /usr/deploy', ignoreError: true
+                remove '/usr/deploy/ROOT.war'
+                remove '/usr/deploy/myphamstore/'
+                put from: "${project.projectDir}/build/libs/ROOT.war",
+                        into: "/usr/deploy/ROOT.war"
+            }
+        }
+    }
+}
+task docker_setup_database {
+    doLast {
+        println 'begin docker_setup_database'
+        def composeFile = file("${project.projectDir}/docker-compose.yml")
+        def sqlFile = file("${project.projectDir}/initdb.sql")
+
+        if (!composeFile.exists() || !sqlFile.exists()) {
+            throw new GradleException("Missing docker-compose.yml or initdb.sql in project directory.")
+        }
+
+        ssh.run {
+            session(remotes.host) {
+                // Tạo thư mục chứa nếu chưa có
+                execute 'mkdir -p /usr/deploy', ignoreError: true
+
+                // Upload file docker-compose.yml và initdb.sql
+                put from: "${composeFile}", into: "/usr/deploy/docker-compose.yml"
+                put from: "${sqlFile}", into: "/usr/deploy/initdb.sql"
+
+                // Chạy docker-compose
+                execute 'cd /usr/deploy && docker-compose down', ignoreError: true
+                execute 'cd /usr/deploy && docker-compose up -d'
+            }
+        }
+    }
+}
+
+task docker_deploy {
+    dependsOn build
+    dependsOn docker_setup_database
+    dependsOn docker_upload_file_to_server
+    dependsOn docker_app_start
+    tasks.getByName('docker_upload_file_to_server').mustRunAfter docker_setup_database
+    tasks.getByName('docker_app_start').mustRunAfter docker_upload_file_to_server
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.eclipse.org/content/repositories/ee4j/' }
+    maven { url 'https://repo.maven.apache.org/maven2' }
+}
+
+dependencies {
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'// SLF4J API
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    // Logback Classic
+    implementation 'ch.qos.logback:logback-classic:1.4.14'
+    // Logback Core
+    implementation 'ch.qos.logback:logback-core:1.4.14'
+    // Gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+    // Jakarta Mail API
+    providedCompile 'jakarta.mail:jakarta.mail-api:2.1.0'
+    // Jakarta Mail
+    implementation 'org.eclipse.angus:jakarta.mail:1.0.0'
+    // Commons FileUpload
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+    // Commons IO
+    implementation 'commons-io:commons-io:2.14.0'
+    // HikariCP
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    // JDBI Core
+    implementation 'org.jdbi:jdbi3-core:3.45.0'
+    // JDBI SQLObject
+    implementation 'org.jdbi:jdbi3-sqlobject:3.45.0'
+    // Weld Servlet
+    implementation 'org.jboss.weld.servlet:weld-servlet-shaded:4.0.3.Final'
+    // Spring Security Core
+    implementation 'org.springframework.security:spring-security-core:6.3.5'
+    // Jakarta Servlet API
+    providedCompile 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    // Jakarta JSP API
+    providedCompile 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.0.0'
+    // JSTL
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:2.0.0'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
+    // Apache HttpClient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'org.apache.httpcomponents:fluent-hc:4.5.14'
+    // MySQL Connector
+    implementation 'com.mysql:mysql-connector-j:8.2.0'
+    // JUnit
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+war {
+    archiveFileName = 'ROOT.war'
+}

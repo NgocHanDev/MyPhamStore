@@ -197,7 +197,7 @@ Purchase:
                   >Đã có tài khoản? Nhấn vào đây để
                   <a href="<c:url value="/login"></c:url> ">Đăng nhập</a></span
                 >
-                <button class="btn signup">Tạo tài khoản</button>
+                <button class="btn signup" style="background: linear-gradient(to right, #c084fc, #ff69b4)">Tạo tài khoản</button>
               </form>
             </div>
           </div>

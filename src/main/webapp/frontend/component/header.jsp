@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="main-header-three">
+<div class="main-header-three" style="background: linear-gradient(to right, #c084fc, #ff69b4);">
 		<div class="ss_categories_box ss-box-two">
 			<nav>
 				<ul class="list-group vertical-menu yamm make-absolute nav vertical-menu-three">
-					<li class="list-group-item button-dropdown"><a href="javascript:void(0)" class="dropdown-toggle sidebar-three"><span><i class="fa fa-list-ul"></i>Danh mục sản phẩm</span></a>
+					<li class="list-group-item button-dropdown" ><a href="javascript:void(0)" class="dropdown-toggle sidebar-three" style="background: #2e9ad0"><span><i class="fa fa-list-ul" style="background: rgba(11,11,11,0.3)"></i>Danh mục sản phẩm</span></a>
 						<ul class="dropdown-menu">
 							<li class="yamm-tfw menu-item menu-item-has-children animate-dropdown dropdown">
 								<div class="wpb_wrapper">
@@ -405,7 +405,7 @@
 					<!-- .cd-dropdown -->
 				</div>
 				<div class="prs_menu_main_wrapper">
-					<div class="search-three">
+					<div class="search-three" style="background: linear-gradient(to right, #c084fc, #ff69b4)">
 						<div class="ss_search_box search-box-three visible-xl visible-lg visible-md hidden-sm">
 							<!-- Search form -->
 							<form action="/danh-muc" method="get">
@@ -421,7 +421,7 @@
 									<!-- Ô nhập liệu -->
            							 <input type="text" name="keyword" placeholder="Tìm sản phẩm...">
 									<!-- Nút tìm kiếm -->
-            						<button type="submit">
+            						<button type="submit" style="background: #b0bec8">
                						 <i class="fa fa-search" aria-hidden="true"></i>
            							 </button>
         						</span>
