@@ -126,37 +126,54 @@ public class CheckoutServiceImpl implements ICheckoutService {
                 if (!selectedKeys.contains(key)) continue;
 
                 ProductModel product = productService.findProductById(cartItem.getProductId());
-                if (product == null) {
-                    request.setAttribute("errorMessage", "Không tìm thấy sản phẩm: " + cartItem.getProductId());
-                    request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
-                    return;
-                }
-                if(cartItem.getVariantId() == null){
-                    totalAmount += product.getPrice() * cartItem.getQuantity();
-                    CartModelHelper helper = new CartModelHelper();
-                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
-                    helper.setProduct(product);
-                    listCartDisplay.add(helper);
-                }else{
-                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
-                    ProductVariant variant = listVariant.stream()
-                            .filter(v -> v.getId().equals(cartItem.getVariantId()))
-                            .findFirst()
-                            .orElse(null);
+                if (product == null) continue;
+//                {
+//                    request.setAttribute("errorMessage", "Không tìm thấy sản phẩm: " + cartItem.getProductId());
+//                    request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+//                    return;
+//                }
+                double price = cartItem.getVariantId() != null
+                        ? productService.getProductVariantsByProductId(cartItem.getProductId())
+                        .stream()
+                        .filter(v -> v.getId().equals(cartItem.getVariantId()))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Variant not found"))
+                        .getPrice()
+                        : product.getPrice();
 
-                    if (variant == null) continue;
+                totalAmount += price * cartItem.getQuantity();
+                listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(),
+                        cartItem.getVariantId() != null ? ProductVariant.builder()
+                                .id(cartItem.getVariantId())
+                                .price(price)
+                                .build() : null));
+
+//                if(cartItem.getVariantId() == null){
+//                    totalAmount += product.getPrice() * cartItem.getQuantity();
+//                    CartModelHelper helper = new CartModelHelper();
+//                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+//                    helper.setProduct(product);
+//                    listCartDisplay.add(helper);
+//                }else{
+//                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
+//                    ProductVariant variant = listVariant.stream()
+//                            .filter(v -> v.getId().equals(cartItem.getVariantId()))
+//                            .findFirst()
+//                            .orElse(null);
+//
+//                    if (variant == null) continue;
 
 //                    for (ProductVariant productVariant : listVariant) {
 //                        if(cartItem.getVariantId() == productVariant.getId()){
 //                            variant = productVariant;
 //                        }
 //                    }
-                    totalAmount += (variant.getPrice() * cartItem.getQuantity());
-                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
-                    listCartDisplay.add(cartModelHelper);
-                }
-
-            }
+//                    totalAmount += (variant.getPrice() * cartItem.getQuantity());
+//                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
+//                    listCartDisplay.add(cartModelHelper);
+//                }
+//
+        }
             System.out.println("After displaying: " + listCartDisplay);
             if (listCartDisplay.isEmpty()) {
                 request.setAttribute("errorMessage", "Không có sản phẩm hợp lệ để thanh toán.");

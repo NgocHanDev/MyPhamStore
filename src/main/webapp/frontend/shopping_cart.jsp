@@ -92,6 +92,7 @@
                     <tr>
                       <td style="text-align: center; padding: 10px;">
                         <input type="checkbox" class="product-checkbox" data-price="${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}" />
+                        <input type="hidden" name="productId" value="${i.product.id}" />
                       </td>
                       <td style="text-align: left; padding: 10px;">
                         <img src="${not empty i.product and not empty i.product.thumbnail ? i.product.thumbnail : ''}"
@@ -127,35 +128,14 @@
                           <p style="margin: 5px 0;">Tổng cộng: <span id="total-amount" class="price">0đ</span></p>
                         </div>
                         <div>
-                          <a href="<c:url value='/checkout?action=display' />" class="btn btn-primary" style="padding: 10px 20px; font-size: 16px; text-transform: uppercase;">Thanh toán</a>
+                          <form id="checkout-form" method="post" action="/checkout?action=checkout">
+                            <input type="hidden" name="selectedItems" id="selectedItemsInput" />
+                            <button type="submit" class="btn btn-primary">Thanh toán</button>
+                          </form>
                         </div>
                       </div>
                     </td>
                   </tr>
-                  <script>
-                    function updateTotalAmount() {
-                      let total = 0;
-                      $(".product-checkbox:checked").each(function () {
-                        total += parseInt($(this).data("price"));
-                      });
-                      $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
-                    }
-
-                    $(document).ready(function () {
-                      $("#select-all").on("change", function () {
-                        $(".product-checkbox").prop("checked", $(this).is(":checked"));
-                        updateTotalAmount();
-                      });
-                      $(".product-checkbox").on("change", function () {
-                        let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
-                        $("#select-all").prop("checked", allChecked);
-                        updateTotalAmount();
-                      });
-
-                      updateTotalAmount();
-                    });
-                  </script>
-
                   </tbody>
                 </table>
               </div>
@@ -178,7 +158,6 @@
                     <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
                   </c:when>
                 </c:choose>
-
               </div>
             </div>
           </div>
@@ -192,6 +171,29 @@
           </div>
         </c:otherwise>
       </c:choose>
+      <script>
+        function updateTotalAmount() {
+          let total = 0;
+          $(".product-checkbox:checked").each(function () {
+            total += parseInt($(this).data("price"));
+          });
+          $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
+        }
+
+        $(document).ready(function () {
+          $("#select-all").on("change", function () {
+            $(".product-checkbox").prop("checked", $(this).is(":checked"));
+            updateTotalAmount();
+          });
+          $(".product-checkbox").on("change", function () {
+            let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
+            $("#select-all").prop("checked", allChecked);
+            updateTotalAmount();
+          });
+
+          updateTotalAmount();
+        });
+      </script>
     </div>
   </div>
 </div>
@@ -252,5 +254,68 @@
     });
   });
 </script>
+<script>
+  document.getElementById("checkout-form").addEventListener("submit", function(e) {
+    const selected = [];
+    document.querySelectorAll(".product-checkbox:checked").forEach(function(checkbox) {
+      const row = checkbox.closest("tr");
+      const productId = row.querySelector("input[name='productId']")?.value;
+      const variantId = row.querySelector("input[name='variantId']")?.value || "null";
+      if (productId) {
+        selected.push(productId + "-" + variantId);
+      }
+    });
+
+    if (selected.length === 0) {
+      e.preventDefault();
+      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+      return;
+    }
+
+    document.getElementById("selectedItemsInput").value = selected.join(",");
+  });
+</script>
+<script>
+  function updateTotalAmount() {
+    let total = 0;
+    $(".product-checkbox:checked").each(function () {
+      total += parseInt($(this).data("price"));
+    });
+    $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
+  }
+
+  function updateSelectedItems() {
+    const selectedKeys = [];
+    $(".product-checkbox:checked").each(function () {
+      const row = $(this).closest("tr");
+      const productId = row.find("input[name='productId']").val();
+      const variantId = $(this).data("variant-id");
+      selectedKeys.push(productId + "-" + (variantId ? variantId : "null"));
+    });
+    $("#selectedItemsInput").val(selectedKeys.join(","));
+  }
+
+  $(document).ready(function () {
+    $("#select-all").on("change", function () {
+      $(".product-checkbox").prop("checked", $(this).is(":checked"));
+      updateTotalAmount();
+      updateSelectedItems();
+    });
+
+    $(".product-checkbox").on("change", function () {
+      let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
+      $("#select-all").prop("checked", allChecked);
+      updateTotalAmount();
+      updateSelectedItems();
+    });
+
+    $("#checkout-form").on("submit", function () {
+      updateSelectedItems();
+    });
+
+    updateTotalAmount();
+  });
+</script>
+
 </body>
 </html>

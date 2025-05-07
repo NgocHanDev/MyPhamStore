@@ -248,7 +248,7 @@
           <tr>
             <td>${cart.product.name}</td>
               <td>
-                  <input type="checkbox" name="selectedItems" value="${cart.product.id}-${variant != null ? variant.id : 'null'}" />
+                  <input type="checkbox" name="selectedProduct" value="${cart.product.id}-${variant != null ? variant.id : 'null'}" />
                       ${cart.product.name}
               </td>
             <td>
