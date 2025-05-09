@@ -281,6 +281,40 @@
       </div>
     </div>
   </div>
+
+  <!-- modal banking -->
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+<!--        <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+        <h4 class="modal-title">Thanh toán chuyển khoản</h4>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <img src="https://img.vietqr.io/image/BIDV-V3CASSNGOCHAN-print.png?amount=5000&addInfo=noidung" alt="qr" width="70%">, 
+        </div>
+        <div class="text-center">
+          <div>
+            <strong>Hêt hạn thanh toán trong: </strong><span id="countdown">09:59</span>
+          </div>
+          <div>
+            <strong>Trạng thái: </strong> <span class="paid-status">đang chờ thanh toán</span> <span class="fa fa-circle-o-notch spinner text-primary" ></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+       <button type="button" id="btn-close-modal" class="btn btn-default hidden " data-dismiss="modal" >Đóng</button>
+      </div>
+    </div>
+
+  </div>
+</div>  
+
   <!-- Footer (Static) -->
   <footer>
     <div class="container">
@@ -345,6 +379,61 @@
   <script>
     document.getElementById("submit-order").addEventListener("click", (e) => {
       e.preventDefault();
+
+
+      $('#myModal').modal('show');
+
+      let time = 5; 
+      let $countdown = $('#countdown');
+
+      let interval = setInterval(function() {
+          time--;
+          let minutes = Math.floor(time / 60).toString().padStart(2, '0');
+          let seconds = (time % 60).toString().padStart(2, '0');
+          $countdown.text(`${minutes}:${seconds}`);
+
+          if (time <= 0) {
+              $countdown.text('QR đã hết hạn!');
+              $('.spinner').hide();
+              $('#btn-close-modal').removeClass('hidden');
+              $('.paid-status').text('Đã hết hạn thanh toán!')
+              clearInterval(interval);
+          }
+      }, 1000);
+
+      //call api check payment status
+      let checkPaymentStatus = setInterval(() => {
+        $.ajax({
+          url: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLj8_6ehEoROBCUkTe9gN4YaAOuZt7z4H9MabZBM9xYZNKnbMVjixXSCgy-agOlGFF_8-DSM3sIQEwtQU6x40sFjUwqK1M2yp5wBP7uJ9d-ofWdHYq1o-Y8jW5vefLM2Y-Xz1UbTa3gPToiLlXERwbLFta12POBxZOu0Wzr_ybJkap9GawYHHp3Hu479aivjW6cO_TJK7tl3DYtK8ZijzjQ0A3JCVvWV-1LWM9_XzeyvzdquPBHnRfuJdoMqGX1QC90ZFuOUD3Ju8RLuMoyunsnKve0cTA&lib=Mr7TTfKIhIo4j5Qm7-ehMzaWRBdHt1V3q',
+          type: 'GET',
+          success: function(response) {
+            const data = response.data[1];
+            const price = data['Số tiền'];
+            const description = data['Mô tả'];
+
+            if (response.status === 'success') {
+              clearInterval(checkPaymentStatus);
+              clearInterval(interval);
+              $('.spinner').hide();
+              $('#btn-close-modal').removeClass('hidden');
+              $('.paid-status').text('Đã thanh toán thành công!')
+            } else if (response.status === 'failed') {
+              clearInterval(checkPaymentStatus);
+              clearInterval(interval);
+              $('.spinner').hide();
+              $('#btn-close-modal').removeClass('hidden');
+              $('.paid-status').text('Thanh toán thất bại!')
+            }
+          },
+          error: function() {
+            console.error("Error checking payment status");
+          }
+        });
+      }, 5000);
+
+
+      return;
+
       Toastify({
         text: "Order placed successfully!\nYour order will be delivered soon!",
         duration: 5000,
