@@ -132,8 +132,8 @@ public class ProductDAOImpl implements IProductDAO {
             return JDBIConnector.getJdbi().withHandle(handle -> {
                 return handle.createUpdate(sql)
                         .bind("name", entity.getName() != null ? entity.getName().trim() : "")
-                        .bind("price", entity.getPrice() != null ? FormatMoney.formatCurrency(entity.getPrice()) : FormatMoney.formatCurrency(0L))
-                        .bind("costPrice", entity.getCostPrice() != null ? FormatMoney.formatCurrency(entity.getCostPrice()) : FormatMoney.formatCurrency(0L))
+                        .bind("price", entity.getPrice() != null ? entity.getPrice() : (0L))
+                        .bind("costPrice", entity.getCostPrice() != null ? entity.getCostPrice() : (0L))
                         .bind("stock", entity.getStock() != null ? entity.getStock() : 0)
                         .bind("soldQuantity", entity.getSoldQuantity() != null ? entity.getSoldQuantity() : 0)
                         .bind("description", entity.getDescription() != null ? entity.getDescription().trim() : "")
@@ -168,8 +168,8 @@ public class ProductDAOImpl implements IProductDAO {
             int result = JDBIConnector.getJdbi().withHandle(handle -> {
                 return handle.createUpdate(sql)
                         .bind("name", entity.getName() != null ? entity.getName().trim() : productModel.getName())
-                        .bind("price", entity.getPrice() != null ? FormatMoney.formatCurrency(entity.getPrice()) : FormatMoney.formatCurrency(productModel.getPrice()))
-                        .bind("costPrice", entity.getCostPrice() != null ? FormatMoney.formatCurrency(entity.getCostPrice()) : FormatMoney.formatCurrency(productModel.getCostPrice()))
+                        .bind("price", entity.getPrice() != null ? (entity.getPrice()) : (productModel.getPrice()))
+                        .bind("costPrice", entity.getCostPrice() != null ?(entity.getCostPrice()) : (productModel.getCostPrice()))
                         .bind("stock", entity.getStock() != null ? entity.getStock() : productModel.getStock())
                         .bind("soldQuantity", entity.getSoldQuantity() != null ? entity.getSoldQuantity() : productModel.getSoldQuantity())
                         .bind("description", entity.getDescription() != null ? entity.getDescription().trim() : productModel.getDescription())
