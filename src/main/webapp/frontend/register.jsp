@@ -102,7 +102,7 @@ Purchase:
               <c:if test="${!empty message}">
                 <div style="font-size: 14px" class="alert alert-warning" role="alert">${message}</div>
               </c:if>
-              <form class="form-horizontal" method="post" action="/register">
+              <form class="form-horizontal" method="post" action="register">
                 <div class="form-group">
                   <label>Họ và tên</label>
                   <input
@@ -197,7 +197,7 @@ Purchase:
                   >Đã có tài khoản? Nhấn vào đây để
                   <a href="<c:url value="/login"></c:url> ">Đăng nhập</a></span
                 >
-                <button class="btn signup" style="background: linear-gradient(to right, #c084fc, #ff69b4)">Tạo tài khoản</button>
+                <button class="btn signup"  style="background: linear-gradient(to right, #c084fc, #ff69b4)">Tạo tài khoản</button>
               </form>
             </div>
           </div>

@@ -187,7 +187,7 @@
               <div class="field-label">Thành phố/Tỉnh thành </div>
               <%--              <input type="text" name="city"  placeholder="nhập tên thành phố/tỉnh thành" value="${address.city}" required >--%>
               <select name="city" id="city" required >
-                <option value="" selected>Vui lòng chọn Tỉnh/thành phố</option>
+                <option value="${address.city}" selected>Vui lòng chọn Tỉnh/thành phố</option>
               </select>
             </div>
 
@@ -196,7 +196,7 @@
               <div class="field-label">Quận/huyện </div>
               <%-- <input type="text" name="district"   placeholder="nhập tên quận/huyện" value="${address.district}" required > --%>
               <select name="district" id="district" required disabled>
-                <option value="" selected>Vui lòng chọn  Quận/huyện</option>
+                <option value="${address.district}" selected>Vui lòng chọn  Quận/huyện</option>
               </select>
             </div>
 
@@ -205,7 +205,7 @@
               <div class="field-label">Phường/xã</div>
               <%-- <input type="text" name="ward"  placeholder="nhập tên phường/xã" value="${address.ward}"  required>--%>
               <select name="ward" id="ward" required disabled>
-                <option value="" selected>Vui lòng chọn  Phường/xã</option>
+                <option value="address.ward" selected>Vui lòng chọn  Phường/xã</option>
               </select>
             </div>
 
@@ -303,6 +303,7 @@
     <%--      </div>--%>
     <%--    </div>--%>
     <!--Payment Box-->
+
     <div class="payment-box">
       <div class="upper-box">
 
@@ -343,16 +344,14 @@
           </ul>
         </div>
 
-      </div>
-      <div class="lower-box text-right">
-        <div class="shop_btn_wrapper checkout_btn">
-          <ul>
-            <li><a id="submit-order" href="#">Đặt hàng </a>
-            </li>
-          </ul>
+        <div class="lower-box text-right">
+          <div class="shop_btn_wrapper checkout_btn">
+            <button type="submit" class="btn btn-fill-out btn-block" id="submit-order">Đặt hàng</button>
+          </div>
         </div>
       </div>
-    </div>
+    </form>
+
     <!--End Payment Box-->
 
   </div>
@@ -433,7 +432,31 @@
 <%--<script src="../static/js/demo/checkout.js"></script>--%>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+<%--<script>--%>
+<%--  document.getElementById("submit-order").addEventListener("click", (e)=>{--%>
+<%--    e.preventDefault();--%>
+<%--    console.log("submit order");--%>
+<%--    Toastify({--%>
+<%--      text: "Đặt hàng thành công \n Đơn hàng của bạn sẽ sớm được giao!",--%>
+<%--      duration: 5000,--%>
+<%--      newWindow: true,--%>
+<%--      close: true,--%>
+<%--      gravity: "top", // `top` or `bottom`--%>
+<%--      position: "center", // `left`, `center` or `right`--%>
+<%--      stopOnFocus: true, // Prevents dismissing of toast on hover--%>
+<%--      style: {--%>
+<%--        //   background: "linear-gradient(to right, #00b09b, #96c93d)",--%>
+<%--      },--%>
+<%--      onClick: function(){} // Callback after click--%>
+<%--    }).showToast();--%>
+<%--    setTimeout(()=>{--%>
+<%--      //submit form--%>
+<%--      document.querySelector(".checkout-form").submit();--%>
+<%--    }, 1000);--%>
+<%--  })--%>
+<%--</script>--%>
 <script>
+
   document.getElementById("submit-order").addEventListener("click", (e) => {
 
     e.preventDefault();
@@ -543,6 +566,7 @@
     return result;
   }
 </script>
+
 </body>
 
 </html>

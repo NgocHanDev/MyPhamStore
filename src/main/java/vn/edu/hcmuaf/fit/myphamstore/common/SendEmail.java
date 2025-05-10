@@ -20,8 +20,10 @@
 
     @Slf4j
     public class SendEmail {
+    
         private static final String EMAIL = "hanrepository@gmail.com";
         private static final String PASSWORD = "jcuubdvqktyzqapa";
+
 
         public static boolean sendEmail(String to, String otp) {
             log.info("Sending email to: {}",to);
@@ -123,7 +125,7 @@
                 msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
     
                 // Người gửi
-    
+                msg.setFrom(new InternetAddress(EMAIL));
                 // Người nhận
                 msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
     
@@ -142,9 +144,11 @@
                 // Gửi email
                 Transport.send(msg);
                 log.info("Send email successful to: {}", to);
+                System.out.println("send mail successful");
                 return true;
             } catch (Exception e) {
                 log.info("Send email fail to: {}", to);
+                System.out.println("send mail error");
                 e.printStackTrace();
                 return false;
             }
@@ -272,7 +276,8 @@
                 // Kiểu nội dung
                 msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
                 // Người gửi
-    
+                msg.setFrom(new InternetAddress(EMAIL));
+
                 // Người nhận
                 msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
     
@@ -290,19 +295,27 @@
     
                 // Gửi email
                 Transport.send(msg);
+
                 log.info("Send email successful to: " + toEmail);
+                System.out.println("Send email successful to: " + toEmail);
             } catch (Exception e) {
                 log.info("Send email fail to: " + toEmail);
+                System.out.println("Send email successful to: " + toEmail);
                 e.printStackTrace();
             }
         }
 
         private static MimeMessage getMimeMessage() {
             Properties props = new Properties();
-            props.put("mail.smtp.host", "smtp.gmail.com"); // SMTP HOST
-            props.put("mail.smtp.port", "587"); // TLS 587 SSL 465
+
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.gmail.com"); // SMTP HOST
+            props.put("mail.smtp.port", "587"); // TLS 587 SSL 465
+            props.put("mail.smtp.connectiontimeout", "10000");  // 10s
+            props.put("mail.smtp.timeout", "10000");            // 10s
+            props.put("mail.smtp.writetimeout", "10000");       // 10s
+
 
             // create Authenticator
             Authenticator auth = new Authenticator() {
@@ -314,10 +327,12 @@
             };
 
             // Phiên làm việc
+            System.out.println("1. Chuẩn bị tạo session...");
             Session session = Session.getInstance(props, auth);
-
+            session.setDebug(true);
             // Tạo một tin nhắn
             MimeMessage msg = new MimeMessage(session);
+            System.out.println("2. Session tạo xong, chuẩn bị gửi...");
             return msg;
         }
         public static boolean forgotPassword(String to, String otp) {
@@ -365,6 +380,7 @@
             MimeMessage msg = getMimeMessage();
             try {
                 msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
+                msg.setFrom(new InternetAddress(EMAIL));
                 msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
                 msg.setSubject(tieuDe, "UTF-8");
                 msg.setSentDate(new Date());
@@ -375,6 +391,7 @@
                 return true;
             } catch (Exception e) {
                 log.error("Failed to send password reset email to: {}", to, e);
+                e.printStackTrace();
                 return false;
             }
         }
