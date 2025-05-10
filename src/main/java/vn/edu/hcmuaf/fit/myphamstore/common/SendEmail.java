@@ -21,7 +21,7 @@
     @Slf4j
     public class SendEmail {
         private static final String EMAIL = "hanrepository@gmail.com";
-        private static final String PASSWORD = "nfssbtsafpmatbaq";
+        private static final String PASSWORD = "jcuubdvqktyzqapa";
 
         public static boolean sendEmail(String to, String otp) {
             log.info("Sending email to: {}",to);

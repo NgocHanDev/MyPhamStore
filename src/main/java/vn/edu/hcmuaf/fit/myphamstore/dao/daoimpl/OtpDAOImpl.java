@@ -46,7 +46,7 @@ public class OtpDAOImpl implements IOtpDAO {
 
     @Override
     public Boolean verifyOtpHash(String email, String otp) {
-        String sql = "SELECT otp FROM otp WHERE email = ?";
+        String sql = "SELECT otp FROM otp WHERE email = ? ORDER BY id DESC LIMIT 1";
         try {
 
             String hashedOtp = JDBIConnector.getJdbi().withHandle(handle ->
@@ -56,9 +56,6 @@ public class OtpDAOImpl implements IOtpDAO {
                             .findFirst()
                             .orElse(null)
             );
-            System.out.println(hashedOtp);
-            System.out.println(otp);
-            System.out.println("Hihi"+PasswordUtils.verifyPassword(otp.trim(),hashedOtp.trim()));
             if (hashedOtp != null) {
                 return PasswordUtils.verifyPassword(hashedOtp.trim(),otp.trim());
             }
