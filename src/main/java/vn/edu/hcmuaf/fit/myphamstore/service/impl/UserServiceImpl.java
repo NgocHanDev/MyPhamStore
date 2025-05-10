@@ -184,15 +184,15 @@ public class UserServiceImpl implements IUserService {
         }
         String otp = otpDAO.generateOtp();
         otpDAO.saveOtp(email, otp);
-        // Sử dụng ExecutorService để gửi email bất đồng bộ
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        String finalEmail = email.trim();
-        executorService.submit(() -> {
-            SendEmail.sendEmail(finalEmail, otp);
-            log.info("USER-SERVICE", String.format("Gửi email thành công: %s", finalEmail));
+
+//         Sử dụng ExecutorService để gửi email bất đồng bộ
+                    ExecutorService executorService = Executors.newSingleThreadExecutor();
+            String finalEmail = email;
+            executorService.submit(() -> {
+                SendEmail.sendEmail(finalEmail, otp);
+                log.info("USER-SERVICE", String.format("Gửi email thành công: %s", finalEmail));
         });
         executorService.shutdown(); // Đóng ExecutorService sau khi gửi
-
         request.setAttribute("message", "Đăng ký thành công, Vui lòng kiểm tra email để kích hoạt tài khoản");
         request.getRequestDispatcher("/frontend/register.jsp").forward(request, response);
     }
@@ -304,7 +304,6 @@ public class UserServiceImpl implements IUserService {
     public boolean verifyOTPHash(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String otp = request.getParameter("otp");
-        System.out.println(otp);
         return otpDAO.verifyOtpHash(email.trim(), otp.trim());
     }
         //        if(verify) {

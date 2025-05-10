@@ -303,49 +303,45 @@
     <%--      </div>--%>
     <%--    </div>--%>
     <!--Payment Box-->
-    <form id="checkout-form" action="/submit-order" method="post">
-      <!--Payment Box-->
-      <div class="payment-box">
-        <div class="upper-box">
-          <!--Payment Options-->
-          <div class="payment-options">
-            <ul>
-              <li>
-                <div class="radio-option">
-                  <input type="radio" name="payment-group" id="payment-2" value="bank" checked>
-                  <label for="payment-2"><strong>Thanh toán chuyển khoản</strong>
-                    <span class="small-text">Thực hiện thanh toán trực tiếp...</span>
-                  </label>
-                </div>
-              </li>
-              <li>
-                <div class="radio-option">
-                  <input type="radio" name="payment-group" id="payment-1" value="cod">
-                  <label for="payment-1"><strong>Cod</strong>
-                    <span class="small-text">Thực hiện thanh toán khi nhận hàng...</span>
-                  </label>
-                </div>
-              </li>
-              <li>
-                <div class="radio-option">
-                  <input type="radio" name="payment-group" id="payment-3" value="momo">
-                  <label for="payment-3"><strong>MOMO</strong></label>
-                </div>
-              </li>
-              <li>
-                <div class="radio-option">
-                  <input type="radio" name="payment-group" id="payment-4" value="vnpay">
-                  <label for="payment-4"><strong>VnPay</strong></label>
-                </div>
-              </li>
-              <li>
-                <div class="radio-option">
-                  <input type="radio" name="payment-group" id="payment-5" value="paypal">
-                  <label for="payment-5"><strong>PayPal</strong></label>
-                </div>
-              </li>
-            </ul>
-          </div>
+
+    <div class="payment-box">
+      <div class="upper-box">
+
+        <!--Payment Options-->
+        <div class="payment-options">
+          <ul>
+            <li>
+              <div class="radio-option">
+                <input type="radio" name="payment-group" id="payment-2" value="bank_transfer" checked>
+                <label for="payment-2"><strong>Thanh toán chuyển khoản </strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
+              </div>
+            </li>
+            <li>
+              <div class="radio-option">
+                <input type="radio" name="payment-group" id="payment-1" value="cod">
+                <label for="payment-1"><strong>Cod</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
+              </div>
+            </li>
+
+            <li>
+              <div class="radio-option">
+                <input type="radio" name="payment-group" id="payment-3" value="momo">
+                <label for="payment-3"><strong>MOMO</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
+              </div>
+            </li>
+            <li>
+              <div class="radio-option">
+                <input type="radio" name="payment-group" id="payment-4" value="vnpay">
+                <label for="payment-4"><strong>VnPay</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
+              </div>
+            </li>
+            <li>
+              <div class="radio-option">
+                <input type="radio" name="payment-group" id="payment-5" value="paypal">
+                <label for="payment-5"><strong>PayPal</strong><span class="small-text">Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã Đơn Hàng của bạn làm tham chiếu thanh toán. Đơn hàng của bạn sẽ không được gửi cho đến khi số tiền thanh toán được ghi nhận vào tài khoản của chúng tôi.</span></label>
+              </div>
+            </li>
+          </ul>
         </div>
 
         <div class="lower-box text-right">
@@ -360,6 +356,36 @@
 
   </div>
 
+</div>
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <!--        <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+        <h4 class="modal-title">Thanh toán chuyển khoản</h4>
+      </div>
+      <div class="modal-body">
+        <div class="text-center" id="img-qr">
+<%--          create img element--%>
+        </div>
+        <div class="text-center">
+          <div>
+            <strong>Hêt hạn thanh toán trong: </strong><span id="countdown">09:59</span>
+          </div>
+          <div>
+            <strong>Trạng thái: </strong> <span class="paid-status">đang chờ thanh toán</span> <span class="fa fa-circle-o-notch spinner text-primary" ></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-close-modal" class="btn btn-default hidden " data-dismiss="modal" >Đóng</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 <!--End CheckOut Page-->
 <%@include file="component/footer.jsp"%>
@@ -430,50 +456,115 @@
 <%--  })--%>
 <%--</script>--%>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const orderForm = document.getElementById("checkout-form");
 
-    orderForm.addEventListener("submit", function (e) {
-      e.preventDefault(); // Ngăn submit mặc định
+  document.getElementById("submit-order").addEventListener("click", (e) => {
 
-      const selectedPayment = document.querySelector('input[name="payment-group"]:checked')?.value;
+    e.preventDefault();
 
-      if (!selectedPayment) {
-        alert("Vui lòng chọn phương thức thanh toán.");
-        return;
-      }
+    // Lấy giá trị radio được chọn
+    let selectedPayment = $('input[name="payment-group"]:checked').val();
+    if (selectedPayment === 'bank_transfer' || selectedPayment === 'momo' || selectedPayment === 'vnpay' || selectedPayment === 'paypal') {
+      // Nếu là thanh toán chuyển khoản, hiển thị modal
+      $('#myModal').modal('show');
+      //create qr code
+      const totalAmount = parseInt($('#total-amount').text().replace(' đ', '').trim());
+      const descriptionInput = generateRandomString(12);
+      //create img qr code element
+      let qrCodeUrl = 'https://img.vietqr.io/image/BIDV-V3CASSNGOCHAN-print.png?amount='+totalAmount+'&addInfo='+descriptionInput;
+      // Tạo phần tử img
+      let qrCodeImg = $('<img>').attr({
+        src: qrCodeUrl,
+        alt: 'qr',
+        width: '70%'
+      });
 
-      if (selectedPayment === "cod") {
-        Toastify({
-          text: "Đặt hàng thành công (COD)",
-          duration: 2000,
-          style: { background: "linear-gradient(to right, #00b09b, #96c93d)" }
-        }).showToast();
+      $('#img-qr').append(qrCodeImg);
 
-        setTimeout(() => {
-          document.querySelector(".checkout-form").submit();
-        }, 2000);
-      }
-      else if (selectedPayment === "vnpay") {
-        Toastify({
-          text: "Đang chuyển hướng đến VNPAY...",
-          duration: 2000,
-          style: { background: "linear-gradient(to right, #0077ff, #00d2ff)" }
-        }).showToast();
 
-        setTimeout(() => {
-          window.location.href = "/vnpay/ajaxServlet";
-        }, 2000);
-      }
-      else {
-        Toastify({
-          text: `Phương thức "${selectedPayment}" hiện chưa hỗ trợ.`,
-          duration: 2000,
-          style: { background: "linear-gradient(to right, #f12711, #f5af19)" }
-        }).showToast();
-      }
-    });
+      let time = 600;
+      let $countdown = $('#countdown');
+
+      let interval = setInterval(function() {
+        time--;
+        let minutes = Math.floor(time / 60).toString().padStart(2, '0');
+        let seconds = (time % 60).toString().padStart(2, '0');
+        $countdown.text(minutes+":"+seconds);
+
+        if (time <= 0) {
+          $countdown.text('QR đã hết hạn!');
+          $('.spinner').hide();
+          $('#btn-close-modal').removeClass('hidden');
+          $('.paid-status').text('Đã hết hạn thanh toán!')
+          clearInterval(interval);
+        }
+      }, 1000);
+
+      //call api check payment status
+      let checkPaymentStatus = setInterval(() => {
+        $.ajax({
+          url: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLj8_6ehEoROBCUkTe9gN4YaAOuZt7z4H9MabZBM9xYZNKnbMVjixXSCgy-agOlGFF_8-DSM3sIQEwtQU6x40sFjUwqK1M2yp5wBP7uJ9d-ofWdHYq1o-Y8jW5vefLM2Y-Xz1UbTa3gPToiLlXERwbLFta12POBxZOu0Wzr_ybJkap9GawYHHp3Hu479aivjW6cO_TJK7tl3DYtK8ZijzjQ0A3JCVvWV-1LWM9_XzeyvzdquPBHnRfuJdoMqGX1QC90ZFuOUD3Ju8RLuMoyunsnKve0cTA&lib=Mr7TTfKIhIo4j5Qm7-ehMzaWRBdHt1V3q',
+          type: 'GET',
+          success: function(response) {
+            const data = response.data[1];
+            const price = data['Số tiền'];
+            const description = data['Mô tả'];
+
+            if(price >= totalAmount && description.includes(descriptionInput)) {
+              clearInterval(checkPaymentStatus);
+              clearInterval(interval);
+              $('.spinner').hide();
+              $('#btn-close-modal').removeClass('hidden');
+              $('.paid-status').text('Đã thanh toán thành công!')
+              // Hiển thị thông báo thành công
+              Toastify({
+                text: "Thanh toán thành công!\nĐơn hàng của bạn sẽ sớm được giao!",
+                duration: 5000,
+                newWindow: true,
+                close: true,
+                gravity: "top",
+                position: "center",
+                stopOnFocus: true,
+                onClick: function(){}
+              }).showToast();
+              setTimeout(() => {
+                document.querySelector(".checkout-form").submit();
+              }, 3000);
+
+            }else{
+              console.log('Chưa thanh toán');
+            }
+          },
+          error: function() {
+            console.error("Error checking payment status");
+          }
+        });
+      }, 3000);
+    } else {
+      // Hiển thị thông báo thành công
+      Toastify({
+        text: "Thanh toán thành công!\nĐơn hàng của bạn sẽ sớm được giao!",
+        duration: 5000,
+        newWindow: true,
+        close: true,
+        gravity: "top",
+        position: "center",
+        stopOnFocus: true,
+        onClick: function(){}
+      }).showToast();
+      setTimeout(() => {
+        document.querySelector(".checkout-form").submit();
+      }, 3000);
+    }
   });
+
+  const generateRandomString = (length) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // Ký tự cho phép
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
 </script>
 
 </body>
