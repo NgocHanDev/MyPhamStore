@@ -128,7 +128,7 @@
                           <p style="margin: 5px 0;">Tổng cộng: <span id="total-amount" class="price">0đ</span></p>
                         </div>
                         <div>
-                          <form id="checkout-form" method="post" action="/checkout?action=checkout">
+                          <form id="checkout-form" method="post" action="/checkout?action=display">
                             <input type="hidden" name="selectedItems" id="selectedItemsInput" />
                             <button type="submit" class="btn btn-primary">Thanh toán</button>
                           </form>
@@ -136,6 +136,29 @@
                       </div>
                     </td>
                   </tr>
+                  <script>
+                    function updateTotalAmount() {
+                      let total = 0;
+                      $(".product-checkbox:checked").each(function () {
+                        total += parseInt($(this).data("price"));
+                      });
+                      $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
+                    }
+
+                    $(document).ready(function () {
+                      $("#select-all").on("change", function () {
+                        $(".product-checkbox").prop("checked", $(this).is(":checked"));
+                        updateTotalAmount();
+                      });
+                      $(".product-checkbox").on("change", function () {
+                        let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
+                        $("#select-all").prop("checked", allChecked);
+                        updateTotalAmount();
+                      });
+
+                      updateTotalAmount();
+                    });
+                  </script>
                   </tbody>
                 </table>
               </div>
