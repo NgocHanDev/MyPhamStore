@@ -113,7 +113,7 @@
                           ${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}đ
                       </td>
                       <td style="text-align: center; padding: 10px;">
-                        <form method="post" action="/gio-hang">
+                        <form method="post" action="${pageContext.request.contextPath}/gio-hang">
                           <input type="hidden" name="action" value="remove" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
                           <button type="submit" class="remove-btn"><i class="fa fa-trash"></i></button>
@@ -128,7 +128,7 @@
                           <p style="margin: 5px 0;">Tổng cộng: <span id="total-amount" class="price">0đ</span></p>
                         </div>
                         <div>
-                          <form id="checkout-form" method="post" action="/checkout?action=display">
+                          <form id="checkout-form" method="post" action="${pageContext.request.contextPath}/checkout?action=display">
                             <input type="hidden" name="selectedItems" id="selectedItemsInput" />
                             <button type="submit" class="btn btn-primary">Thanh toán</button>
                           </form>
