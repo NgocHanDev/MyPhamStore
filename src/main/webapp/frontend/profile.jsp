@@ -54,6 +54,82 @@ To change this template use File | Settings | File Templates.
       type="image/png"
       href="../static/images/header/favicon.png"
     />
+        <style>
+            /* Phần nền mờ */
+            #addAddressModal {
+                display: none;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 2147483647;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Nội dung modal */
+            #addAddressModal .modal-content {
+                background: #fff;
+                padding: 30px 40px;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 600px;
+                position: relative;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                animation: fadeIn 0.3s ease-out;
+            }
+
+            /* Nút đóng */
+            #addAddressModal .close {
+                position: absolute;
+                top: 12px;
+                right: 16px;
+                font-size: 24px;
+                color: #333;
+                cursor: pointer;
+            }
+
+            /* Label & input */
+            #addAddressForm label {
+                display: block;
+                margin-top: 15px;
+                margin-bottom: 5px;
+                font-weight: 500;
+            }
+
+            #addAddressForm input[type="text"],
+            #addAddressForm select {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+
+            #addAddressForm input[type="checkbox"] {
+                margin-right: 5px;
+            }
+
+            /* Nút submit */
+            #addAddressForm .btn-success {
+                margin-top: 20px;
+                width: 100%;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            /* Animation */
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            body.modal-open .search-three {
+                display: none !important;
+            }
+
+
+        </style>
+
     </head>
     <body>
       
@@ -220,31 +296,35 @@ To change this template use File | Settings | File Templates.
       <%@include file="component/footer.jsp"%>
 
       <!-- Modal thêm địa chỉ -->
-      <div id="addAddressModal" class="modal">
-          <div class="modal-content">
-              <span class="close">&times;</span>
-              <h2>Thêm địa chỉ mới</h2>
-              <form id="addAddressForm">
-                  <label for="note">Ghi chú (Số nhà, đường):</label>
-                  <input type="text" id="note" name="note" required>
+      <div id="addAddressModal" style="display: none; position: fixed; top: 0; left: 0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:9999;">
+          <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:50%; position:relative;">
+              <span class="close" style="position:absolute; top:10px; right:20px; cursor:pointer;">&times;</span>
 
-                  <label for="ward">Phường/Xã:</label>
-                  <input type="text" id="ward" name="ward" required>
+              <!-- Form thêm địa chỉ -->
+            <form id="addAddressForm">
+                <label for="city">Thành phố/Tỉnh:</label>
+            <select id="city" name="city" required>
+              <option value="" selected disabled>Chọn Tỉnh/Thành</option>
+            </select>
 
-                  <label for="district">Quận/Huyện:</label>
-                  <input type="text" id="district" name="district" required>
+            <label for="district">Quận/Huyện:</label>
+            <select id="district" name="district" required disabled>
+              <option value="" selected disabled>Vui lòng chọn Tỉnh/Thành trước</option>
+            </select>
 
-                  <label for="city">Thành phố/Tỉnh:</label>
-                  <input type="text" id="city" name="city" required>
+            <label for="ward">Phường/Xã:</label>
+            <select id="ward" name="ward" required disabled>
+              <option value="" selected disabled>Vui lòng chọn Quận/Huyện trước</option>
+            </select>
 
-                  <label>
-                      <input type="hidden" name="setDefault" value="false"> <!-- Giá trị mặc định -->
-                      <input type="checkbox" id="setDefault" name="setDefault" value="true"> Đặt làm địa chỉ mặc định
-                  </label>
-
-
-                  <button type="submit" class="btn btn-success">Lưu địa chỉ</button>
-              </form>
+            <label>
+              <input type="hidden" name="setDefault" value="false">
+              <input type="checkbox" id="setDefault" name="setDefault" value="true"> Đặt làm địa chỉ mặc định
+            </label>
+                <label for="note">Ghi chú (Số nhà, đường):</label>
+                <input type="text" id="note" name="note" required>
+            <button type="submit" class="btn btn-success">Lưu địa chỉ</button>
+            </form>
           </div>
       </div>
 
@@ -261,6 +341,7 @@ To change this template use File | Settings | File Templates.
       <script src="../static/js/jquery.easing.1.3.js"></script>
       <script src="../static/js/jquery.inview.min.js"></script>
       <script src="../static/js/custom.js"></script>
+      <script src="../static/js/address.js"></script>
       <script>
           document.getElementById('editButton').addEventListener('click', function () {
               let inputs = document.querySelectorAll('#editProfileForm input, #editProfileForm select');
@@ -277,51 +358,88 @@ To change this template use File | Settings | File Templates.
           document.getElementById('cancelButton').addEventListener('click', function () {
               location.reload(); // Reload trang để hủy chỉnh sửa
           });
-          // Mở modal khi bấm "Thêm địa chỉ mới"
-          document.getElementById('addAddressButton').addEventListener('click', function() {
-              document.getElementById('addAddressModal').style.display = 'block';
+          document.getElementById('addAddressButton').addEventListener('click', function () {
+              document.getElementById('addAddressModal').style.display = 'flex';
+              document.body.classList.add('modal-open');
           });
 
-          // Đóng modal khi bấm "x"
-          document.querySelector('.close').addEventListener('click', function() {
+          document.querySelector('.close').addEventListener('click', function () {
               document.getElementById('addAddressModal').style.display = 'none';
-          });
-
-          // Gửi dữ liệu khi submit form
-          document.getElementById('addAddressForm').addEventListener('submit', function(event) {
-              event.preventDefault(); // Ngăn chặn reload trang
-
-              let formData = new FormData(this);
-
-              // Kiểm tra trạng thái của checkbox và cập nhật giá trị
-              formData.set("setDefault", document.getElementById("setDefault").checked ? "true" : "false");
-
-              fetch('/profile?action=addAddress', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/x-www-form-urlencoded' // Đảm bảo server nhận đúng kiểu dữ liệu
-                  },
-                  body: new URLSearchParams(formData).toString()
-              })
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.success) {
-                          alert('Đã thêm địa chỉ thành công!');
-                          location.reload(); // Tải lại trang để cập nhật danh sách địa chỉ
-                      } else {
-                          alert(`Lỗi: ${data.message}`);
-                      }
-                  })
-                  .catch(error => {
-                      console.error('Lỗi:', error);
-                      alert('Có lỗi xảy ra, vui lòng thử lại!');
-                  });
+              document.body.classList.remove('modal-open');
           });
 
 
+          <%--// Gửi dữ liệu khi submit form--%>
+          <%--document.getElementById('addAddressForm').addEventListener('submit', function(event) {--%>
+          <%--    event.preventDefault(); // Ngăn chặn reload trang--%>
 
+          <%--    let formData = new FormData(this);--%>
+
+          <%--    // Kiểm tra trạng thái của checkbox và cập nhật giá trị--%>
+          <%--    formData.set("setDefault", document.getElementById("setDefault").checked ? "true" : "false");--%>
+
+          <%--    fetch('/profile?action=addAddress', {--%>
+          <%--        method: 'POST',--%>
+          <%--        headers: {--%>
+          <%--            'Content-Type': 'application/x-www-form-urlencoded' // Đảm bảo server nhận đúng kiểu dữ liệu--%>
+          <%--        },--%>
+          <%--        body: new URLSearchParams(formData).toString()--%>
+          <%--    })--%>
+          <%--        .then(response => response.json())--%>
+          <%--        .then(data => {--%>
+          <%--            if (data.success) {--%>
+          <%--                alert('Đã thêm địa chỉ thành công!');--%>
+          <%--                location.reload(); // Tải lại trang để cập nhật danh sách địa chỉ--%>
+          <%--            } else {--%>
+          <%--                alert(`Lỗi: ${data.message}`);--%>
+          <%--            }--%>
+          <%--        })--%>
+          <%--        .catch(error => {--%>
+          <%--            console.error('Lỗi:', error);--%>
+          <%--            alert('Có lỗi xảy ra, vui lòng thử lại!');--%>
+          <%--        });--%>
+          <%--});--%>
+
+              document.getElementById('addAddressForm').addEventListener('submit', function(e) {
+              e.preventDefault();
+
+              const citySelect = document.getElementById('city');
+              const districtSelect = document.getElementById('district');
+              const wardSelect = document.getElementById('ward');
+              const note = document.getElementById('note').value;
+
+              const formData = new FormData();
+              formData.append("city", citySelect.options[citySelect.selectedIndex].textContent); // Gửi tên tỉnh
+              formData.append("cityId", citySelect.value); // Gửi mã tỉnh
+              formData.append("district", districtSelect.options[districtSelect.selectedIndex].textContent); // Gửi tên huyện
+              formData.append("districtId", districtSelect.value); // Gửi mã huyện
+              formData.append("ward", wardSelect.options[wardSelect.selectedIndex].textContent); // Gửi tên xã
+              formData.append("wardCode", wardSelect.value); // Gửi mã xã
+              formData.append("note", note);
+              formData.append("setDefault", document.getElementById("setDefault").checked ? "true" : "false");
+
+              fetch("/profile?action=addAddress", {
+              method: "POST",
+              body: new URLSearchParams(formData).toString(),
+              headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          }
+          })
+              .then(res => res.json())
+              .then(data => {
+              if (data.success) {
+              alert("Địa chỉ đã được lưu!");
+              document.getElementById('addAddressModal').style.display = 'none';
+              location.reload(); // Tải lại trang để cập nhật danh sách địa chỉ
+          } else {
+              alert("Lỗi: " + data.message);
+          }
+          })
+              .catch(error => {
+              console.error('Lỗi:', error);
+              alert('Có lỗi xảy ra, vui lòng thử lại!');
+          });
+          });
       </script>
-
-
     </body>
 </html>

@@ -148,3 +148,7 @@ const handleFeeShip = (wardId, districtId) =>{
             totalAmount.textContent = (totalAmountNum + data.data.total) + " đ"
         })
 }
+
+
+
+
