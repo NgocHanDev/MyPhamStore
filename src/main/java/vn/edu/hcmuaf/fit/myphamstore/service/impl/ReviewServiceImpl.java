@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.myphamstore.service.impl;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.edu.hcmuaf.fit.myphamstore.common.OrderStatus;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IReviewDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IUserDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
@@ -12,6 +13,7 @@ import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewServiceImpl implements IReviewService {
@@ -55,9 +57,18 @@ public class ReviewServiceImpl implements IReviewService {
         }
         boolean isPurchased = false;
         String productId = request.getParameter("productId");
-        String userId = request.getParameter("userId");
+        String userId = user.getId().toString();
         List<OrderModel> orders = orderService.getOrdersByUserId(Long.parseLong(userId));
+        List<OrderModel> confirmedOrders = new ArrayList<>();
         for (OrderModel order : orders) {
+            if (order.getStatus() == OrderStatus.CONFIRMED) {
+                confirmedOrders.add(order);
+            }
+        }
+        for (OrderModel order : confirmedOrders) {
+            if(order.getStatus() != OrderStatus.CONFIRMED){
+                orders.remove(order);
+            }
             List<OrderDetailModel> orderDetailModels = orderService.getOrderDetailsByOrderId(order.getId());
             for (OrderDetailModel detail : orderDetailModels) {
                 List<ProductModel> productModels = orderService.getProductByOrderDetail(detail);
