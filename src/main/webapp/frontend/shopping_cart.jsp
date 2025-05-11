@@ -86,6 +86,7 @@
                     <th style="background: #2e9ad0; text-align: center; padding: 10px;">Tổng cộng</th>
                     <th style="background: #2e9ad0; text-align: center; padding: 10px;">Hành động</th>
                   </tr>
+
                   </thead>
                   <tbody>
                   <c:forEach var="i" items="${listCartDisplay}">
@@ -105,6 +106,7 @@
                       <td style="text-align: center; padding: 10px;">
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="updateCart" />
+                          <input type="checkbox" class="product-checkbox" data-price="${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
                           <input style="height: auto; text-align: center;" type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
                         </form>
@@ -136,29 +138,6 @@
                       </div>
                     </td>
                   </tr>
-                  <script>
-                    function updateTotalAmount() {
-                      let total = 0;
-                      $(".product-checkbox:checked").each(function () {
-                        total += parseInt($(this).data("price"));
-                      });
-                      $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
-                    }
-
-                    $(document).ready(function () {
-                      $("#select-all").on("change", function () {
-                        $(".product-checkbox").prop("checked", $(this).is(":checked"));
-                        updateTotalAmount();
-                      });
-                      $(".product-checkbox").on("change", function () {
-                        let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
-                        $("#select-all").prop("checked", allChecked);
-                        updateTotalAmount();
-                      });
-
-                      updateTotalAmount();
-                    });
-                  </script>
                   </tbody>
                 </table>
               </div>
@@ -194,29 +173,6 @@
           </div>
         </c:otherwise>
       </c:choose>
-      <script>
-        function updateTotalAmount() {
-          let total = 0;
-          $(".product-checkbox:checked").each(function () {
-            total += parseInt($(this).data("price"));
-          });
-          $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
-        }
-
-        $(document).ready(function () {
-          $("#select-all").on("change", function () {
-            $(".product-checkbox").prop("checked", $(this).is(":checked"));
-            updateTotalAmount();
-          });
-          $(".product-checkbox").on("change", function () {
-            let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
-            $("#select-all").prop("checked", allChecked);
-            updateTotalAmount();
-          });
-
-          updateTotalAmount();
-        });
-      </script>
     </div>
   </div>
 </div>
@@ -312,8 +268,10 @@
     $(".product-checkbox:checked").each(function () {
       const row = $(this).closest("tr");
       const productId = row.find("input[name='productId']").val();
-      const variantId = $(this).data("variant-id");
-      selectedKeys.push(productId + "-" + (variantId ? variantId : "null"));
+      const variantId = $(this).data("variant-id") || "null";
+      if (productId) {
+        selectedKeys.push(productId + "-" + variantId);
+      }
     });
     $("#selectedItemsInput").val(selectedKeys.join(","));
   }
@@ -332,12 +290,22 @@
       updateSelectedItems();
     });
 
-    $("#checkout-form").on("submit", function () {
+    $("#checkout-form").on("submit", function (e) {
       updateSelectedItems();
+      const selectedItems = $("#selectedItemsInput").val();
+      if (!selectedItems) {
+        e.preventDefault();
+        alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+        return false;
+      }
+      console.log("Selected items:", selectedItems); // Log để kiểm tra
     });
 
     updateTotalAmount();
+    updateSelectedItems();
   });
+
+
 </script>
 
 </body>
