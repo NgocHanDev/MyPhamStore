@@ -26,4 +26,6 @@ public interface IOrderService {
     void changeStatus(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 
     List<ProductModel> getProductByOrderDetail(OrderDetailModel orderDetail);
+
+    List<OrderModel> getOrdersByUserId(Long userId);
 }

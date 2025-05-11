@@ -4662,8 +4662,8 @@ a.navbar-brand img {
   float: left;
   width: 100%;
   background: #f9f9f9;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: 25px;
+  padding-bottom: 25px;
 }
 .ss_inner_title_cont_wrapper {
   float: left;
@@ -5338,8 +5338,8 @@ a.navbar-brand img {
 .cc_ps_top_product_main_wrapper {
   float: left;
   width: 100%;
-  padding-top: 100px;
-  padding-bottom: 100px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
 
 .cc_ps_top_slider_section .owl-theme .owl-dots {

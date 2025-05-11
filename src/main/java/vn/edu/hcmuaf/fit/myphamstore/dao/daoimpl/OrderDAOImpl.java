@@ -84,14 +84,13 @@ public class OrderDAOImpl implements IOrderDAO {
     }
 
     @Override
-    public OrderModel findOrderByUserId(Long userId) {
+    public List<OrderModel> findOrderByUserId(Long userId) {
         String sql = "SELECT * FROM orders WHERE user_id = :userId";
         try{
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("userId", userId)
                     .mapToBean(OrderModel.class)
-                    .findFirst()
-                    .orElse(null));
+                    .list());
         }catch (Exception e){
             e.printStackTrace();
             return null;

@@ -10,7 +10,7 @@ public interface IOrderDAO extends GenericDAO<OrderModel> {
     Long saveOrder(OrderModel orderModel);
     void saveOrderDetail(OrderDetailModel orderDetailModel);
     void updateOrder(OrderModel orderModel);
-    OrderModel findOrderByUserId(Long userId);
+    List<OrderModel> findOrderByUserId(Long userId);
     OrderModel findOrderById(Long orderId);
     List<OrderDetailModel> findOrderDetailByOrderId(Long orderId);
     void updateOrderDetail(OrderDetailModel orderDetailModel);

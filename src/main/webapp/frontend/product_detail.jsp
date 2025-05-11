@@ -175,7 +175,7 @@
 <div class="accordion_section">
   <div class="container">
     <div class="row">
-      <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+      <div class="col-lg-12 col-md-9 col-sm-12 col-xs-12">
         <div class="panel-group" id="accordionFourLeft">
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -209,6 +209,14 @@
                 <div class="col-lg-6 col-md-6 col-sm-12">
                   <form action="<c:url value='/product-detail' />" method="post">
                   <div class="btc_shop_single_prod_right_section shop_product_single_head">
+                    <%
+                      String error = request.getParameter("error");
+                      if ("notPurchased".equals(error)) {
+                    %>
+                    <div class="alert alert-warning">Bạn chưa mua sản phẩm này nên không thể đánh giá.</div>
+                    <%
+                      }
+                    %>
                     <h1>Thêm đánh giá của bạn</h1>
                     <input type="hidden" name="action" value="addReview" />
                     <input type="hidden" name="productId" value="${product.id}" />

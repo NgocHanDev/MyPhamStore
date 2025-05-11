@@ -144,10 +144,10 @@ public class OrderServiceImpl implements IOrderService {
         log.info(CLASS_NAME, "Lấy sản phẩm trong đơn hàng thành công id: " + orderDetail.getId());
         return productService.findProduct(orderDetail.getProductId());
     }
-
+    @Override
     public List<OrderModel> getOrdersByUserId(Long userId) {
         log.info(CLASS_NAME, "Lấy danh sách đơn hàng của người dùng thành công id: " + userId);
-        return orderDAO.findByUserId(userId, 1, 10);
+        return orderDAO.findOrderByUserId(userId);
     }
 
     public OrderModel getOrderDetails(Long orderId) {
