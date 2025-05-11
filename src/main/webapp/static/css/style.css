@@ -8238,3 +8238,15 @@ a.navbar-brand img {
 .btc_shop_sin_pro_icon_wrapper i.fa-star {
   color: gold !important; /* Màu khi được chọn */
 }
+    .spinner {
+      display: inline-block;
+      font-size: 20px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(90deg); }
+      50% { transform: rotate(180deg); }
+      75% { transform: rotate(270deg); }
+      100% { transform: rotate(360deg); }
+    }

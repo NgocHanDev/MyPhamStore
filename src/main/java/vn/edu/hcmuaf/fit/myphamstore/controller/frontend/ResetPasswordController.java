@@ -51,6 +51,7 @@ public class ResetPasswordController extends HttpServlet {
 
         // Cập nhật mật khẩu mới
         UserModel user = userService.findUserByEmail(email);
+        user.setPassword(PasswordUtils.hashPassword(newPassword));
         boolean updateSuccess = userService.updateUserPassword(user);
 
         if (updateSuccess) {

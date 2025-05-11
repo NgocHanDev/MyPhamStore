@@ -1,4 +1,4 @@
-# create database myphamstoredb;
+create database myphamstoredb;
 
 use myphamstoredb;
 
