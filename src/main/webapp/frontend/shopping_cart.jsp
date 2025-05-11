@@ -17,7 +17,9 @@
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/font-awesome.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/owl.carousel.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/owl.theme.default.css" />
-  <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/magnific-popup.css" />
+  <link rel="stylesheet" type _
+
+          ="text/css" href="${pageContext.request.contextPath}/static/css/magnific-popup.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/fonts.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/dl-menu.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/reset.css" />
@@ -25,19 +27,7 @@
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/style.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/responsive.css" />
   <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/css/sidebar.css" />
-  <script src="${pageContext.request.contextPath}/static/js/jquery_min.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/wow.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/bootstrap.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/owl.carousel.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/modernizr.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/jquery.magnific-popup.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/jquery.dlmenu.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/jquery.sticky.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/jquery.menu-aim.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/camera.min.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/jquery.easing.1.3.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/jquery.inview.min.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/custom.js"></script></head>
+</head>
 <body>
 <div id="preloader">
   <div id="status"></div>
@@ -91,7 +81,7 @@
                   <c:forEach var="i" items="${listCartDisplay}">
                     <tr>
                       <td style="text-align: center; padding: 10px;">
-                        <input type="checkbox" class="product-checkbox" data-price="${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}" />
+                        <input type="checkbox" class="product-checkbox" data-price="${i.product.price * i.quantity}" data-product-id="${i.product.id}" />
                         <input type="hidden" name="productId" value="${i.product.id}" />
                       </td>
                       <td style="text-align: left; padding: 10px;">
@@ -100,7 +90,7 @@
                         <span class="product-name">${not empty i.product and not empty i.product.name ? i.product.name : 'Không có tên'}</span>
                       </td>
                       <td style="text-align: center; padding: 10px;" class="price">
-                          ${i.variant != null ? i.variant.price : (i.product != null ? i.product.price : 0)}đ
+                          ${i.product.price}đ
                       </td>
                       <td style="text-align: center; padding: 10px;">
                         <form method="post" action="/gio-hang">
@@ -110,10 +100,10 @@
                         </form>
                       </td>
                       <td style="text-align: center; padding: 10px;" class="price">
-                          ${i.variant != null ? i.variant.price * i.quantity : i.product.price * i.quantity}đ
+                          ${i.product.price * i.quantity}đ
                       </td>
                       <td style="text-align: center; padding: 10px;">
-                        <form method="post" action="/gio-hang">
+                        <form method="post" action="${pageContext.request.contextPath}/gio-hang">
                           <input type="hidden" name="action" value="remove" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
                           <button type="submit" class="remove-btn"><i class="fa fa-trash"></i></button>
@@ -128,7 +118,7 @@
                           <p style="margin: 5px 0;">Tổng cộng: <span id="total-amount" class="price">0đ</span></p>
                         </div>
                         <div>
-                          <form id="checkout-form" method="post" action="/checkout?action=display">
+                          <form id="checkout-form" method="post" action="${pageContext.request.contextPath}/checkout?action=display">
                             <input type="hidden" name="selectedItems" id="selectedItemsInput" />
                             <button type="submit" class="btn btn-primary">Thanh toán</button>
                           </form>
@@ -136,29 +126,6 @@
                       </div>
                     </td>
                   </tr>
-                  <script>
-                    function updateTotalAmount() {
-                      let total = 0;
-                      $(".product-checkbox:checked").each(function () {
-                        total += parseInt($(this).data("price"));
-                      });
-                      $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
-                    }
-
-                    $(document).ready(function () {
-                      $("#select-all").on("change", function () {
-                        $(".product-checkbox").prop("checked", $(this).is(":checked"));
-                        updateTotalAmount();
-                      });
-                      $(".product-checkbox").on("change", function () {
-                        let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
-                        $("#select-all").prop("checked", allChecked);
-                        updateTotalAmount();
-                      });
-
-                      updateTotalAmount();
-                    });
-                  </script>
                   </tbody>
                 </table>
               </div>
@@ -172,16 +139,6 @@
                   <button type="submit">Xác nhận</button>
                 </form>
               </div>
-              <div class="panel-heading checkout_panel_heading">
-                <h4 class="panel-title"><i class="fa fa-ticket"></i> Mã giảm giá khả dụng</h4>
-              </div>
-              <div class="panel-body">
-                <c:choose>
-                  <c:when test="${empty discountCodes}">
-                    <p class="text-muted text-center">Không có mã giảm giá nào khả dụng.</p>
-                  </c:when>
-                </c:choose>
-              </div>
             </div>
           </div>
         </c:when>
@@ -194,46 +151,23 @@
           </div>
         </c:otherwise>
       </c:choose>
-      <script>
-        function updateTotalAmount() {
-          let total = 0;
-          $(".product-checkbox:checked").each(function () {
-            total += parseInt($(this).data("price"));
-          });
-          $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
-        }
-
-        $(document).ready(function () {
-          $("#select-all").on("change", function () {
-            $(".product-checkbox").prop("checked", $(this).is(":checked"));
-            updateTotalAmount();
-          });
-          $(".product-checkbox").on("change", function () {
-            let allChecked = $(".product-checkbox").length === $(".product-checkbox:checked").length;
-            $("#select-all").prop("checked", allChecked);
-            updateTotalAmount();
-          });
-
-          updateTotalAmount();
-        });
-      </script>
     </div>
   </div>
 </div>
 <%@include file="component/footer.jsp"%>
-<script src="../static/js/jquery_min.js"></script>
-<script src="../static/js/wow.js"></script>
-<script src="../static/js/bootstrap.js"></script>
-<script src="../static/js/owl.carousel.js"></script>
-<script src="../static/js/modernizr.js"></script>
-<script src="../static/js/jquery.magnific-popup.js"></script>
-<script src="../static/js/jquery.dlmenu.js"></script>
-<script src="../static/js/jquery.sticky.js"></script>
-<script src="../static/js/jquery.menu-aim.js"></script>
-<script src="../static/js/camera.min.js"></script>
-<script src="../static/js/jquery.easing.1.3.js"></script>
-<script src="../static/js/jquery.inview.min.js"></script>
-<script src="../static/js/custom.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery_min.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/wow.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/bootstrap.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/owl.carousel.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/modernizr.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery.magnific-popup.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery.dlmenu.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery.sticky.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery.menu-aim.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/camera.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery.easing.1.3.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/jquery.inview.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/custom.js"></script>
 <script>
   $(window).on("load", function () {
     var wow = new WOW({
@@ -245,15 +179,6 @@
     });
     wow.init();
   });
-</script>
-<script>
-  function copyCoupon(code) {
-    navigator.clipboard.writeText(code).then(() => {
-      alert("Đã sao chép mã giảm giá: " + code);
-    }).catch(err => {
-      console.error('Lỗi sao chép mã:', err);
-    });
-  }
 </script>
 <script>
   function formatPrice(price, currencySymbol, delimiter) {
@@ -278,27 +203,6 @@
   });
 </script>
 <script>
-  document.getElementById("checkout-form").addEventListener("submit", function(e) {
-    const selected = [];
-    document.querySelectorAll(".product-checkbox:checked").forEach(function(checkbox) {
-      const row = checkbox.closest("tr");
-      const productId = row.querySelector("input[name='productId']")?.value;
-      const variantId = row.querySelector("input[name='variantId']")?.value || "null";
-      if (productId) {
-        selected.push(productId + "-" + variantId);
-      }
-    });
-
-    if (selected.length === 0) {
-      e.preventDefault();
-      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
-      return;
-    }
-
-    document.getElementById("selectedItemsInput").value = selected.join(",");
-  });
-</script>
-<script>
   function updateTotalAmount() {
     let total = 0;
     $(".product-checkbox:checked").each(function () {
@@ -310,10 +214,10 @@
   function updateSelectedItems() {
     const selectedKeys = [];
     $(".product-checkbox:checked").each(function () {
-      const row = $(this).closest("tr");
-      const productId = row.find("input[name='productId']").val();
-      const variantId = $(this).data("variant-id");
-      selectedKeys.push(productId + "-" + (variantId ? variantId : "null"));
+      const productId = $(this).data("product-id");
+      if (productId) {
+        selectedKeys.push(productId);
+      }
     });
     $("#selectedItemsInput").val(selectedKeys.join(","));
   }
@@ -332,13 +236,19 @@
       updateSelectedItems();
     });
 
-    $("#checkout-form").on("submit", function () {
+    $("#checkout-form").on("submit", function (e) {
       updateSelectedItems();
+      const selectedItems = $("#selectedItemsInput").val();
+      if (!selectedItems) {
+        e.preventDefault();
+        alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+        return false;
+      }
     });
 
     updateTotalAmount();
+    updateSelectedItems();
   });
 </script>
-
 </body>
 </html>

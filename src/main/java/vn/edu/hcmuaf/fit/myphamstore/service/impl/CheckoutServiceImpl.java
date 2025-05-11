@@ -18,12 +18,10 @@ import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
 import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,7 +37,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
     @Inject
     private ICouponService couponService;
     @Inject
-    private LoggingService  log;
+    private LoggingService log;
     private final String CLASS_NAME = "CHECKOUT-SERVICE";
 
     @Override
@@ -48,46 +46,47 @@ public class CheckoutServiceImpl implements ICheckoutService {
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
-        if (listCartItems == null) {
-            request.setAttribute("errorMessage", "Your cart is empty.");
+        String selectedItems = request.getParameter("selectedItems");
+
+        if (listCartItems == null || selectedItems == null || selectedItems.isEmpty()) {
+            request.setAttribute("errorMessage", "Giỏ hàng trống hoặc chưa chọn sản phẩm.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
+
+        List<String> selectedProductIds = Arrays.asList(selectedItems.split(","));
         List<CartModelHelper> listCartDisplay = new ArrayList<>();
         AtomicLong totalAmount = new AtomicLong(0);
+
         try {
             for (CartModel cartItem : listCartItems) {
-                ProductModel product = productService.findProductById(cartItem.getProductId());
-                if (product == null) {
-                    request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
-                    request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
-                    return;
-                }else if(cartItem.getVariantId() == null){
+                if (selectedProductIds.contains(String.valueOf(cartItem.getProductId()))) {
+                    ProductModel product = productService.findProductById(cartItem.getProductId());
+                    if (product == null) {
+                        request.setAttribute("errorMessage", "Sản phẩm không tồn tại: " + cartItem.getProductId());
+                        request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+                        return;
+                    }
                     totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
                     CartModelHelper helper = new CartModelHelper();
-                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setQuantity(cartItem.getQuantity());
                     helper.setProduct(product);
                     listCartDisplay.add(helper);
-                }else{
-                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
-                    ProductVariant variant = null;
-                    for (ProductVariant productVariant : listVariant) {
-                        if(cartItem.getVariantId() == productVariant.getId()){
-                            variant = productVariant;
-                        }
-                    }
-                    totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
-                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
-                    listCartDisplay.add(cartModelHelper);
                 }
             }
+            if (listCartDisplay.isEmpty()) {
+                request.setAttribute("errorMessage", "Không có sản phẩm nào được chọn.");
+                request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+                return;
+            }
         } catch (Exception e) {
-            request.setAttribute("errorMessage", "An error occurred while processing your cart.");
+            request.setAttribute("errorMessage", "Lỗi khi xử lý giỏ hàng.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
-        List<AddressModel> addresss = addressDAO.findByUserId(user.getId());
-        for (AddressModel addressModel : addresss) {
+
+        List<AddressModel> addresses = addressDAO.findByUserId(user.getId());
+        for (AddressModel addressModel : addresses) {
             if (addressModel.getIsDefault()) {
                 request.setAttribute("address", addressModel);
                 break;
@@ -95,7 +94,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
         }
 
         request.setAttribute("listCartDisplay", listCartDisplay);
-        request.setAttribute("totalAmount", totalAmount);
+        request.setAttribute("totalAmount", totalAmount.get());
         request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
     }
 
@@ -104,47 +103,45 @@ public class CheckoutServiceImpl implements ICheckoutService {
         log.info(CLASS_NAME, "thực hiện thanh toán");
         HttpSession session = request.getSession();
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
-        if (listCartItems == null) {
-            request.setAttribute("errorMessage", "Your cart is empty.");
+        String selectedItems = request.getParameter("selectedItems");
+
+        if (listCartItems == null || selectedItems == null || selectedItems.isEmpty()) {
+            request.setAttribute("errorMessage", "Giỏ hàng trống hoặc chưa chọn sản phẩm.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
+
+        List<String> selectedProductIds = Arrays.asList(selectedItems.split(","));
         List<CartModelHelper> listCartDisplay = new ArrayList<>();
         Double totalAmount = 0.0;
+
         try {
             for (CartModel cartItem : listCartItems) {
-                ProductModel product = productService.findProductById(cartItem.getProductId());
-                if (product == null) {
-                    request.setAttribute("errorMessage", "Product not found: " + cartItem.getProductId());
-                    request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
-                    return;
-                }else if(cartItem.getVariantId() == null){
+                if (selectedProductIds.contains(String.valueOf(cartItem.getProductId()))) {
+                    ProductModel product = productService.findProductById(cartItem.getProductId());
+                    if (product == null) {
+                        request.setAttribute("errorMessage", "Sản phẩm không tồn tại: " + cartItem.getProductId());
+                        request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+                        return;
+                    }
                     totalAmount += product.getPrice() * cartItem.getQuantity();
                     CartModelHelper helper = new CartModelHelper();
-                    helper.setQuantity(cartItem.getQuantity());//new CartModelHelper(product, cartItem.getQuantity())
+                    helper.setQuantity(cartItem.getQuantity());
                     helper.setProduct(product);
                     listCartDisplay.add(helper);
-                }else{
-                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
-                    ProductVariant variant = null;
-                    for (ProductVariant productVariant : listVariant) {
-                        if(cartItem.getVariantId() == productVariant.getId()){
-                            variant = productVariant;
-                        }
-                    }
-                    totalAmount += (variant.getPrice() * cartItem.getQuantity());
-                    CartModelHelper cartModelHelper =  new CartModelHelper(product, cartItem.getQuantity(), variant);
-                    listCartDisplay.add(cartModelHelper);
                 }
-
             }
-            System.out.println("After displaying: " + listCartDisplay);
+            if (listCartDisplay.isEmpty()) {
+                request.setAttribute("errorMessage", "Không có sản phẩm nào được chọn.");
+                request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+                return;
+            }
         } catch (Exception e) {
-
-            request.setAttribute("errorMessage", "An error occurred while processing your cart.");
+            request.setAttribute("errorMessage", "Lỗi khi xử lý giỏ hàng.");
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
+
         String couponCode = request.getParameter("couponCode");
         log.info(CLASS_NAME, "Mã giảm giá: " + couponCode);
         if (couponCode != null && !couponCode.isEmpty()) {
@@ -153,11 +150,12 @@ public class CheckoutServiceImpl implements ICheckoutService {
                 totalAmount -= coupon.getDiscountValue();
                 request.setAttribute("appliedCoupon", coupon);
             } else {
-                request.setAttribute("errorMessage", "Invalid or expired coupon code.");
+                request.setAttribute("errorMessage", "Mã giảm giá không hợp lệ hoặc đã hết hạn.");
                 request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
                 return;
             }
         }
+
         AddressModel address = this.getAddressFromRequest(request);
         OrderModel order = OrderModel.builder()
                 .userId(address.getUserId())
@@ -169,16 +167,16 @@ public class CheckoutServiceImpl implements ICheckoutService {
                 .paymentMethod(PaymentMethod.COD)
                 .orderDate(LocalDateTime.now())
                 .shippingFee(0)
-                //Integer.parseInt(request.getParameter("submit-fee-cost"))
                 .status(OrderStatus.PENDING)
                 .build();
+
         Long orderId = orderDAO.saveOrder(order);
         if (orderId == null) {
-            request.setAttribute("errorMessage", "An error occurred while processing your order.");
+            request.setAttribute("errorMessage", "Lỗi khi xử lý đơn hàng.");
             request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
             return;
         }
-        System.out.println(listCartDisplay);
+
         for (CartModelHelper cartItem : listCartDisplay) {
             OrderDetailModel orderDetail = OrderDetailModel.builder()
                     .orderId(orderId)
@@ -188,31 +186,29 @@ public class CheckoutServiceImpl implements ICheckoutService {
                     .build();
             orderDAO.saveOrderDetail(orderDetail);
         }
-        session.removeAttribute("cart");
-        //updatet total price
+
+        // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
+        listCartItems.removeIf(cartItem -> selectedProductIds.contains(String.valueOf(cartItem.getProductId())));
+        session.setAttribute("cart", listCartItems);
+
+        // Cập nhật tổng giá đơn hàng
         order.setTotalPrice(totalAmount);
         orderDAO.updateOrder(order);
 
-        // lấy user từ session
+        // Gửi email thông báo đơn hàng
         UserModel user = (UserModel) session.getAttribute("user");
-        //gửi email thông báo đơn hàng
-
-        // Sử dụng ExecutorService để gửi email bất đồng bộ
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
             log.info(CLASS_NAME, "Gửi email thông báo đơn hàng cho: " + user.getEmail());
             SendEmail.notifyOrderToUser(user.getEmail(), order, listCartDisplay, address);
         });
-        executorService.shutdown(); // Đóng ExecutorService sau khi gửi
+        executorService.shutdown();
+
         order.setId(orderId);
-
-
         response.sendRedirect("/trang-chu");
     }
 
-
     private AddressModel getAddressFromRequest(HttpServletRequest request) {
-        //get user id from session
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
         Long userId = user.getId();
@@ -225,14 +221,14 @@ public class CheckoutServiceImpl implements ICheckoutService {
                 .ward(request.getParameter("ward"))
                 .note(request.getParameter("note"))
                 .build();
-        //check if address is already exist
-        boolean addressExist  = addressDAO.checkAddressIsExist(address, userId);
+
+        boolean addressExist = addressDAO.checkAddressIsExist(address, userId);
         Long addressId = null;
         if (!addressExist) {
             log.info(CLASS_NAME, "Địa chỉ không tồn tại, thêm mới địa chỉ Id:" + addressId);
             addressId = addressDAO.save(address);
-        }else {
-            List<AddressModel> listAddress = addressDAO.findByUserId((long) Integer.parseInt(userId.toString()));
+        } else {
+            List<AddressModel> listAddress = addressDAO.findByUserId(userId);
             for (AddressModel addressModel : listAddress) {
                 if (addressModel.getRecipientName().equals(address.getRecipientName()) &&
                         addressModel.getRecipientPhone().equals(address.getRecipientPhone()) &&
@@ -245,6 +241,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
                 }
             }
         }
+
         if (addressId != null) {
             address.setId(addressId);
         }
