@@ -3,18 +3,26 @@ package vn.edu.hcmuaf.fit.myphamstore.service.impl;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.edu.hcmuaf.fit.myphamstore.common.OrderStatus;
 import vn.edu.hcmuaf.fit.myphamstore.dao.IReviewDAO;
-import vn.edu.hcmuaf.fit.myphamstore.model.ReviewModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
+import vn.edu.hcmuaf.fit.myphamstore.dao.IUserDAO;
+import vn.edu.hcmuaf.fit.myphamstore.model.*;
+import vn.edu.hcmuaf.fit.myphamstore.service.IOrderService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IReviewService;
+import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewServiceImpl implements IReviewService {
     @Inject
     private IReviewDAO reviewDAO;
+    @Inject
+    private IOrderService orderService;
+    @Inject
+    private IUserDAO userDAO;
     @Inject
     private LoggingService log;
     private final String CLASS_NAME = "REVIEW-SERVICE";
@@ -47,9 +55,40 @@ public class ReviewServiceImpl implements IReviewService {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        boolean isPurchased = false;
         String productId = request.getParameter("productId");
-        String userId = request.getParameter("userId");
-        System.out.println("userId: " + userId);
+        String userId = user.getId().toString();
+        List<OrderModel> orders = orderService.getOrdersByUserId(Long.parseLong(userId));
+        List<OrderModel> confirmedOrders = new ArrayList<>();
+        for (OrderModel order : orders) {
+            if (order.getStatus() == OrderStatus.CONFIRMED) {
+                confirmedOrders.add(order);
+            }
+        }
+        for (OrderModel order : confirmedOrders) {
+            if(order.getStatus() != OrderStatus.CONFIRMED){
+                orders.remove(order);
+            }
+            List<OrderDetailModel> orderDetailModels = orderService.getOrderDetailsByOrderId(order.getId());
+            for (OrderDetailModel detail : orderDetailModels) {
+                List<ProductModel> productModels = orderService.getProductByOrderDetail(detail);
+                for (ProductModel productModel : productModels) {
+                    if (productModel.getId().equals(Long.parseLong(productId))) {
+                        log.info(CLASS_NAME, "Người dùng đã mua sản phẩm này");
+                        // Đặt cờ để đánh dấu đã mua
+                        isPurchased = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!isPurchased) {
+            log.info(CLASS_NAME, "Người dùng chưa mua sản phẩm này");
+            response.sendRedirect(request.getContextPath() + "/product-detail?id=" + productId + "&error=notPurchased");
+            return;
+        }
+
+
         int rating = Integer.parseInt(request.getParameter("rating"));
         String comment = request.getParameter("comment");
 

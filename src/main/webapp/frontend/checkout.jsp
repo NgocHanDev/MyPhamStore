@@ -205,7 +205,7 @@
               <div class="field-label">Phường/xã</div>
               <%-- <input type="text" name="ward"  placeholder="nhập tên phường/xã" value="${address.ward}"  required>--%>
               <select name="ward" id="ward" required disabled>
-                <option value="address.ward" selected>Vui lòng chọn  Phường/xã</option>
+                <option value="${address.ward}" selected>Vui lòng chọn  Phường/xã</option>
               </select>
             </div>
 
@@ -350,14 +350,14 @@
 
         <div class="lower-box text-right">
           <div class="shop_btn_wrapper checkout_btn">
-            <button type="submit" class="btn btn-fill-out btn-block" id="submit-order">Đặt hàng</button>
+            <ul>
+              <li><a id="submit-order">Đặt hàng </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-    </form>
-
     <!--End Payment Box-->
-
   </div>
 
 </div>
