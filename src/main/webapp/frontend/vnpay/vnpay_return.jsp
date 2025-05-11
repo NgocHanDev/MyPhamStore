@@ -1,6 +1,6 @@
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.nio.charset.StandardCharsets"%>
-<%@page import="vn.edu.hcmuaf.fit.myphamstore.vnpay.Config"%>
+<%@page import="vn.edu.hcmuaf.fit.myphamstore.common.Config"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
