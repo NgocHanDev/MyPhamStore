@@ -253,6 +253,40 @@ public class ProductDAOImpl implements IProductDAO {
     }
 
     @Override
+    public Integer getSoldQuantityByProductId(Long id) {
+        String sql = "SELECT sold_quantity FROM product WHERE id = :id";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind("id", id)
+                            .mapTo(Integer.class)
+                            .one()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void increaseSoldQuantity(Long productId, Integer quantity) {
+        String sql = "UPDATE product SET sold_quantity = sold_quantity + :quantity, updated_at = :updatedAt WHERE id = :productId";
+
+        try {
+            JDBIConnector.getJdbi().useHandle(handle ->
+                    handle.createUpdate(sql)
+                            .bind("quantity", quantity)
+                            .bind("updatedAt", new Timestamp(System.currentTimeMillis()))
+                            .bind("productId", productId)
+                            .execute()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
     public List<ProductModel> findAll(String keyword, int currentPage, int pageSize, String orderBy) {
         // Sàng lọc dữ liệu đầu vào
         if (currentPage < 1) currentPage = 1;
