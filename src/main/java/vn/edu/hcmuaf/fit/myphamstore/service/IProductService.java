@@ -36,4 +36,5 @@ public interface IProductService {
 
     List<ProductModel> findProduct(Long orderDetailId);
 
+    ProductVariant findVariantById(Long variantId);
 }

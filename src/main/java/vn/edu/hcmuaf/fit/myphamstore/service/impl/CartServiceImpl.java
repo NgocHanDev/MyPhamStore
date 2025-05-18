@@ -50,6 +50,27 @@ public class CartServiceImpl implements ICartService {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
             return;
         }
+
+        // 🔍 Kiểm tra tồn kho
+        int availableStock;
+        if (variantId != null) {
+            ProductVariant variant = productService.findVariantById(variantId); // Bạn cần có phương thức này
+            if (variant == null) {
+                log.error(LOGGER_NAME, "Không tìm thấy biến thể sản phẩm với ID: " + variantId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product variant not found");
+                return;
+            }
+            availableStock = variant.getStock();
+        } else {
+            availableStock = product.getStock(); // Giả sử ProductModel có getStock()
+        }
+
+        if (quantity > availableStock) {
+            log.warn(LOGGER_NAME, "Số lượng đặt vượt quá tồn kho. Sản phẩm ID: " + productId + ", Tồn kho: " + availableStock);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Số lượng yêu cầu vượt quá số lượng tồn kho");
+            return;
+        }
+
         Long brandId = product.getBrandId();
 
         CartModel item = CartModel.builder()
@@ -71,12 +92,19 @@ public class CartServiceImpl implements ICartService {
         boolean itemExists = false;
         for (CartModel cartItem : listCartItems) {
             if (cartItem.equals(item)) {
-                cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                int newQuantity = cartItem.getQuantity() + quantity;
+                if (newQuantity > availableStock) {
+                    log.warn(LOGGER_NAME, "Tổng số lượng yêu cầu vượt quá tồn kho. Sản phẩm ID: " + productId + ", Tồn kho: " + availableStock);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tổng số lượng trong giỏ hàng vượt quá số lượng tồn kho");
+                    return;
+                }
+                cartItem.setQuantity(newQuantity);
                 itemExists = true;
                 log.info(LOGGER_NAME, "Cập nhật số lượng sản phẩm ID: " + productId + ", số lượng mới: " + cartItem.getQuantity());
                 break;
             }
         }
+
         if (!itemExists) {
             listCartItems.add(item);
             log.info(LOGGER_NAME, "Thêm sản phẩm mới vào giỏ hàng, ID: " + productId + ", số lượng: " + quantity);
@@ -86,6 +114,7 @@ public class CartServiceImpl implements ICartService {
         log.info(LOGGER_NAME, "Hoàn tất thêm sản phẩm vào giỏ hàng, tổng số mục: " + listCartItems.size());
         response.sendRedirect(request.getHeader("referer"));
     }
+
 
     @Override
     public void updateCart(HttpServletRequest request, HttpServletResponse response) throws IOException {

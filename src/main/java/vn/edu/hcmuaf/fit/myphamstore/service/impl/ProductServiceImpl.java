@@ -268,6 +268,11 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public ProductVariant findVariantById(Long variantId) {
+        return productVariantDAO.findById(variantId);
+    }
+
+    @Override
     public void stopBuying(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm với id: " + request.getParameter("id"));
         Long id = Long.parseLong(request.getParameter("id"));

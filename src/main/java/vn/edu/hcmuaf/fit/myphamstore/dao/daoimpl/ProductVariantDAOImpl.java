@@ -70,4 +70,19 @@ public class ProductVariantDAOImpl implements IProductVariantDAO {
             return List.of();
         }
     }
+
+    @Override
+    public ProductVariant findById(Long id) {
+        String sql = "SELECT * FROM product_variant WHERE id = :id";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
+                    .bind("id", id)
+                    .mapToBean(ProductVariant.class)
+                    .one());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

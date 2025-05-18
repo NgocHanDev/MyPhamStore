@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface IProductVariantDAO extends GenericDAO<ProductVariant> {
     List<ProductVariant> findAllByProduct(ProductModel productModel);
+
+    ProductVariant findById(Long variantId);
 }
