@@ -117,6 +117,11 @@ public class OrderServiceImpl implements IOrderService {
         return orderDAO.findOrderDetailByOrderId(orderId);
     }
 
+    @Override
+    public void update(OrderModel order) {
+        orderDAO.update(order);
+    }
+
 
     @Override
     public List<OrderModel> getOrderHistoryByUserId(Long userId, int currentPage, int pageSize) {

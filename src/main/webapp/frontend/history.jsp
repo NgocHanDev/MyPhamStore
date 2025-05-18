@@ -96,6 +96,13 @@
                                 out.print("Đã xác nhận");
                             }
                             %>
+                                <% if ("PENDING".equalsIgnoreCase(order.getStatus()) || "CONFIRMED".equalsIgnoreCase(order.getStatus())) { %>
+    <form method="post" action="<%= request.getContextPath() + "/order-history" %>" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+        <input type="hidden" name="orderId" value="<%= order.getId() %>"/>
+        <button type="submit" class="btn btn-danger mt-2">Hủy đơn hàng</button>
+    </form>
+<% } %>
+
             </span>
                         </div>
                         <div class="order-details">
