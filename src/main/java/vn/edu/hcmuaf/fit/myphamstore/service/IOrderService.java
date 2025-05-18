@@ -19,6 +19,7 @@ public interface IOrderService {
     List<OrderModel> getOrdersWithPaging(String keyword,int currentPage, int pageSize, String orderBy);
 
     List<OrderDetailModel> getOrderDetailsByOrderId(Long orderId);
+    void update(OrderModel order);
 
 
     List<OrderModel> getOrderHistoryByUserId(Long userId, int currentPage, int pageSize);

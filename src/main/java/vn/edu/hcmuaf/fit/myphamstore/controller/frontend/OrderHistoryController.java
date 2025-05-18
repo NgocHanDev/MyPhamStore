@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.edu.hcmuaf.fit.myphamstore.common.OrderStatus;
 import vn.edu.hcmuaf.fit.myphamstore.model.OrderDetailModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.OrderModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
@@ -66,6 +67,25 @@ public class OrderHistoryController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String cancelOrderId = req.getParameter("orderId");
+
+        if (cancelOrderId != null) {
+            try {
+                Long orderId = Long.parseLong(cancelOrderId);
+                OrderModel order = orderService.findOrderById(orderId);
+
+                // Kiểm tra trạng thái đơn và cập nhật nếu hợp lệ
+                if (order != null && ("PENDING".equalsIgnoreCase(String.valueOf(order.getStatus())) || "CONFIRMED".equalsIgnoreCase(String.valueOf(order.getStatus())))) {
+                    order.setStatus(OrderStatus.valueOf("CANCELLED"));
+                    orderService.update(order);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace(); // Có thể log kỹ hơn nếu cần
+            }
+        }
+
+        // Quay lại trang lịch sử đơn hàng (load lại dữ liệu)
         doGet(req, resp);
     }
+
 }
