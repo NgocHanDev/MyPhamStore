@@ -407,6 +407,12 @@ public class UserServiceImpl implements IUserService {
         UserModel user = (UserModel) request.getSession().getAttribute("user");
         String recipientName = user.getFullName();
         String recipientPhone = user.getPhone();
+        Integer cityId = Integer.parseInt(request.getParameter("cityId"));
+        Integer districtId = Integer.parseInt(request.getParameter("districtId"));
+        Integer wardCode = Integer.parseInt(request.getParameter("wardCode"));
+        System.out.println("cityId: " + cityId);
+        System.out.println("districtId: " + districtId);
+        System.out.println("wardCode: " + wardCode);
         String city = request.getParameter("city");
         String district = request.getParameter("district");
         String ward = request.getParameter("ward");
@@ -417,6 +423,9 @@ public class UserServiceImpl implements IUserService {
                 .userId(user.getId())
                 .recipientName(recipientName)
                 .recipientPhone(recipientPhone)
+//                .cityId(cityId)
+//                .districtId(districtId)
+//                .wardCode(wardCode)
                 .city(city)
                 .district(district)
                 .ward(ward)

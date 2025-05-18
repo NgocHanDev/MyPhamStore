@@ -56,13 +56,16 @@ public class AddressDAOImpl implements IAddressDAO {
 
     @Override
     public Long save(AddressModel entity) {
-        String sql = "INSERT INTO address (user_id, recipient_name, recipient_phone, city, district, ward, note, is_default, is_active, created_at, updated_at) " +
-                "VALUES(:user_id, :recipient_name, :recipient_phone, :city, :district, :ward, :note, :is_default, :is_active, :created_at, :updated_at)";
+        String sql = "INSERT INTO address (user_id, recipient_name, recipient_phone, city_id, district_id, ward_code, city, district, ward, note, is_default, is_active, created_at, updated_at) " +
+                "VALUES(:user_id, :recipient_name, :recipient_phone, :city_id, :district_id, :ward_code, :city, :district, :ward, :note, :is_default, :is_active, :created_at, :updated_at)";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql)
                     .bind("user_id", entity.getUserId())
                     .bind("recipient_name", entity.getRecipientName()   == null ? "" : entity.getRecipientName())
                     .bind("recipient_phone", entity.getRecipientPhone() == null ? "" : entity.getRecipientPhone())
+                    .bind("city_id", entity.getCityId() == null ? 0 : entity.getCityId())
+                    .bind("district_id", entity.getDistrictId() == null ? 0 : entity.getDistrictId())
+                    .bind("ward_code", entity.getWardCode() == null ? 0 : entity.getWardCode())
                     .bind("city", entity.getCity()  == null ? "" : entity.getCity())
                     .bind("district", entity.getDistrict()  == null ? "" : entity.getDistrict())
                     .bind("ward", entity.getWard() == null ? "" : entity.getWard())
@@ -81,11 +84,14 @@ public class AddressDAOImpl implements IAddressDAO {
 
     @Override
     public AddressModel update(AddressModel entity) {
-        String sql = "UPDATE address SET recipient_name = :recipient_name, recipient_phone = :recipient_phone, city = :city, district = :district, ward = :ward, note = :note, is_default = :is_default, is_active = :is_active, updated_at = :updated_at WHERE id = :id";
+        String sql = "UPDATE address SET recipient_name = :recipient_name, recipient_phone = :recipient_phone,city_id = :city_id, district_id = :district_id, ward_code = :ward_code, city = :city, district = :district, ward = :ward, note = :note, is_default = :is_default, is_active = :is_active, updated_at = :updated_at WHERE id = :id";
         try {
             JDBIConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql)
                     .bind("recipient_name", entity.getRecipientName())
                     .bind("recipient_phone", entity.getRecipientPhone())
+                    .bind("city_id", entity.getCityId())
+                    .bind("district_id", entity.getDistrictId())
+                    .bind("ward_code", entity.getWardCode())
                     .bind("city", entity.getCity())
                     .bind("district", entity.getDistrict())
                     .bind("ward", entity.getWard())

@@ -31,6 +31,9 @@ public class AddressModel extends BaseModel {
     private Long userId;
     private String recipientName;
     private String recipientPhone;
+    private Integer cityId;
+    private Integer districtId;
+    private Integer wardCode;
     private String city;
     private String district;
     private String ward;
