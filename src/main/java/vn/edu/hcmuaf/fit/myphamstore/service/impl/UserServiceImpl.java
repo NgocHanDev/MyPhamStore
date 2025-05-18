@@ -23,6 +23,7 @@ import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -306,56 +307,70 @@ public class UserServiceImpl implements IUserService {
         String otp = request.getParameter("otp");
         return otpDAO.verifyOtpHash(email.trim(), otp.trim());
     }
-        //        if(verify) {
-//            UserModel user = userDAO.getUserByEmail(email);
-//            user.setStatus(UserStatus.ACTIVE);
-//            roleDAO.setRoleToUser(RoleType.CUSTOMER, user.getId());
-//            userDAO.update(user);
-//            request.setAttribute("message", "Đặt lại mật khẩu thành công");
-//        }else {
-//            request.setAttribute("message", "Mã OTP không chính xác");
-//            request.getRequestDispatcher("/frontend/forgot-password.jsp").forward(request, response);
-//        }
-//        request.getRequestDispatcher("/frontend/forgot-password.jsp").forward(request, response);
-
-
-
     @Override
     public void updateProfile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserModel user = (UserModel) request.getSession().getAttribute("user");
-        AddressModel addressModel = addressDAO.findAddressById(user.getId());
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
 
         String fullName = request.getParameter("fullname");
         String gender = request.getParameter("gender");
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String dob = request.getParameter("dob");
-
-        Long addressId = Long.parseLong(request.getParameter("address"));
-
-
+        String addressIdParam = request.getParameter("address");
+        String[] addressesToDelete = request.getParameterValues("deleteAddressIds");// Get array of address IDs to delete
+        System.out.println("addressesToDelete: " + Arrays.toString(addressesToDelete));
         // Cập nhật thông tin người dùng
         user.setFullName(fullName);
         user.setGender(Gender.valueOf(gender));
         user.setEmail(email);
         user.setPhone(phone);
         user.setDateOfBirth(LocalDate.parse(dob));
+
+        // Xử lý xóa địa chỉ
         List<AddressModel> addresses = addressDAO.findByUserId(user.getId());
-        for (AddressModel addr : addresses) {
-            addr.setIsDefault(addr.getId().equals(addressId));
-            addressDAO.update(addr);
+        if (addressesToDelete != null) {
+            for (String addressIdStr : addressesToDelete) {
+                try {
+                    Long addressIdToDelete = Long.parseLong(addressIdStr);
+                    AddressModel address = addressDAO.findAddressById(addressIdToDelete);
+                    if (address != null && address.getUserId().equals(user.getId())) {
+                        addressDAO.delete(address);
+                    }
+                } catch (NumberFormatException e) {
+                    // Log error if needed
+                    continue;
+                }
+            }
         }
 
+        // Cập nhật địa chỉ mặc định
+        if (addressIdParam != null && !addressIdParam.isEmpty()) {
+            try {
+                Long addressId = Long.parseLong(addressIdParam);
+                for (AddressModel addr : addresses) {
+                    if (addr.getIsActive()) { // Only update active addresses
+                        addr.setIsDefault(addr.getId().equals(addressId));
+                        addressDAO.update(addr);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                // Log error if needed
+            }
+        }
 
+        // Cập nhật thông tin người dùng trong database
         UserModel isUpdated = userDAO.update(user);
 
         if (isUpdated != null) {
-            request.getSession().setAttribute("successMessage", "Cập nhật hồ sơ thành công!");
+            request.getSession().setAttribute("successMessage", "Cập nhật hồ sơ và địa chỉ thành công!");
         } else {
             request.getSession().setAttribute("errorMessage", "Cập nhật hồ sơ thất bại!");
         }
         response.sendRedirect(request.getContextPath() + "/profile");
-
     }
 
     @Override

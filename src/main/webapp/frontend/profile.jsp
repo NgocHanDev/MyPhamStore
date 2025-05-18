@@ -126,6 +126,23 @@ To change this template use File | Settings | File Templates.
             body.modal-open .search-three {
                 display: none !important;
             }
+            .address-list {
+                list-style: none;
+                padding: 0;
+            }
+            .address-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                border-bottom: 1px solid #ccc;
+            }
+            .address-item input[type="checkbox"] {
+                margin-right: 10px;
+            }
+            .default-address {
+                font-weight: bold;
+            }
 
 
         </style>
@@ -225,16 +242,20 @@ To change this template use File | Settings | File Templates.
                               </div>
 
                               <div class="mb-3">
-                                  <label for="inputLocation">Địa chỉ giao hàng:</label>
-                                  <select name="address" id="inputLocation" class="form-control" disabled>
+                                  <label>Địa chỉ giao hàng:</label>
+                                  <ul class="address-list">
                                       <% if (addresss != null) { %>
                                       <% for (AddressModel addr : addresss) { %>
-                                      <option value="<%= addr.getId() %>" <%= addr.getIsDefault() ? "selected" : "" %>>
-                                          <%= addr.getNote() + ", " + addr.getWard() + ", " + addr.getDistrict() + ", " + addr.getCity() %>
-                                      </option>
+                                      <li class="address-item <%= addr.getIsDefault() ? "default-address" : "" %>">
+            <span>
+                <input type="checkbox" name="deleteAddressIds" value="<%= addr.getId() %>" class="delete-address-checkbox" disabled>
+                <%= addr.getNote() + ", " + addr.getWard() + ", " + addr.getDistrict() + ", " + addr.getCity() %> <%= addr.getIsDefault() ? "(Mặc định)" : "" %>
+            </span>
+                                          <input type="radio" name="address" value="<%= addr.getId() %>" <%= addr.getIsDefault() ? "checked" : "" %> disabled>
+                                      </li>
                                       <% } %>
                                       <% } %>
-                                  </select>
+                                  </ul>
                               </div>
 
 
@@ -347,7 +368,8 @@ To change this template use File | Settings | File Templates.
               let inputs = document.querySelectorAll('#editProfileForm input, #editProfileForm select');
               inputs.forEach(input => input.removeAttribute('readonly'));
               document.querySelector("select[name='gender']").disabled = false;
-              document.querySelector("select[name='address']").disabled = false;
+              document.querySelectorAll("input[name='address']").forEach(radio => radio.disabled = false);
+              document.querySelectorAll("input[name='deleteAddressIds']").forEach(checkbox => checkbox.disabled = false);
 
               // Hiển thị nút "Lưu" và "Hủy"
               document.getElementById('saveButton').style.display = "inline-block";
@@ -367,40 +389,7 @@ To change this template use File | Settings | File Templates.
               document.getElementById('addAddressModal').style.display = 'none';
               document.body.classList.remove('modal-open');
           });
-
-
-          <%--// Gửi dữ liệu khi submit form--%>
-          <%--document.getElementById('addAddressForm').addEventListener('submit', function(event) {--%>
-          <%--    event.preventDefault(); // Ngăn chặn reload trang--%>
-
-          <%--    let formData = new FormData(this);--%>
-
-          <%--    // Kiểm tra trạng thái của checkbox và cập nhật giá trị--%>
-          <%--    formData.set("setDefault", document.getElementById("setDefault").checked ? "true" : "false");--%>
-
-          <%--    fetch('/profile?action=addAddress', {--%>
-          <%--        method: 'POST',--%>
-          <%--        headers: {--%>
-          <%--            'Content-Type': 'application/x-www-form-urlencoded' // Đảm bảo server nhận đúng kiểu dữ liệu--%>
-          <%--        },--%>
-          <%--        body: new URLSearchParams(formData).toString()--%>
-          <%--    })--%>
-          <%--        .then(response => response.json())--%>
-          <%--        .then(data => {--%>
-          <%--            if (data.success) {--%>
-          <%--                alert('Đã thêm địa chỉ thành công!');--%>
-          <%--                location.reload(); // Tải lại trang để cập nhật danh sách địa chỉ--%>
-          <%--            } else {--%>
-          <%--                alert(`Lỗi: ${data.message}`);--%>
-          <%--            }--%>
-          <%--        })--%>
-          <%--        .catch(error => {--%>
-          <%--            console.error('Lỗi:', error);--%>
-          <%--            alert('Có lỗi xảy ra, vui lòng thử lại!');--%>
-          <%--        });--%>
-          <%--});--%>
-
-              document.getElementById('addAddressForm').addEventListener('submit', function(e) {
+          document.getElementById('addAddressForm').addEventListener('submit', function(e) {
               e.preventDefault();
 
               const citySelect = document.getElementById('city');

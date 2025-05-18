@@ -100,19 +100,28 @@ public class AddressDAOImpl implements IAddressDAO {
             return null;
         }
     }
-
     @Override
     public void delete(AddressModel entity) {
         String sql = "UPDATE address SET is_active = 0 WHERE id = :id";
         try {
-            JDBIConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql)
-                    .bind("id", entity.getId())
-                    .execute());
+            int rows = JDBIConnector.getJdbi().withHandle(handle -> {
+                handle.getConnection().setAutoCommit(false);
+                int affectedRows = handle.createUpdate(sql)
+                        .bind("id", entity.getId())
+                        .execute();
+                handle.commit();
+                return affectedRows;
+            });
+            System.out.println("Đã cập nhật is_active = 0 cho id: " + entity.getId() + ", affected rows: " + rows);
+            if (rows == 0) {
+                System.out.println("No rows updated for id: " + entity.getId() + ". Check if ID exists.");
+            }
         } catch (Exception e) {
+            System.err.println("Lỗi khi xóa address: " + e.getMessage());
             e.printStackTrace();
         }
-
     }
+
 
     @Override
     public List<AddressModel> findAll(String keyword, int currentPage, int pageSize, String orderBy) {
