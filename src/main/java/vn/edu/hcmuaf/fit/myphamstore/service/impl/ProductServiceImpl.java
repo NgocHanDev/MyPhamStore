@@ -268,6 +268,16 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public Integer getSoldQuantityByProductId(Long id) {
+        return productDAO.getSoldQuantityByProductId(id);
+    }
+
+    @Override
+    public void incrementSoldQuantity(Long productId, Integer quantity) {
+        productDAO.increaseSoldQuantity(productId, quantity);
+    }
+
+    @Override
     public void stopBuying(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm với id: " + request.getParameter("id"));
         Long id = Long.parseLong(request.getParameter("id"));

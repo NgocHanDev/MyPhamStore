@@ -17,4 +17,8 @@ public interface IProductDAO extends GenericDAO<ProductModel> {
      Long countAllProducts();
 
     List<ProductModel> findProduct(Long productId);
+
+    Integer getSoldQuantityByProductId(Long id);
+
+    void increaseSoldQuantity(Long productId, Integer quantity);
 }

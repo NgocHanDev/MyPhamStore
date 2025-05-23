@@ -36,4 +36,7 @@ public interface IProductService {
 
     List<ProductModel> findProduct(Long orderDetailId);
 
+    Integer getSoldQuantityByProductId(Long id);
+
+    void incrementSoldQuantity(Long productId, Integer quantity);
 }

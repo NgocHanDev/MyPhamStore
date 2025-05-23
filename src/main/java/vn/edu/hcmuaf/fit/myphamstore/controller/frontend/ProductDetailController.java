@@ -40,6 +40,8 @@ public class ProductDetailController extends HttpServlet {
         request.setAttribute("product", product);
         BrandModel brand = productService.getBrandById(product.getBrandId());
         request.setAttribute("brand", brand);
+        Integer soldQuantity = productService.getSoldQuantityByProductId(id);
+        request.setAttribute("soldQuantity", soldQuantity);
         List<ProductImageModel> productImages = productService.getProductImageById(id);
         request.setAttribute("productImages", productImages);
         List<ReviewModel> reviews = productService.getReviewsByProductId(id);

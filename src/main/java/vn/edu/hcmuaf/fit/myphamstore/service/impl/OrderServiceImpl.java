@@ -129,15 +129,26 @@ public class OrderServiceImpl implements IOrderService {
         log.info(CLASS_NAME, "Thay đổi trạng thái đơn hàng");
         Long orderId = Long.parseLong(req.getParameter("id"));
         OrderStatus status = OrderStatus.valueOf(req.getParameter("status"));
+
         orderDAO.changeStatus(orderId, status);
-        if(status == OrderStatus.CONFIRMED){
+
+        if (status == OrderStatus.CONFIRMED) {
             log.info(CLASS_NAME, "Xác nhận đơn hàng thành công id: " + orderId);
+
             OrderModel order = orderDAO.findOrderById(orderId);
             order.setConfirmedAt(LocalDateTime.now());
             orderDAO.update(order);
+
+            // ✅ Tăng số lượng bán
+            List<OrderDetailModel> orderDetails = orderDAO.findOrderDetailByOrderId(orderId);
+            for (OrderDetailModel detail : orderDetails) {
+                productService.incrementSoldQuantity(detail.getProductId(), detail.getQuantity());
+            }
         }
+
         resp.sendRedirect(req.getContextPath() + "/admin/orders?action=display");
     }
+
 
     @Override
     public List<ProductModel> getProductByOrderDetail(OrderDetailModel orderDetail) {
