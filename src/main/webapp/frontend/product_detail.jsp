@@ -100,8 +100,10 @@
           <h1><a href="#">${product.name}"</h1>
             <div class="btc_shop_single_prod_right_section_cont">
             <p>
-              <c:out value="${reviewCount} "/> Đánh Giá <span><a href="#collapseFiveLeftfive"></a></span>
+              <c:out value="${reviewCount} "/> Đánh Giá <span><a ></a></span>
             </p>
+              <p>Đã bán: <c:out value="${soldQuantity}"/> sản phẩm</p>
+
               <c:set var="variants" value="${variants}"/>
               <c:if test="${not empty variants}">
                 <h5>Chọn biến thể:</h5>
