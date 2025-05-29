@@ -183,6 +183,38 @@
             <%--            </div>--%>
 
             <!--Form Group-->
+            <c:choose>
+            <c:when test="${not empty address}">
+            <div class="form-group col-md-6 col-sm-12 col-xs-12">
+            <select name="city" id="city"  >
+                <option value="${address.city}" selected>${address.city}</option>
+                <!-- Thêm các tùy chọn khác từ danh sách tỉnh/thành -->
+              </select>
+            </div>
+            <div class="form-group col-md-6 col-sm-12 col-xs-12">
+
+            <select name="district" id="district">
+                <option value="${address.district}" selected>${address.district}</option>
+                <!-- Thêm các tùy chọn khác từ danh sách quận/huyện -->
+              </select>
+            </div>
+            <div class="form-group col-md-6 col-sm-12 col-xs-12">
+
+            <select name="ward" id="ward">
+                <option value="${address.ward}" selected>${address.ward}</option>
+                <!-- Thêm các tùy chọn khác từ danh sách phường/xã -->
+              </select>
+            </div>
+              <div class="form-group col-md-6 col-sm-6 col-xs-12">
+              <input type="text" name="note" value="${address.note}">
+                </div>
+              <div class="form-group col-md-6 col-sm-6 col-xs-12">
+                <div class="field-label">Ghi chú của khách hàng </div>
+                <input type="text" name="customerNote"  placeholder="ghi chú của bạn" required >
+              </div>
+              <a href="#" onclick="showNewAddressForm()">Sử dụng địa chỉ khác</a>
+            </c:when>
+            <c:otherwise>
             <div class="form-group col-md-6 col-sm-12 col-xs-12">
               <div class="field-label">Thành phố/Tỉnh thành </div>
               <%--              <input type="text" name="city"  placeholder="nhập tên thành phố/tỉnh thành" value="${address.city}" required >--%>
@@ -207,6 +239,7 @@
               <select name="ward" id="ward" required disabled>
                 <option value="${address.ward}" selected>Vui lòng chọn  Phường/xã</option>
               </select>
+
             </div>
 
             <!--Form Group-->
@@ -219,12 +252,14 @@
               <div class="field-label">Ghi chú của khách hàng </div>
               <input type="text" name="customerNote"  placeholder="ghi chú của bạn" required >
             </div>
+            </c:otherwise>
+            </c:choose>
           </div>
         </div>
       </div>
       <input type="hidden" id="submit-fee-cost" name="submit-fee-cost">
-
     </form>
+
     <!--End Checkout Details-->
 
     <!--Order Box-->
