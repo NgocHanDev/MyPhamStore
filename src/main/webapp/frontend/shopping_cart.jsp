@@ -96,7 +96,7 @@
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="updateCart" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
-                          <input style="height: auto; text-align: center;" type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
+                          <input style="height: auto; text-align: center;" type="number" name="quantity" value="${i.quantity}" min="1" />
                         </form>
                       </td>
                       <td style="text-align: center; padding: 10px;" class="price">
@@ -249,6 +249,88 @@
     updateTotalAmount();
     updateSelectedItems();
   });
+</script>
+<script>
+  $(document).ready(function () {
+    $("input[name='quantity']").on("change", function (e) {
+      e.preventDefault();
+      var $input = $(this);
+      var newQuantity = parseInt($input.val());
+      if (isNaN(newQuantity) || newQuantity < 1) {
+        newQuantity = 1;
+        $input.val(1);
+      }
+
+      var $row = $input.closest("tr");
+      var productId = $row.find("input[name='productId']").val();
+
+    $.ajax({
+      url: "/gio-hang",
+      method: "POST",
+      data: {
+        action: "updateCart",
+        productId: productId,
+        quantity: newQuantity
+      },
+      success: function (response) {
+        if (response.status === "success") {
+          var pricePerUnit = parseInt($row.find(".price").first().text().replace(/\D/g, ""));
+          var totalPrice = pricePerUnit * newQuantity;
+          $row.find(".price").last().text(totalPrice.toLocaleString('vi-VN') + "đ");
+
+          $row.find(".product-checkbox").data("price", totalPrice);
+
+          updateTotalAmount();
+        } else {
+          alert(response.message || "Có lỗi xảy ra khi cập nhật.");
+        }
+      },
+      error: function () {
+        alert("Có lỗi xảy ra khi cập nhật số lượng.");
+      }
+    });
+  })});
+</script>
+<script>
+  $(document).on("click", ".remove-btn", function (e) {
+    e.preventDefault();
+    var $row = $(this).closest("tr");
+    var productId = $row.find("input[name='productId']").val();
+
+    $.ajax({
+      url: "/gio-hang",
+      method: "POST",
+      data: {
+        action: "remove",
+        productId: productId
+      },
+      success: function (response) {
+        if (response.status === "success") {
+          $row.remove();
+          updateTotalAmount();
+          updateCartCount();
+        } else {
+          alert(response.message || "Có lỗi xảy ra khi xóa sản phẩm.");
+        }
+      },
+      error: function () {
+        alert("Có lỗi xảy ra khi xóa sản phẩm.");
+      }
+    });
+  });
+  function updateCartCount() {
+    $.ajax({
+      url: '/gio-hang?action=count',
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        $('#cart-quantity').text(data.count);
+      },
+      error: function () {
+        console.error('Failed to fetch cart count');
+      }
+    });
+  }
 </script>
 </body>
 </html>
