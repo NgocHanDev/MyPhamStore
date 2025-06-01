@@ -12,7 +12,8 @@ import java.util.Objects;
 @ToString
 @Setter
 @Getter
-public class CartModel  implements Serializable {
+public class CartModel extends BaseModel implements Serializable  {
+    private Long cardId;
     private Long productId;
     private Integer quantity;
     private Long brandId;
