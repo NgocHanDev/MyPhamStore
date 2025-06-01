@@ -96,7 +96,7 @@
                         <form method="post" action="/gio-hang">
                           <input type="hidden" name="action" value="updateCart" />
                           <input type="hidden" name="productId" value="${i.product.id}" />
-                          <input style="height: auto; text-align: center;" type="number" name="quantity" value="${i.quantity}" min="1" onchange="this.form.submit()" />
+                          <input style="height: auto; text-align: center;" type="number" name="quantity" value="${i.quantity}" min="1" />
                         </form>
                       </td>
                       <td style="text-align: center; padding: 10px;" class="price">
@@ -249,6 +249,46 @@
     updateTotalAmount();
     updateSelectedItems();
   });
+</script>
+<script>
+  $(document).ready(function () {
+    $("input[name='quantity']").on("change", function (e) {
+      e.preventDefault();
+      var $input = $(this);
+      var newQuantity = parseInt($input.val());
+      if (isNaN(newQuantity) || newQuantity < 1) {
+        newQuantity = 1;
+        $input.val(1);
+      }
+
+      var $row = $input.closest("tr");
+      var productId = $row.find("input[name='productId']").val();
+
+      $.ajax({
+        url: "/gio-hang",
+        method: "POST",
+        data: {
+          action: "updateCart",
+          productId: productId,
+          quantity: newQuantity
+        },
+        success: function (response) {
+
+          var pricePerUnit = parseInt($row.find(".price").first().text().replace(/\D/g, ""));
+          var totalPrice = pricePerUnit * newQuantity;
+          $row.find(".price").last().text(totalPrice.toLocaleString('vi-VN') + "đ");
+
+          $row.find(".product-checkbox").data("price", totalPrice);
+
+          updateTotalAmount();
+        },
+        error: function () {
+          alert("Có lỗi xảy ra khi cập nhật số lượng.");
+        }
+      });
+    });
+  });
+
 </script>
 </body>
 </html>
