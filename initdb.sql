@@ -42,6 +42,9 @@ CREATE TABLE `address` (
                            `user_id` int,
                            `recipient_name` nvarchar(255) NOT NULL,
                            `recipient_phone` varchar(15) NOT NULL,
+                            `city_id` int NOT NULL,
+                            `district_id` int NOT NULL,
+                            `ward_code` int NOT NULL,
                            `city` nvarchar(255) NOT NULL,
                            `district` nvarchar(255) NOT NULL,
                            `ward` nvarchar(255) NOT NULL,
@@ -446,4 +449,3 @@ INSERT INTO review (user_id, product_id, rating, comment) VALUES
 (11, 15, 4, 'Sản phẩm khá tốt'),
 (12, 16, 5, 'Rất hài lòng'),
 (13, 17, 1, 'Tệ, không nên mua');
-

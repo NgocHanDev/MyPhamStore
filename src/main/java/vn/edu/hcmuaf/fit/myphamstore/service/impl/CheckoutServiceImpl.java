@@ -86,13 +86,18 @@ public class CheckoutServiceImpl implements ICheckoutService {
         }
 
         List<AddressModel> addresses = addressDAO.findByUserId(user.getId());
+        AddressModel defaultAddress = null;
         for (AddressModel addressModel : addresses) {
             if (addressModel.getIsDefault()) {
-                request.setAttribute("address", addressModel);
+                defaultAddress = addressModel;
                 break;
             }
         }
+        if (defaultAddress == null && !addresses.isEmpty()) {
+            defaultAddress = addresses.get(0);
+        }
 
+        request.setAttribute("address", defaultAddress);
         request.setAttribute("listCartDisplay", listCartDisplay);
         request.setAttribute("totalAmount", totalAmount.get());
         request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
@@ -212,10 +217,32 @@ public class CheckoutServiceImpl implements ICheckoutService {
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
         Long userId = user.getId();
+        String cityIdStr = request.getParameter("cityId");
+        String districtIdStr = request.getParameter("districtId");
+        String wardCodeStr = request.getParameter("wardCode");
+
+        Integer cityId = null, districtId = null, wardCode = null;
+        try {
+            if (cityIdStr != null && !cityIdStr.trim().isEmpty()) {
+                cityId = Integer.parseInt(cityIdStr);
+            }
+            if (districtIdStr != null && !districtIdStr.trim().isEmpty()) {
+                districtId = Integer.parseInt(districtIdStr);
+            }
+            if (wardCodeStr != null && !wardCodeStr.trim().isEmpty()) {
+                wardCode = Integer.parseInt(wardCodeStr);
+            }
+        } catch (NumberFormatException e) {
+            log.error("Invalid format for City ID, District ID, or Ward Code: {}", e.getMessage());
+        }
+
         AddressModel address = AddressModel.builder()
                 .userId(userId)
                 .recipientName(request.getParameter("recipientName"))
                 .recipientPhone(request.getParameter("recipientPhone"))
+                .cityId(cityId)
+                .districtId(districtId)
+                .wardCode(wardCode)
                 .city(request.getParameter("city"))
                 .district(request.getParameter("district"))
                 .ward(request.getParameter("ward"))
@@ -225,7 +252,7 @@ public class CheckoutServiceImpl implements ICheckoutService {
         boolean addressExist = addressDAO.checkAddressIsExist(address, userId);
         Long addressId = null;
         if (!addressExist) {
-            log.info(CLASS_NAME, "Địa chỉ không tồn tại, thêm mới địa chỉ Id:" + addressId);
+            log.info(CLASS_NAME, "Địa chỉ không tồn tại, thêm mới địa chỉ");
             addressId = addressDAO.save(address);
         } else {
             List<AddressModel> listAddress = addressDAO.findByUserId(userId);

@@ -270,6 +270,13 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductVariant findVariantById(Long variantId) {
         return productVariantDAO.findById(variantId);
+    public Integer getSoldQuantityByProductId(Long id) {
+        return productDAO.getSoldQuantityByProductId(id);
+    }
+
+    @Override
+    public void incrementSoldQuantity(Long productId, Integer quantity) {
+        productDAO.increaseSoldQuantity(productId, quantity);
     }
 
     @Override
