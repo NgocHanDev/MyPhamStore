@@ -89,12 +89,16 @@ public class CartServiceImpl implements ICartService {
 
     @Override
     public void updateCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
         List<CartModel> cart = (List<CartModel>) session.getAttribute("cart");
         if (cart == null) {
             log.error(LOGGER_NAME, "Không tìm thấy giỏ hàng trong phiên làm việc.");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cart not found");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Cart not found\"}");
             return;
         }
 
@@ -104,12 +108,14 @@ public class CartServiceImpl implements ICartService {
             quantity = Integer.parseInt(request.getParameter("quantity"));
             if (quantity < 1) {
                 log.warn(LOGGER_NAME, "Số lượng không hợp lệ khi cập nhật giỏ hàng: " + quantity);
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Quantity must be at least 1");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"status\":\"error\", \"message\":\"Số lượng tối thiểu phải bằng 1\"}");
                 return;
             }
         } catch (NumberFormatException e) {
             log.error(LOGGER_NAME, "Định dạng số lượng không hợp lệ: " + request.getParameter("quantity"));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid quantity format");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Invalid quantity format\"}");
             return;
         }
 
@@ -123,17 +129,20 @@ public class CartServiceImpl implements ICartService {
 
         session.setAttribute("cart", cart);
         log.info(LOGGER_NAME, "Hoàn tất cập nhật giỏ hàng.");
-        response.sendRedirect(request.getHeader("referer"));
+        response.getWriter().write("{\"status\":\"success\"}");
     }
 
     @Override
     public void removeCartItem(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         @SuppressWarnings("unchecked")
         List<CartModel> cart = (List<CartModel>) session.getAttribute("cart");
         if (cart == null) {
             log.error(LOGGER_NAME, "Không tìm thấy giỏ hàng để xóa mục.");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cart not found");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Cart not found\"}");
             return;
         }
 
@@ -143,13 +152,16 @@ public class CartServiceImpl implements ICartService {
 
         if (cart.size() < initialSize) {
             log.info(LOGGER_NAME, "Xóa sản phẩm khỏi giỏ hàng, ID: " + productId);
+            session.setAttribute("cart", cart);
+            response.getWriter().write("{\"status\":\"success\"}");
         } else {
             log.warn(LOGGER_NAME, "Không tìm thấy sản phẩm để xóa, ID: " + productId);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Product not found\"}");
         }
 
         session.setAttribute("cart", cart);
         log.info(LOGGER_NAME, "Hoàn tất xóa mục khỏi giỏ hàng, số mục còn lại: " + cart.size());
-        response.sendRedirect(request.getHeader("referer"));
     }
 
     @Override

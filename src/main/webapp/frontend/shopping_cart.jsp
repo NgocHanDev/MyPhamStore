@@ -264,16 +264,16 @@
       var $row = $input.closest("tr");
       var productId = $row.find("input[name='productId']").val();
 
-      $.ajax({
-        url: "/gio-hang",
-        method: "POST",
-        data: {
-          action: "updateCart",
-          productId: productId,
-          quantity: newQuantity
-        },
-        success: function (response) {
-
+    $.ajax({
+      url: "/gio-hang",
+      method: "POST",
+      data: {
+        action: "updateCart",
+        productId: productId,
+        quantity: newQuantity
+      },
+      success: function (response) {
+        if (response.status === "success") {
           var pricePerUnit = parseInt($row.find(".price").first().text().replace(/\D/g, ""));
           var totalPrice = pricePerUnit * newQuantity;
           $row.find(".price").last().text(totalPrice.toLocaleString('vi-VN') + "đ");
@@ -281,11 +281,40 @@
           $row.find(".product-checkbox").data("price", totalPrice);
 
           updateTotalAmount();
-        },
-        error: function () {
-          alert("Có lỗi xảy ra khi cập nhật số lượng.");
+        } else {
+          alert(response.message || "Có lỗi xảy ra khi cập nhật.");
         }
-      });
+      },
+      error: function () {
+        alert("Có lỗi xảy ra khi cập nhật số lượng.");
+      }
+    });
+  });
+</script>
+<script>
+  $(document).on("click", ".remove-btn", function (e) {
+    e.preventDefault();
+    var $row = $(this).closest("tr");
+    var productId = $row.find("input[name='productId']").val();
+
+    $.ajax({
+      url: "/gio-hang",
+      method: "POST",
+      data: {
+        action: "remove",
+        productId: productId
+      },
+      success: function (response) {
+        if (response.status === "success") {
+          $row.remove();
+          updateTotalAmount();
+        } else {
+          alert(response.message || "Có lỗi xảy ra khi xóa sản phẩm.");
+        }
+      },
+      error: function () {
+        alert("Có lỗi xảy ra khi xóa sản phẩm.");
+      }
     });
   });
 
