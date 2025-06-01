@@ -289,7 +289,7 @@
         alert("Có lỗi xảy ra khi cập nhật số lượng.");
       }
     });
-  });
+  })});
 </script>
 <script>
   $(document).on("click", ".remove-btn", function (e) {
@@ -308,6 +308,7 @@
         if (response.status === "success") {
           $row.remove();
           updateTotalAmount();
+          updateCartCount();
         } else {
           alert(response.message || "Có lỗi xảy ra khi xóa sản phẩm.");
         }
@@ -317,7 +318,19 @@
       }
     });
   });
-
+  function updateCartCount() {
+    $.ajax({
+      url: '/gio-hang?action=count',
+      method: 'GET',
+      dataType: 'json',
+      success: function (data) {
+        $('#cart-quantity').text(data.count);
+      },
+      error: function () {
+        console.error('Failed to fetch cart count');
+      }
+    });
+  }
 </script>
 </body>
 </html>
