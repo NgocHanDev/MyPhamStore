@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpSession;
 
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICartDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
-import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.CouponDAOImpl;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
 
 import vn.edu.hcmuaf.fit.myphamstore.service.*;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CartServiceImpl implements ICartService {

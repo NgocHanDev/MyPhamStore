@@ -2,9 +2,8 @@ package vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl;
 
 import vn.edu.hcmuaf.fit.myphamstore.common.JDBIConnector;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICartDAO;
-import vn.edu.hcmuaf.fit.myphamstore.model.BrandModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModelHelper;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -152,12 +151,29 @@ public class CartDAOImpl implements ICartDAO {
     }
 
     @Override
-    public CartModel getCartByUserId(int userId) {
+    public Long createCartForUser(Long userId) {
+        String sql = "INSERT INTO cart (user_id) VALUES (:user_id)";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createUpdate(sql)
+                            .bind("user_id", userId)
+                            .executeAndReturnGeneratedKeys("id") // Lấy id tự động sinh
+                            .mapTo(Long.class)
+                            .one()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public CartHeaderModel getCartByUserId(Long userId) {
         String query = "SELECT * FROM cart WHERE id = :id";
         try {
-            CartModel result = JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(query)
+            CartHeaderModel result = JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(query)
                     .bind("id", userId)
-                    .mapToBean(CartModel.class)
+                    .mapToBean(CartHeaderModel.class)
                     .one());
             return result;
         } catch (Exception e) {
