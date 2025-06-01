@@ -268,6 +268,8 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public ProductVariant findVariantById(Long variantId) {
+        return productVariantDAO.findById(variantId);
     public Integer getSoldQuantityByProductId(Long id) {
         return productDAO.getSoldQuantityByProductId(id);
     }
