@@ -11,6 +11,6 @@ import java.io.Serializable;
 @Setter
 @Getter
 @ToString
-public class CartHeaderModel implements Serializable {
+public class CartHeaderModel extends BaseModel implements Serializable {
     private Long userId;
 }

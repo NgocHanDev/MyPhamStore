@@ -18,6 +18,7 @@ public class CartModel extends BaseModel implements Serializable  {
     private Integer quantity;
     private Long brandId;
     private Long variantId;
+    private Long priceAtAdded;
 
     @Override
     public boolean equals(Object o) {

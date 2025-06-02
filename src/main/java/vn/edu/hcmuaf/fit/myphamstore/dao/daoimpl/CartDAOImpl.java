@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl;
 
 import vn.edu.hcmuaf.fit.myphamstore.common.JDBIConnector;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICartDAO;
+import vn.edu.hcmuaf.fit.myphamstore.model.BrandModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
 
@@ -14,8 +15,8 @@ import static java.rmi.server.LogStream.log;
 public class CartDAOImpl implements ICartDAO {
     @Override
     public Long save(CartModel entity) {
-        String sql = "INSERT INTO cart_item (cart_id,  product_id, variant_id,quantity, created_at, updated_at) " +
-                "VALUES (:cart_id, :product_id, :variant_id,:quantity, :createdAt, :updatedAt)";
+        String sql = "INSERT INTO cart_item (cart_id,  product_id, variant_id,quantity,price_at_added , created_at, updated_at) " +
+                "VALUES (:cart_id, :product_id, :variant_id,:quantity,:price_at_added, :createdAt, :updatedAt)";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> {
                 // Thực hiện câu lệnh INSERT và lấy id tự động sinh
@@ -24,6 +25,7 @@ public class CartDAOImpl implements ICartDAO {
                         .bind("product_id", entity.getProductId())
                         .bind("variant_id", entity.getVariantId())
                         .bind("quantity", entity.getQuantity())
+                        .bind("price_at_added", entity.getPriceAtAdded())
                         .bind("createdAt", LocalDateTime.now())
                         .bind("updatedAt", LocalDateTime.now())
                         .executeAndReturnGeneratedKeys("id") // Lấy giá trị khóa chính tự động sinh
@@ -94,9 +96,9 @@ public class CartDAOImpl implements ICartDAO {
         }
 
         // Xây dựng câu lệnh SQL
-        String sql = "SELECT * FROM brand ";
+        String sql = "SELECT * FROM cart_item ";
         if (keyword != null && !keyword.trim().isEmpty()) {
-            sql += "WHERE CONCAT(id, name, logo,is_available, created_at, updated_at) LIKE :keyword ";
+            sql += "WHERE CONCAT(id,cart_id,product_id , quantity,brandId,variantId, created_at, updated_at) LIKE :keyword ";
         }
         sql += "ORDER BY " + orderBy + " " +
                 "LIMIT :limit " +
@@ -182,4 +184,16 @@ public class CartDAOImpl implements ICartDAO {
         }
         return null;
     }
+
+    @Override
+    public List<CartModel> getCartItemsByCartId(Long cartId) {
+        String sql = "SELECT * FROM cart_item WHERE cart_id = :cart_id";
+        return JDBIConnector.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("cart_id", cartId)
+                        .mapToBean(CartModel.class)
+                        .list()
+        );
+    }
+
 }
