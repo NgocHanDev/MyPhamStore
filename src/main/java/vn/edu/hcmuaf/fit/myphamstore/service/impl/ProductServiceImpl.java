@@ -262,6 +262,11 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public List<ProductModel> getMostPopularProducts() {
+        return productDAO.getMostPopularProducts();
+    }
+
+    @Override
     public List<ProductModel> findProduct(Long productId) {
         log.info(CLASS_NAME, "lấy danh sách sản phẩm theo id: " + productId);
         return productDAO.findProduct(productId);

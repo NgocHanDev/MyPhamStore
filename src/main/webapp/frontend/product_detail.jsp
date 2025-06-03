@@ -195,7 +195,65 @@
               <!-- end of panel-body -->
             </div>
           </div>
+          <!-- recommend product-->
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion_oneLeft" href="#related-products"
+                   aria-expanded="false">
+                  Sản phẩm cùng thể loại
+                </a>
+              </h4>
+            </div>
+            <div id="related-products" class="panel-collapse collapse in" aria-expanded="true" role="tablist">
+              <div class="ss_latest_products_wrapper" style="padding-bottom: 0;">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-lg-12">
+                      <div class="ss_latest_products">
+                        <div class="owl-carousel owl-theme" id="related-products-carousel">
+                          <c:forEach var="product" items="${sameCateProducts}">
+                          <div class="item">
+                            <div class="ss_featured_products_box">
+                              <div class="ss_featured_products_box_img">
+                                <span class="ss_tag">mới</span>
+                                <img src="${product.thumbnail}" alt="${product.name}" class="img-responsive">
+                              </div>
+                              <div class="ss_feat_prod_cont_heading_wrapper">
+                                <h4><a class="limited-text" href="<c:url value="/product-detail?id=${product.id}" />">${product.name}</a></h4>
+                                <del class="price">${product.price}</del>
+                                <ins class="price">${product.price - (product.price * 0.2)}</ins>
+                              </div>
+                              <div class="ss_featured_products_box_footer">
+                                <ul style="    display: flex
+;
+    padding-top: 15px;
+    justify-content: center;">
+                                  <form method="post" action="<c:url value='/gio-hang' />">
+                                    <input type="hidden" name="action" value="add">
+                                    <input type="hidden" name="productId" value="${product.id}">
+                                    <button type="submit" class="ss_btn">Thêm vào giỏ</button>
+                                  </form>
 
+                                  <li>
+                                    <form method="post" action="<c:url value='/wishlist' />">
+                                      <input type="hidden" name="action" value="add">
+                                      <input type="hidden" name="productId" value="${product.id}">
+                                      <button type="submit" class="fa fa-heart" aria-hidden="true"></button>
+                                    </form>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </c:forEach>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- /.panel-default -->
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -390,24 +448,24 @@
 
   <%@include file="component/footer.jsp"%>
 
-<script>
-  const submitAddCart = (e) =>{
-    e.preventDefault();
-    //
-    const productId = document.getElementById("productId").value;
-    const  select = document.getElementById('variants');
-    const variantId = select.options[select.selectedIndex].value
+<%--<script>--%>
+<%--  const submitAddCart = (e) =>{--%>
+<%--    e.preventDefault();--%>
+<%--    //--%>
+<%--    const productId = document.getElementById("productId").value;--%>
+<%--    const  select = document.getElementById('variants');--%>
+<%--    const variantId = select.options[select.selectedIndex].value--%>
 
-    const url = '/gio-hang?action=add&variantId='+variantId+'&productId='+productId
+<%--    const url = '/gio-hang?action=add&variantId='+variantId+'&productId='+productId--%>
 
-    fetch(url, {
-      method: 'POST'
-    }).then(()=>{
-      window.location.reload();
-    })
-  }
+<%--    fetch(url, {--%>
+<%--      method: 'POST'--%>
+<%--    }).then(()=>{--%>
+<%--      window.location.reload();--%>
+<%--    })--%>
+<%--  }--%>
 
-</script>
+<%--</script>--%>
 
 <script>
   const changeVariant = (select) =>{
@@ -469,6 +527,86 @@
 
     // Đặt mặc định là 1 sao
     updateStars(1);
+  });
+  $(document).ready(function () {
+    // Initialize Owl Carousel for Related Products
+    $("#related-products-carousel").owlCarousel({
+      loop: true,
+      margin: 15,
+      nav: true,
+      dots: true,
+      autoplay: true,
+      autoplayTimeout: 5000,
+      autoplayHoverPause: true,
+      responsive: {
+        0: {
+          items: 1,
+        },
+        576: {
+          items: 2,
+        },
+        768: {
+          items: 3,
+        },
+        992: {
+          items: 4,
+        },
+      },
+    });
+
+    // Add to Cart Toast Notification
+    $("form[action='/gio-hang']").on("submit", function (e) {
+      e.preventDefault();
+      const form = $(this);
+      $.ajax({
+        url: form.attr("action"),
+        method: "POST",
+        data: form.serialize(),
+        success: function () {
+          Toastify({
+            text: "Sản phẩm đã được thêm vào giỏ hàng!",
+            duration: 3000,
+            backgroundColor: "#28a745",
+            className: "toastify-success",
+          }).showToast();
+        },
+        error: function () {
+          Toastify({
+            text: "Có lỗi xảy ra khi thêm vào giỏ hàng.",
+            duration: 3000,
+            backgroundColor: "#dc3545",
+            className: "toastify-error",
+          }).showToast();
+        },
+      });
+    });
+
+    // Add to Wishlist Toast Notification
+    $("form[action='/wishlist']").on("submit", function (e) {
+      e.preventDefault();
+      const form = $(this);
+      $.ajax({
+        url: form.attr("action"),
+        method: "POST",
+        data: form.serialize(),
+        success: function () {
+          Toastify({
+            text: "Sản phẩm đã được thêm vào danh sách yêu thích!",
+            duration: 3000,
+            backgroundColor: "#28a745",
+            className: "toastify-success",
+          }).showToast();
+        },
+        error: function () {
+          Toastify({
+            text: "Có lỗi xảy ra khi thêm vào danh sách yêu thích.",
+            duration: 3000,
+            backgroundColor: "#dc3545",
+            className: "toastify-error",
+          }).showToast();
+        },
+      });
+    });
   });
 </script>
 
