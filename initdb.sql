@@ -473,3 +473,36 @@ INSERT INTO review (user_id, product_id, rating, comment) VALUES
 (11, 15, 4, 'Sản phẩm khá tốt'),
 (12, 16, 5, 'Rất hài lòng'),
 (13, 17, 1, 'Tệ, không nên mua');
+
+
+INSERT INTO `coupon` (`code`, `min_order_value`, `discount_type`, `discount_value`, `start_date`, `end_date`, `current_usage`, `max_usage`, `is_available`, `max_discount_value`)
+VALUES
+-- 1. Phiếu giảm giá phần trăm, đang hoạt động, chưa bị dùng hết, có giới hạn giảm
+('PERCENT10', 100000, 'PERCENTAGE', 10, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 2, 10, true, 50000),
+
+-- 2. Phiếu giảm cố định, đang hoạt động, không có giới hạn giảm
+('FIXED50K', 200000, 'FIXED', 50, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, null, true, null),
+
+-- 3. Phiếu đã hết hạn
+('EXPIRED_COUPON', 50000, 'PERCENTAGE', 15, '2025-04-01 00:00:00', '2025-05-01 23:59:59', 5, 100, true, 30000),
+
+-- 4. Phiếu chưa bắt đầu
+('FUTURE_COUPON', 0, 'FIXED', 20, '2025-07-01 00:00:00', '2025-07-31 23:59:59', 0, 50, true, null),
+
+-- 5. Phiếu đạt đến giới hạn sử dụng
+('LIMITED_USE', 100000, 'PERCENTAGE', 20, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 100, 100, true, 70000),
+
+-- 6. Phiếu đang hoạt động, nhưng bị vô hiệu hóa
+('DISABLED_COUPON', 0, 'FIXED', 10, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, null, false, null),
+
+-- 7. Phiếu giảm giá phần trăm, không có giới hạn số lần dùng
+('UNLIMITED_PERCENT', 0, 'PERCENTAGE', 5, '2025-05-01 00:00:00', '2025-12-31 23:59:59', 250, null, true, null),
+
+-- 8. Phiếu giảm cố định, đã dùng nhưng chưa đạt `max_usage`
+('USED_FIXED', 150000, 'FIXED', 30, '2025-05-01 00:00:00', '2025-06-30 23:59:59', 3, 10, true, null),
+
+-- 9. Phiếu giảm giá phần trăm có giới hạn giảm nhỏ
+('PERCENT_LOW_CAP', 100000, 'PERCENTAGE', 50, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, null, true, 20000),
+
+-- 10. Phiếu không yêu cầu giá trị đơn hàng tối thiểu
+('NO_MIN_ORDER', 0, 'FIXED', 15, '2025-06-01 00:00:00', '2025-07-01 23:59:59', 1, 5, true, null);

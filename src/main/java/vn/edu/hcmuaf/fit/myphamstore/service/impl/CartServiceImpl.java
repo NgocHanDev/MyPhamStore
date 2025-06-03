@@ -521,4 +521,8 @@ public class CartServiceImpl implements ICartService {
         log.info(LOGGER_NAME, "Tổng giá trị giỏ hàng: " + total);
         return total;
     }
+    @Override
+    public List<CouponModel> getAvailableCoupons() {
+        return couponService.findAvailableCoupons();
+    }
 }

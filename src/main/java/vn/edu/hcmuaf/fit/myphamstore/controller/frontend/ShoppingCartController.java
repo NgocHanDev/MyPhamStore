@@ -8,8 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.User;
+import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
@@ -25,6 +27,8 @@ public class ShoppingCartController extends HttpServlet {
 
     @Inject
     private ICartService cartService;
+    @Inject
+    private ICouponDAO couponDAO;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,6 +49,29 @@ public class ShoppingCartController extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().write("{\"count\": " + count + "}");
         }
+        else if ("getAvailableCoupons".equals(action)) {
+            List<CouponModel> availableCoupons = cartService.getAvailableCoupons();
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            StringBuilder json = new StringBuilder("[");
+            for (int i = 0; i < availableCoupons.size(); i++) {
+                CouponModel c = availableCoupons.get(i);
+                json.append("{")
+                        .append("\"id\":").append(c.getId()).append(",")
+                        .append("\"code\":\"").append(c.getCode()).append("\",")
+                        .append("\"discountType\":\"").append(c.getDiscountType()).append("\",")
+                        .append("\"discountValue\":").append(c.getDiscountValue()).append(",")
+                        .append("\"minOrderValue\":").append(c.getMinOrderValue())
+                        .append("}");
+                if (i != availableCoupons.size() - 1) json.append(",");
+            }
+            json.append("]");
+
+            response.getWriter().write(json.toString());
+        }
+
         else {
             cartService.displayCart(request, response);
 }
