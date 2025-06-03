@@ -11,5 +11,8 @@ public interface ICartDAO extends GenericDAO<CartModel>{
     CartHeaderModel getCartByUserId(Long userId);
     Long saveCartHeader(CartHeaderModel cartHeaderModel);
     List<CartModel> getCartItemsByCartId(Long id);
+    void removeProduct(Long productId);
+
+    void clearCartItems(Long id);
 }
 

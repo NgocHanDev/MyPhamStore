@@ -60,7 +60,7 @@
         </div>
       </div>
       <c:choose>
-        <c:when test="${not empty sessionScope.cart}">
+        <c:when test="${not empty listCartDisplay}">
           <div class="shop_cart_page_wrapper">
             <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
               <div class="table-responsive cart-calculations">

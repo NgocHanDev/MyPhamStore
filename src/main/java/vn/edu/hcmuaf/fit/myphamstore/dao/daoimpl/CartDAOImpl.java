@@ -217,4 +217,28 @@ public class CartDAOImpl implements ICartDAO {
         );
     }
 
+    @Override
+    public void removeProduct(Long productId) {
+        String sql = "DELETE FROM cart_item WHERE product_id = :product_id";
+        try {
+            JDBIConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql)
+                    .bind("product_id", productId)
+                    .execute());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void clearCartItems(Long id) {
+        String sql = "DELETE FROM cart_item WHERE cart_id = :cart_id";
+        try {
+            JDBIConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql)
+                    .bind("cart_id", id)
+                    .execute());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

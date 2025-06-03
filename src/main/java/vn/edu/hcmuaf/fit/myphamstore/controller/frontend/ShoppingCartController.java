@@ -28,12 +28,6 @@ public class ShoppingCartController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        String action = request.getParameter("action");
-//        if ("count".equals(action)) {
-//            cartService.getCartCount(request, response);
-//        } else {
-//            cartService.displayCart(request, response);
-//        }
         String action = request.getParameter("action");
         if ("count".equals(action)) {
             HttpSession session = request.getSession();
