@@ -10,6 +10,7 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
     />
     <title>Chi Tiết Khách Hàng</title>
+
     <link rel="stylesheet" href="../../static/css/admin.css" />
     <link
       rel="stylesheet"
@@ -73,6 +74,7 @@
             action="#"
             method="post"
             style="padding: 0 100px 0 100px"
+            onsubmit=" return validateForm()"
           >
             <div class="row">
               <div class="col-md-6 col-xs-12">
@@ -247,6 +249,31 @@
                 </div>
               </div>
             </div>
+            <!--  phần chỉnh sửa vai trò -->
+            <div class="row" style="margin-top: 20px">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <label for="roles" class="input-group-addon" id="basic-addon1">Vai trò</label>
+                  <select multiple id="roles" name="roles" class="form-control">
+                    <c:forEach var="availableRole" items="${availableRoles}">
+                      <c:set var="isSelected" value="false" />
+                      <c:forEach var="userRole" items="${user.roles}">
+                        <c:if test="${userRole.name eq availableRole.name}">
+                          <c:set var="isSelected" value="true" />
+                        </c:if>
+                      </c:forEach>
+                      <option value="${availableRole.name}" ${isSelected ? 'selected' : ''}>
+                        <c:choose>
+                          <c:when test="${availableRole.name eq 'ADMIN'}">Quản trị viên</c:when>
+                          <c:when test="${availableRole.name eq 'EMPLOYEE'}">Nhân viên</c:when>
+                          <c:otherwise>Khách hàng</c:otherwise>
+                        </c:choose>
+                      </option>
+                    </c:forEach>
+                  </select>
+                </div>
+              </div>
+            </div>
             <div class="row" style="margin-top: 20px">
               <div class="col-md-12">
                 <div class="input-group">
@@ -271,7 +298,7 @@
               >
                 Quay lại
               </button>
-
+              <button class="btn-lg btn-primary" style="width: 200px" type="submit" formaction="<c:url value='/admin/users?action=updateRoles&id=${user.id}'/>">Lưu vai trò</button>
             </div>
           </form>
         </div>
@@ -311,6 +338,19 @@
             alert("No file selected!");
           }
         });
+    </script>
+    <script>
+      function validateForm() {
+        const rolesSelect = document.getElementById("roles");
+        const selectedRoles = rolesSelect.selectedOptions.length;
+        console.log("Selected roles count: " + selectedRoles);
+        if (selectedRoles === 0) {
+          alert("Vui lòng chọn ít nhất một vai trò.");
+          return false; // Ngăn gửi form
+        } else {
+          return true; // Cho phép gửi form
+        }
+      }
     </script>
     <script src="../../static/js/bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

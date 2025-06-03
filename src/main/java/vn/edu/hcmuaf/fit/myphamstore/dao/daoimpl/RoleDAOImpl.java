@@ -63,4 +63,40 @@ public class RoleDAOImpl implements IRoleDAO {
         }
     }
 
+    @Override
+    public List<RoleModel> findAllRoles() {
+        return JDBIConnector.getJdbi().withHandle(handle -> {
+            String sql = "SELECT * FROM role";
+            return handle.createQuery(sql)
+                    .mapToBean(RoleModel.class)
+                    .list();
+        });
+    }
+
+    @Override
+    public void updateRolesToUser(List<RoleModel> roles, Long userId) {
+        String deleteSql = "DELETE FROM user_has_role WHERE user_id = :userId";
+        String insertSql = "INSERT INTO user_has_role (role_id, user_id) VALUES (:role_id, :user_id)";
+
+        try {
+            JDBIConnector.getJdbi().useHandle(handle -> {
+                // Xóa tất cả các vai trò hiện tại của người dùng
+                handle.createUpdate(deleteSql)
+                        .bind("userId", userId)
+                        .execute();
+
+                // Thêm các vai trò mới
+                for (RoleModel role : roles) {
+                    handle.createUpdate(insertSql)
+                            .bind("role_id", role.getId())
+                            .bind("user_id", userId)
+                            .execute();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+    }
 }
