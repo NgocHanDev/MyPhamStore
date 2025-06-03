@@ -62,6 +62,7 @@ public class ShoppingCartController extends HttpServlet {
             cartService.removeCartItem(request, response);
         } else if ("clear".equals(action)) {
             cartService.clearCart(request, response);
+            response.sendRedirect("/gio-hang");
         } else if ("applyDiscount".equals(action)) {
             String discountCode = request.getParameter("discountCode");
             cartService.applyDiscountCode(request, response, discountCode);
