@@ -206,6 +206,29 @@ CREATE TABLE logs (
                      message VARCHAR(255) NOT NULL,            
                      created_at DATETIME DEFAULT CURRENT_TIMESTAMP 
 );
+CREATE TABLE `cart` (
+                        `id` INT PRIMARY KEY AUTO_INCREMENT,
+                        `user_id` INT NOT NULL,
+                        `created_at` DATETIME DEFAULT NOW(),
+                        `updated_at` DATETIME DEFAULT NOW(),
+                        FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)
+);
+CREATE TABLE `cart_item` (
+                             `id` INT PRIMARY KEY AUTO_INCREMENT,
+                             `cart_id` INT NOT NULL,
+                             `product_id` INT NOT NULL,
+                             `variant_id` INT DEFAULT NULL, -- Nếu sản phẩm có biến thể (màu, size,...) thì lưu ở đây
+                             `quantity` INT NOT NULL DEFAULT 1,
+                             `price_at_added` INT NOT NULL, -- Giá sản phẩm tại thời điểm thêm vào giỏ hàng
+                             `created_at` DATETIME DEFAULT NOW(),
+                             `updated_at` DATETIME DEFAULT NOW(),
+                             FOREIGN KEY (`cart_id`) REFERENCES `cart`(`id`),
+                             FOREIGN KEY (`product_id`) REFERENCES `product`(`id`),
+                             FOREIGN KEY (`variant_id`) REFERENCES `product_variant`(`id`)
+);
+ALTER TABLE `order_details`
+    ADD COLUMN `variant_id` INT NULL,
+    ADD FOREIGN KEY (`variant_id`) REFERENCES `product_variant`(`id`);
 
 ALTER TABLE `user_has_role` ADD FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 

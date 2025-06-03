@@ -7,11 +7,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.userdetails.User;
+import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
 import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "ShoppingCartController", value = "/gio-hang")
@@ -23,12 +28,32 @@ public class ShoppingCartController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+//        String action = request.getParameter("action");
+//        if ("count".equals(action)) {
+//            cartService.getCartCount(request, response);
+//        } else {
+//            cartService.displayCart(request, response);
+//        }
         String action = request.getParameter("action");
         if ("count".equals(action)) {
-            cartService.getCartCount(request, response);
-        } else {
-            cartService.displayCart(request, response);
+            HttpSession session = request.getSession();
+            UserModel user = (UserModel) session.getAttribute("user");
+
+            int count = 0;
+            if (user != null) {
+                List<CartModel> listItems = cartService.getCartList(request,response);
+                count = listItems.size();
+            } else {
+                List<CartModel> sessionCart = (List<CartModel>) session.getAttribute("cart");
+                if (sessionCart != null) count = sessionCart.size();
+            }
+
+            response.setContentType("application/json");
+            response.getWriter().write("{\"count\": " + count + "}");
         }
+        else {
+            cartService.displayCart(request, response);
+}
     }
 
 

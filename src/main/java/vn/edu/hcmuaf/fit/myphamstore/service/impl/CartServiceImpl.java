@@ -7,20 +7,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.security.core.userdetails.User;
+import vn.edu.hcmuaf.fit.myphamstore.dao.ICartDAO;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICouponDAO;
-import vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl.CouponDAOImpl;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
 
-import vn.edu.hcmuaf.fit.myphamstore.service.ICartService;
-import vn.edu.hcmuaf.fit.myphamstore.service.ICouponService;
-import vn.edu.hcmuaf.fit.myphamstore.service.IProductService;
-import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
+import vn.edu.hcmuaf.fit.myphamstore.service.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CartServiceImpl implements ICartService {
@@ -31,12 +28,117 @@ public class CartServiceImpl implements ICartService {
     @Inject
     private ICouponDAO couponDAO;
     @Inject
-    private CouponDAOImpl couponDAOImpl;
-    @Inject
     private LoggingService log;
+    @Inject
+    private ICartDAO cartDAO;
 
     private static final String LOGGER_NAME = "CART-SERVICE";
 
+    @Override
+    public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Long productId = Long.parseLong(request.getParameter("productId"));
+        String variantIdParam = request.getParameter("variantId");
+        Long variantId = (variantIdParam == null || variantIdParam.isBlank()) ? null : Long.parseLong(variantIdParam);
+
+        int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
+        ProductModel product = productService.findProductById(productId);
+        if (product == null) {
+            log.error(LOGGER_NAME, "Không tìm thấy sản phẩm với ID: " + productId);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found");
+            return;
+        }
+
+        int availableStock;
+        if (variantId != null) {
+            ProductVariant variant = productService.findVariantById(variantId);
+            if (variant == null) {
+                log.error(LOGGER_NAME, "Không tìm thấy biến thể sản phẩm với ID: " + variantId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product variant not found");
+                return;
+            }
+            availableStock = variant.getStock();
+        } else {
+            availableStock = product.getStock();
+        }
+
+        if (quantity > availableStock) {
+            log.warn(LOGGER_NAME, "Số lượng đặt vượt quá tồn kho. Sản phẩm ID: " + productId + ", Tồn kho: " + availableStock);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Số lượng yêu cầu vượt quá số lượng tồn kho");
+            return;
+        }
+
+        // Lấy thông tin user từ session
+        HttpSession session = request.getSession();
+        UserModel user = (UserModel) session.getAttribute("user");
+        if (user == null) {
+            log.warn(LOGGER_NAME, "Người dùng chưa đăng nhập");
+            response.sendRedirect("/login");
+            return;
+        }
+
+        Long userId = user.getId();
+
+        // Kiểm tra user đã có cart chưa, nếu chưa thì tạo mới
+        CartHeaderModel userCart = cartDAO.getCartByUserId(userId);
+        if (userCart == null) {
+            Long newCartId = cartDAO.createCartForUser(userId);
+            if (newCartId == null) {
+                log.error(LOGGER_NAME, "Không thể tạo giỏ hàng mới cho user ID: " + userId);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Không thể tạo giỏ hàng");
+                return;
+            }
+            userCart = new CartHeaderModel();
+            userCart.setId(newCartId);
+            userCart.setUserId(userId);
+        }
+
+        // Kiểm tra cart_item đã tồn tại chưa (productId + variantId)
+        CartModel newItem = CartModel.builder()
+                .cardId(userCart.getId())
+                .productId(productId)
+                .variantId(variantId)
+                .quantity(quantity)
+                .brandId(product.getBrandId())
+                .build();
+
+        boolean itemExists = false;
+
+        List<CartModel> cartItems = cartDAO.getCartItemsByCartId(userCart.getId());
+        for (CartModel existingItem : cartItems) {
+            if (existingItem.equals(newItem)) {
+                int newQuantity = existingItem.getQuantity() + quantity;
+                if (newQuantity > availableStock) {
+                    log.warn(LOGGER_NAME, "Tổng số lượng yêu cầu vượt quá tồn kho. Sản phẩm ID: " + productId + ", Tồn kho: " + availableStock);
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tổng số lượng trong giỏ hàng vượt quá số lượng tồn kho");
+                    return;
+                }
+                existingItem.setQuantity(newQuantity);
+                cartDAO.update(existingItem);
+                itemExists = true;
+                log.info(LOGGER_NAME, "Cập nhật số lượng sản phẩm ID: " + productId + ", số lượng mới: " + existingItem.getQuantity());
+                break;
+            }
+        }
+
+        if (!itemExists) {
+            // Thêm mới vào cart_item
+            newItem.setPriceAtAdded(product.getPrice());
+            Long newCartItemId = cartDAO.save(newItem);
+            newItem.setId(newCartItemId);
+            cartItems.add(newItem);
+            log.info(LOGGER_NAME, "Thêm sản phẩm mới vào giỏ hàng DB, ID: " + productId + ", số lượng: " + quantity);
+        }
+
+        // Cập nhật session
+        session.setAttribute("cartItems", cartItems);
+        session.setAttribute("cart", userCart);
+
+        log.info(LOGGER_NAME, "Hoàn tất thêm sản phẩm vào giỏ hàng, tổng số mục: " + cartItems.size());
+        response.sendRedirect(request.getHeader("referer"));
+    }
+
+
+    /*
     @Override
     public void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = Long.parseLong(request.getParameter("productId"));
@@ -70,9 +172,9 @@ public class CartServiceImpl implements ICartService {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Số lượng yêu cầu vượt quá số lượng tồn kho");
             return;
         }
-
+        HttpSession session = request.getSession();
         Long brandId = product.getBrandId();
-
+        UserModel user = (UserModel) request.getSession().getAttribute("user");
         CartModel item = CartModel.builder()
                 .productId(productId)
                 .quantity(quantity)
@@ -80,7 +182,7 @@ public class CartServiceImpl implements ICartService {
                 .variantId(variantId)
                 .build();
 
-        HttpSession session = request.getSession();
+
         @SuppressWarnings("unchecked")
         List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
         if (listCartItems == null) {
@@ -114,6 +216,7 @@ public class CartServiceImpl implements ICartService {
         log.info(LOGGER_NAME, "Hoàn tất thêm sản phẩm vào giỏ hàng, tổng số mục: " + listCartItems.size());
         response.sendRedirect(request.getHeader("referer"));
     }
+    */
 
 
     @Override
@@ -210,7 +313,17 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void displayCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        List<CartModel> listCartItems = (List<CartModel>) session.getAttribute("cart");
+        UserModel user = (UserModel) session.getAttribute("user");
+        List<CartModel> listCartItems = null;
+        CartHeaderModel cartHeader = null;
+        if (session.getAttribute("user") == null) {
+            listCartItems = (List<CartModel>) session.getAttribute("cartItems");
+        }else {
+            System.out.println(user.getId());
+            cartHeader = cartDAO.getCartByUserId(user.getId());
+            System.out.println(cartHeader);
+            listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
+        }
         log.info(LOGGER_NAME, "Hiển thị giỏ hàng, số mục: " + (listCartItems == null ? 0 : listCartItems.size()));
 
         if (listCartItems == null || listCartItems.isEmpty()) {
@@ -308,6 +421,20 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
+    public CartHeaderModel getCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        UserModel user = (UserModel) session.getAttribute("user");
+        return cartDAO.getCartByUserId(user.getId());
+    }
+
+    @Override
+    public List<CartModel> getCartList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CartHeaderModel cart = getCart(request, response);
+        List<CartModel> listItems = cartDAO.getCartItemsByCartId(cart.getId());
+        return  listItems;
+    }
+
+    @Override
     public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
         HttpSession session = request.getSession();
         List<CartModel> cartItems = (List<CartModel>) session.getAttribute("cart");
@@ -357,7 +484,7 @@ public class CartServiceImpl implements ICartService {
             return;
         }
 
-        if (couponDAOImpl.getRemainingQuantity(discountCode) <= 0) {
+        if (couponDAO.getRemainingQuantity(discountCode) <= 0) {
             log.warn(LOGGER_NAME, "Mã giảm giá đã hết lượt sử dụng: " + discountCode);
             session.setAttribute("discountError", "Mã giảm giá đã hết lượt sử dụng");
             response.sendRedirect("/gio-hang");

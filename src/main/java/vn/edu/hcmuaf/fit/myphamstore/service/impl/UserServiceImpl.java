@@ -6,16 +6,16 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import vn.edu.hcmuaf.fit.myphamstore.common.*;
-import vn.edu.hcmuaf.fit.myphamstore.dao.IAddressDAO;
-import vn.edu.hcmuaf.fit.myphamstore.dao.IOtpDAO;
-import vn.edu.hcmuaf.fit.myphamstore.dao.IRoleDAO;
-import vn.edu.hcmuaf.fit.myphamstore.dao.IUserDAO;
+import vn.edu.hcmuaf.fit.myphamstore.dao.*;
 import vn.edu.hcmuaf.fit.myphamstore.exception.UserNotActiveException;
 import vn.edu.hcmuaf.fit.myphamstore.model.AddressModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
@@ -41,6 +41,8 @@ public class UserServiceImpl implements IUserService {
     private IOtpDAO otpDAO;
     @Inject
     private IAddressDAO addressDAO;
+    @Inject
+    private ICartDAO cartDAO;
     @Inject
     LoggingService logger;
 
@@ -85,6 +87,7 @@ public class UserServiceImpl implements IUserService {
     public void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        HttpSession session = request.getSession();
 
         if (email == null || password == null || email.trim().isEmpty() || password.trim().isEmpty()) {
             request.setAttribute("message", "Vui lòng nhập email và mật khẩu!");
@@ -105,12 +108,14 @@ public class UserServiceImpl implements IUserService {
                     if (user.getRoles() != null && user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase (RoleType.ADMIN))) {
                         response.sendRedirect(request.getContextPath() + "/admin");
                     } else {
+                        CartHeaderModel cartHeaderModel = cartDAO.getCartByUserId(user.getId());
+                        List<CartModel> cartItems = cartDAO.getCartItemsByCartId(cartHeaderModel.getId());
+                        session.setAttribute("cartItems", cartItems);
                         response.sendRedirect(request.getContextPath() + "/trang-chu");
                     }
                 }
             } else {
                 logger.warn( "USER-SERVICE", String.format("Login %s fails", email));
-
                 request.setAttribute("message", "Sai email hoặc mật khẩu!");
                 request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
             }
