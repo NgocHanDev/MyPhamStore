@@ -205,11 +205,10 @@
                 </a>
               </h4>
             </div>
-            <div id="related-products" class="panel-collapse collapse in" aria-expanded="true" role="tablist">
+            <div id="related-products" class="panel-collapse collapse in" aria-expanded="false" role="tablist">
+              <div class="panel-body">
               <div class="ss_latest_products_wrapper" style="padding-bottom: 0;">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-10 col-lg-offset-1">
                       <div class="ss_latest_products">
                         <div class="owl-carousel owl-theme" id="related-products-carousel">
                           <c:forEach var="product" items="${sameCateProducts}">
@@ -250,7 +249,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
               </div>
             </div>
           </div>
