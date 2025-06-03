@@ -97,6 +97,7 @@ public class UserServiceImpl implements IUserService {
 
         email = email.trim();
         password = password.trim();
+        List<CartModel> cartItems = null   ;
 
         try {
             boolean isAuthenticated = this.checkLogin(email, password);
@@ -109,7 +110,14 @@ public class UserServiceImpl implements IUserService {
                         response.sendRedirect(request.getContextPath() + "/admin");
                     } else {
                         CartHeaderModel cartHeaderModel = cartDAO.getCartByUserId(user.getId());
-                        List<CartModel> cartItems = cartDAO.getCartItemsByCartId(cartHeaderModel.getId());
+
+                        if (cartHeaderModel == null) {
+                            Long id = cartDAO.createCartForUser(user.getId());
+                            cartItems = cartDAO.getCartItemsByCartId(id);
+                        }else {
+                            cartItems = cartDAO.getCartItemsByCartId(cartHeaderModel.getId());
+                        }
+
                         session.setAttribute("cartItems", cartItems);
                         response.sendRedirect(request.getContextPath() + "/trang-chu");
                     }
@@ -508,6 +516,16 @@ public class UserServiceImpl implements IUserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Long saveGoogle(UserModel user) {
+        return userDAO.saveGoogleUser(user);
+    }
+
+    @Override
+    public void updateGoogle(UserModel user) {
+        userDAO.update(user);
     }
 
     public Long authenticate(String email, String password) {

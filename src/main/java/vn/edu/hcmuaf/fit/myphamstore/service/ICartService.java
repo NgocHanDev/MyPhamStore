@@ -19,4 +19,5 @@ public interface ICartService {
     CartHeaderModel getCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     List<CartModel> getCartList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException;
+    Long createCartForUser(Long id);
 }

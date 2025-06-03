@@ -77,21 +77,14 @@ public class CartServiceImpl implements ICartService {
         }
 
         Long userId = user.getId();
-
         // Kiểm tra user đã có cart chưa, nếu chưa thì tạo mới
         CartHeaderModel userCart = cartDAO.getCartByUserId(userId);
         if (userCart == null) {
-            Long newCartId = cartDAO.createCartForUser(userId);
-            if (newCartId == null) {
-                log.error(LOGGER_NAME, "Không thể tạo giỏ hàng mới cho user ID: " + userId);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Không thể tạo giỏ hàng");
-                return;
-            }
-            userCart = new CartHeaderModel();
-            userCart.setId(newCartId);
-            userCart.setUserId(userId);
+            CartHeaderModel newCart = new CartHeaderModel();
+            newCart.setUserId(userId);
+            cartDAO.saveCartHeader(newCart);
+            userCart = cartDAO.getCartByUserId(userId);
         }
-
         // Kiểm tra cart_item đã tồn tại chưa (productId + variantId)
         CartModel newItem = CartModel.builder()
                 .cardId(userCart.getId())
@@ -319,9 +312,21 @@ public class CartServiceImpl implements ICartService {
         if (session.getAttribute("user") == null) {
             listCartItems = (List<CartModel>) session.getAttribute("cartItems");
         }else {
-            System.out.println(user.getId());
             cartHeader = cartDAO.getCartByUserId(user.getId());
-            System.out.println(cartHeader);
+            if (cartHeader == null) {
+                // Create a new cart if none exists
+                Long newCartId = cartDAO.createCartForUser(user.getId());
+                if (newCartId == null) {
+                    log.error(LOGGER_NAME, "Không thể tạo giỏ hàng mới cho user ID: " + user.getId());
+                    request.setAttribute("errorMessage", "Lỗi khi tạo giỏ hàng. Vui lòng thử lại sau.");
+                    request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
+                    return;
+                }
+                cartHeader = CartHeaderModel.builder()
+                        .id(newCartId)
+                        .userId(user.getId())
+                        .build();
+            }
             listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
         }
         log.info(LOGGER_NAME, "Hiển thị giỏ hàng, số mục: " + (listCartItems == null ? 0 : listCartItems.size()));
@@ -496,6 +501,11 @@ public class CartServiceImpl implements ICartService {
         log.info(LOGGER_NAME, "Áp dụng mã giảm giá thành công: " + discountCode);
 
         response.sendRedirect("/gio-hang");
+    }
+
+    @Override
+    public Long createCartForUser(Long id) {
+        return  cartDAO.createCartForUser(id);
     }
 
     private long calculateTotalAmount(List<CartModel> cartItems) {

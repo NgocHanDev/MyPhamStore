@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import vn.edu.hcmuaf.fit.myphamstore.common.UserStatus;
+import vn.edu.hcmuaf.fit.myphamstore.dao.ICartDAO;
 import vn.edu.hcmuaf.fit.myphamstore.entity.FacebookAccount;
 import vn.edu.hcmuaf.fit.myphamstore.entity.GoogleAccount;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
@@ -28,19 +30,18 @@ public class HomeController extends HttpServlet {
     private ICategoryService categoryService;
     @Inject
     private IUserService userService;
+    @Inject
+    private ICartService cartService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<CartModel> cartItems = null;
         try {
             if(request.getParameter("code") != null) {
                 String code = request.getParameter("code");
-                System.out.println(code.length());
                 String scope = request.getParameter("scope");
-                System.out.println(scope.length());
                 String accessToken = GoogleLogin.getToken(code);
                 GoogleAccount googleAccount = GoogleLogin.getUserInfo(accessToken);
-//                String accessToken = FaceBookLogin.getToken(code);
-//                FacebookAccount googleAccount = FaceBookLogin.getUserInfo(accessToken);
                 UserModel userModel = userService.findUserByEmail(googleAccount.getEmail());
 
                 if(userModel != null) {
@@ -51,18 +52,34 @@ public class HomeController extends HttpServlet {
                     user.setEmail(googleAccount.getEmail());
                     user.setFullName(googleAccount.getName());
                     user.setAvatar(googleAccount.getPicture());
+                    user.setStatus(UserStatus.ACTIVE);
+
                     List<RoleModel> roles = new ArrayList<>();
                     RoleModel role = new RoleModel();
                     role.setName("ROLE_USER");
                     role.setDescription("CUSTOMER");
                     roles.add(role);
                     user.setRoles(roles);
+
+                    Long newUserId = userService.saveGoogle(user);
+                    user.setId(newUserId);// gán ID sau khi insert
+                    cartService.createCartForUser(newUserId);
+                    userService.updateGoogle(user);
                     request.getSession().setAttribute("user", user);
                 }
             }
             UserModel user = (UserModel) request.getSession().getAttribute("user");
+
             if (user != null) {
                 request.setAttribute("user", user);
+//                CartHeaderModel cartHeaderModel = cartService.getCart(request,response);
+//
+//                if (cartHeaderModel == null) {
+//                    Long id = cartService.createCartForUser(user.getId());
+//                    cartItems = cartService.getCartList(request,response);
+//                }else {
+//                    cartItems = cartService.getCartList(request,response);
+//                }
             }
             // Lấy các tham số từ request
             String keyword = request.getParameter("keyword");

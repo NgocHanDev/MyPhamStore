@@ -2,7 +2,6 @@ package vn.edu.hcmuaf.fit.myphamstore.dao.daoimpl;
 
 import vn.edu.hcmuaf.fit.myphamstore.common.JDBIConnector;
 import vn.edu.hcmuaf.fit.myphamstore.dao.ICartDAO;
-import vn.edu.hcmuaf.fit.myphamstore.model.BrandModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
 
@@ -171,18 +170,40 @@ public class CartDAOImpl implements ICartDAO {
 
     @Override
     public CartHeaderModel getCartByUserId(Long userId) {
-        String query = "SELECT * FROM cart WHERE id = :id";
+        String query = "SELECT * FROM cart WHERE user_id = :userId";
         try {
             CartHeaderModel result = JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(query)
-                    .bind("id", userId)
+                    .bind("userId", userId)
                     .mapToBean(CartHeaderModel.class)
                     .one());
             return result;
         } catch (Exception e) {
-            log("cart not found");
+            log("Cart not found for userId: " + userId);
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public Long saveCartHeader(CartHeaderModel entity) {
+        String sql = "INSERT INTO cart (user_id, created_at, updated_at) " +
+                "VALUES (:user_id, :createdAt, :updatedAt)";
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle -> {
+                // Thực hiện câu lệnh INSERT và lấy id tự động sinh
+                return handle.createUpdate(sql)
+                        .bind("user_id",entity.getUserId())
+                        .bind("createdAt", LocalDateTime.now())
+                        .bind("updatedAt", LocalDateTime.now())
+                        .executeAndReturnGeneratedKeys("id") // Lấy giá trị khóa chính tự động sinh
+                        .mapTo(Long.class) // Ánh xạ giá trị trả về thành Long
+                        .one();
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override

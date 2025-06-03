@@ -38,4 +38,8 @@ public interface IUserService {
     void showAvatar(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     boolean forgotPassword(String email, String otp);
+
+    Long saveGoogle(UserModel user);
+
+    void updateGoogle(UserModel user);
 }

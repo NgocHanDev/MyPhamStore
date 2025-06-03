@@ -9,7 +9,7 @@ import java.util.List;
 public interface ICartDAO extends GenericDAO<CartModel>{
     Long createCartForUser(Long userId);
     CartHeaderModel getCartByUserId(Long userId);
-
+    Long saveCartHeader(CartHeaderModel cartHeaderModel);
     List<CartModel> getCartItemsByCartId(Long id);
 }
 
