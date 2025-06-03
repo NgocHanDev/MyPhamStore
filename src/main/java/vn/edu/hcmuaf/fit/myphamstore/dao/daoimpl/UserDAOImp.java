@@ -301,6 +301,36 @@ public class UserDAOImp implements IUserDAO {
         }
     }
 
+    @Override
+    public Long saveGoogleUser(UserModel entity) {
+        String sql = "INSERT INTO user (email, full_name, phone, date_of_birth, gender, status, created_at, updated_at, avatar, last_login) " +
+                "VALUES (:email, :fullName, :phone, :dateOfBirth, :gender, :status, :createdAt, :updatedAt, :avatar,  :lastLogin)";
+
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle -> {
+                // Hash password trước khi lưu
+                // Thực hiện câu lệnh INSERT và lấy id tự động sinh
+                return handle.createUpdate(sql)
+                        .bind("email", entity.getEmail().trim())
+                        .bind("fullName", entity.getFullName().trim())
+                        .bind("phone", entity.getPhone())
+                        .bind("dateOfBirth", entity.getDateOfBirth())
+                        .bind("gender", entity.getGender() == null ? null : entity.getGender().name().toUpperCase())
+                        .bind("status", entity.getStatus() == null ? UserStatus.NONE.toString() : entity.getStatus().toString().toUpperCase())
+                        .bind("createdAt", LocalDateTime.now())
+                        .bind("updatedAt", LocalDateTime.now())
+                        .bind("avatar", entity.getAvatar())
+                        .bind("lastLogin", LocalDateTime.now())
+                        .executeAndReturnGeneratedKeys("id") // Lấy giá trị khóa chính tự động sinh
+                        .mapTo(Long.class) // Ánh xạ giá trị trả về thành Long
+                        .one();
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Lấy số lượng page dựa trên số lượng item cần hiển thị
      * @param numOfItems

@@ -13,5 +13,6 @@ public class OrderDetailModel extends BaseModel{
     private Long orderId;
     private Long productId;
     private Integer quantity;
+//    private Long variantId;
     private Double totalPrice;
 }

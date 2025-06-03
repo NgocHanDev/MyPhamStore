@@ -1,3 +1,4 @@
+drop DATABASE myphamstoredb;
 create database myphamstoredb;
 
 use myphamstoredb;
@@ -10,10 +11,10 @@ CREATE TABLE `user` (
                         `id` int PRIMARY KEY AUTO_INCREMENT,
                         `full_name` nvarchar(255) NOT NULL,
                         `email` varchar(255) UNIQUE NOT NULL,
-                        `password` varchar(255) NOT NULL,
-                        `phone` varchar(255) UNIQUE NOT NULL,
-                        `date_of_birth` date NOT NULL,
-                        `gender` ENUM ('MALE', 'FEMALE', 'OTHER') NOT NULL,
+                        `password` varchar(255) ,
+                        `phone` varchar(255) UNIQUE NULL,
+                        `date_of_birth` date NULL,
+                        `gender` ENUM ('MALE', 'FEMALE', 'OTHER') NULL,
                         `avatar` longtext,
                         `status` ENUM ('NONE', 'ACTIVE', 'INACTIVE') not null,
                         `last_login` datetime,
@@ -208,7 +209,7 @@ CREATE TABLE logs (
 );
 CREATE TABLE `cart` (
                         `id` INT PRIMARY KEY AUTO_INCREMENT,
-                        `user_id` INT NOT NULL,
+                        `user_id` INT UNIQUE NOT NULL,
                         `created_at` DATETIME DEFAULT NOW(),
                         `updated_at` DATETIME DEFAULT NOW(),
                         FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)

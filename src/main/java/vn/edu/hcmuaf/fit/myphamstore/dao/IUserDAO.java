@@ -14,4 +14,5 @@ public interface IUserDAO extends GenericDAO<UserModel> {
     void updateAvatar(Long id, String newAvatarUrl);
 
     String getAvatar(int userId);
+    Long saveGoogleUser(UserModel user);
 }
