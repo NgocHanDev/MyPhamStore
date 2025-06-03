@@ -295,7 +295,6 @@ public class CartServiceImpl implements ICartService {
         session.removeAttribute("discountError");
 
         log.info(LOGGER_NAME, "Xóa toàn bộ giỏ hàng và các thuộc tính liên quan trong session.");
-        response.sendRedirect("/gio-hang");
     }
 
     @Override
