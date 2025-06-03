@@ -33,7 +33,7 @@ public interface IProductService {
     List<ProductModel> getFilteredProducts(String keyword, List<String> categories, List<String> brands, String priceRange, int currentPage, int pageSize, String orderBy);
     List<ProductVariant> getProductVariantsByProductId(Long id);
 
-
+    List<ProductModel> getMostPopularProducts();
     List<ProductModel> findProduct(Long orderDetailId);
 
     ProductVariant findVariantById(Long variantId);

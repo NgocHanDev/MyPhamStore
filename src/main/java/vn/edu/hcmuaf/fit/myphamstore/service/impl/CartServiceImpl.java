@@ -303,20 +303,20 @@ public class CartServiceImpl implements ICartService {
         UserModel user = (UserModel) session.getAttribute("user");
         List<CartModel> listCartItems = null;
         CartHeaderModel cartHeader = null;
-        cartHeader = cartDAO.getCartByUserId(user.getId());
-        listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
-//        if (session.getAttribute("user") == null) {
-//            listCartItems = (List<CartModel>) session.getAttribute("cartItems");
-//        } else {
-//            cartHeader = cartDAO.getCartByUserId(user.getId());
-//            if (cartHeader != null) {
-//                listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
-//            }
-//            if (listCartItems == null || listCartItems.isEmpty()) {
-//                listCartItems = (List<CartModel>) session.getAttribute("cartItems");
-//                log.warn(LOGGER_NAME, "Database cart empty, using session cartItems: " + (listCartItems != null ? listCartItems.size() : 0));
-//            }
-//        }
+//        cartHeader = cartDAO.getCartByUserId(user.getId());
+//        listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
+        if (user == null) {
+            listCartItems = (List<CartModel>) session.getAttribute("cartItems");
+        } else {
+            cartHeader = cartDAO.getCartByUserId(user.getId());
+            if (cartHeader != null) {
+                listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
+            }
+            if (listCartItems == null || listCartItems.isEmpty()) {
+                listCartItems = (List<CartModel>) session.getAttribute("cartItems");
+                log.warn(LOGGER_NAME, "Database cart empty, using session cartItems: " + (listCartItems != null ? listCartItems.size() : 0));
+            }
+        }
         log.info(LOGGER_NAME, "Hiển thị giỏ hàng, số mục: " + (listCartItems == null ? 0 : listCartItems.size()));
 
         if (listCartItems == null || listCartItems.isEmpty()) {

@@ -103,7 +103,8 @@ public class HomeController extends HttpServlet {
             // Lấy danh sách sản phẩm mới nhất
             List<ProductModel> latestProducts = productService.getLatestProducts();
             request.setAttribute("latestProducts", latestProducts);
-
+            List<ProductModel> mostPopularProducts = productService.getMostPopularProducts();
+            request.setAttribute("mostPopularProducts", mostPopularProducts);
             // Lấy danh sách thương hiệu
             List<BrandModel> brands = brandService.getAllBrands();
 
