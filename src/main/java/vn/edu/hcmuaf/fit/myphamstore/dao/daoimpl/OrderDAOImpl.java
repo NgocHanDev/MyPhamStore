@@ -149,13 +149,18 @@ public class OrderDAOImpl implements IOrderDAO {
     @Override
     public void changeStatus(Long orderId, OrderStatus status) {
         String sql = "UPDATE orders SET status = :status WHERE id = :orderId";
-        try{
-            JDBIConnector.getJdbi().withHandle(handle -> handle.createUpdate(sql)
-                    .bind("status", status.name())
-                    .bind("orderId", orderId)
-                    .execute());
-        }catch (Exception e) {
-            e.printStackTrace();
+        try {
+            int rowsAffected = JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createUpdate(sql)
+                            .bind("status", status.name())
+                            .bind("orderId", orderId)
+                            .execute()
+            );
+            if (rowsAffected == 0) {
+                throw new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi cập nhật trạng thái đơn hàng: " + e.getMessage(), e);
         }
     }
 

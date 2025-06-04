@@ -287,6 +287,18 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
+    public void decrementSoldQuantity(Long productId, Integer quantity) {
+        ProductModel product = findProductById(productId);
+        if (product != null) {
+            int currentSold = product.getSoldQuantity();
+            int newSold = Math.max(0, currentSold - quantity);
+            product.setSoldQuantity(newSold);
+            productDAO.update(product);
+        }
+    }
+
+
+    @Override
     public void stopBuying(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.info(CLASS_NAME, "cập nhật trạng thái sản phẩm với id: " + request.getParameter("id"));
         Long id = Long.parseLong(request.getParameter("id"));

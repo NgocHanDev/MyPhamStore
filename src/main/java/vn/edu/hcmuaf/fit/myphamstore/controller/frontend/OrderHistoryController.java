@@ -65,7 +65,18 @@ public class OrderHistoryController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String action = req.getServletPath();
+        if ("/order-history".equalsIgnoreCase(action)) {
+            try {
+                orderService.changeStatus(req, resp);
+            }
+            catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.setContentType("application/json");
+                resp.getWriter().write("{\"message\": \"Có lỗi xảy ra khi hủy đơn hàng.\"}");
+            }
+        }
+
     }
 }

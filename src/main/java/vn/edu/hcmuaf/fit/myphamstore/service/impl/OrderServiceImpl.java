@@ -126,27 +126,49 @@ public class OrderServiceImpl implements IOrderService {
 
     @Override
     public void changeStatus(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        log.info(CLASS_NAME, "Thay đổi trạng thái đơn hàng");
-        Long orderId = Long.parseLong(req.getParameter("id"));
-        OrderStatus status = OrderStatus.valueOf(req.getParameter("status"));
-
-        orderDAO.changeStatus(orderId, status);
-
-        if (status == OrderStatus.CONFIRMED) {
-            log.info(CLASS_NAME, "Xác nhận đơn hàng thành công id: " + orderId);
-
+        try {
+            Long orderId = Long.parseLong(req.getParameter("id"));
             OrderModel order = orderDAO.findOrderById(orderId);
-            order.setConfirmedAt(LocalDateTime.now());
-            orderDAO.update(order);
 
-            // ✅ Tăng số lượng bán
-            List<OrderDetailModel> orderDetails = orderDAO.findOrderDetailByOrderId(orderId);
-            for (OrderDetailModel detail : orderDetails) {
-                productService.incrementSoldQuantity(detail.getProductId(), detail.getQuantity());
+            if (order == null) {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                resp.setContentType("application/json");
+                resp.getWriter().write("{\"message\": \"Không tìm thấy đơn hàng.\"}");
+                return;
             }
-        }
 
-        resp.sendRedirect(req.getContextPath() + "/admin/orders?action=display");
+            if (order.getStatus() != OrderStatus.PENDING) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.setContentType("application/json");
+                resp.getWriter().write("{\"message\": \"Chỉ có thể hủy đơn hàng ở trạng thái PENDING.\"}");
+                return;
+            }
+
+            OrderStatus originalStatus = order.getStatus(); // Lưu trạng thái ban đầu
+            orderDAO.changeStatus(orderId, OrderStatus.CANCELLED);
+            order.setStatus(OrderStatus.CANCELLED); // Cập nhật trạng thái cho đối tượng order
+
+            if ( order.getStatus() == OrderStatus.CANCELLED) {
+                log.info(CLASS_NAME, "Hủy đơn hàng id: " + orderId + " với trạng thái ban đầu: " + originalStatus);
+                List<OrderDetailModel> orderDetails = orderDAO.findOrderDetailByOrderId(orderId);
+                for (OrderDetailModel detail : orderDetails) {
+                    productService.decrementSoldQuantity(detail.getProductId(), detail.getQuantity());
+                }
+            }
+
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"message\": \"Hủy đơn hàng thành công.\"}");
+        } catch (IllegalArgumentException e) {
+            log.error(CLASS_NAME, "Trạng thái không hợp lệ: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"message\": \"Trạng thái không hợp lệ.\"}");
+        } catch (Exception e) {
+            log.error(CLASS_NAME, "Lỗi khi hủy đơn hàng: " + e.getMessage());
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"message\": \"Có lỗi xảy ra khi hủy đơn hàng: " + e.getMessage() + "\"}");
+        }
     }
 
 
