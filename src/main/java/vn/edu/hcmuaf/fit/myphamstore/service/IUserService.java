@@ -42,4 +42,5 @@ public interface IUserService {
     Long saveGoogle(UserModel user);
 
     void updateGoogle(UserModel user);
+    void updateRoles(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 }

@@ -13,4 +13,5 @@ public class AdminAction {
     public static final String INSERT = "insert";
     public static final String PENDING = "pending";
     public static final String DONE = "done";
+    public static final String UPDATE_ROLES = "updateRoles";
 }

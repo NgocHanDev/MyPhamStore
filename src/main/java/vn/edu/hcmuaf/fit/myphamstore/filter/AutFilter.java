@@ -46,14 +46,14 @@ public class AutFilter implements Filter {
         }else{//da login
             //check role admin
             List<RoleModel> roles = user.getRoles();
-            boolean isAdmin = false;
+            boolean isAdminOrEmployee = false;
             for (RoleModel role : roles){
-                if(role.getName().equals(RoleType.ADMIN)){
-                    isAdmin = true;
+                if(role.getName().equals(RoleType.ADMIN) || role.getName().equals(RoleType.EMPLOYEE)){
+                    isAdminOrEmployee = true;
                     break;
                 }
             }
-            if(!isAdmin && currentURL.contains("/admin")){
+            if(!isAdminOrEmployee && currentURL.contains("/admin")){
                 res.sendRedirect(req.getContextPath() + "/trang-chu");
                 return;
             }

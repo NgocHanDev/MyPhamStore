@@ -9,4 +9,6 @@ public interface IRoleDAO {
     List<RoleModel> findListRoleByUserId(Long userId);
     void setRoleToUser(String roleType, Long userId);
     RoleModel findRoleByName(String roleType);
+    List<RoleModel> findAllRoles();
+    void updateRolesToUser(List<RoleModel> roles, Long userId);
 }
