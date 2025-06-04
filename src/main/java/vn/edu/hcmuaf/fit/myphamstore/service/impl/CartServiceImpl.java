@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CartServiceImpl implements ICartService {
@@ -39,8 +40,9 @@ public class CartServiceImpl implements ICartService {
         Long productId = Long.parseLong(request.getParameter("productId"));
         String variantIdParam = request.getParameter("variantId");
         Long variantId = (variantIdParam == null || variantIdParam.isBlank()) ? null : Long.parseLong(variantIdParam);
-
+        double price = 0.0;
         int quantity = Integer.parseInt(request.getParameter("quantity") == null ? "1" : request.getParameter("quantity"));
+
         ProductModel product = productService.findProductById(productId);
         if (product == null) {
             log.error(LOGGER_NAME, "Không tìm thấy sản phẩm với ID: " + productId);
@@ -67,17 +69,58 @@ public class CartServiceImpl implements ICartService {
             return;
         }
 
-        // Lấy thông tin user từ session
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
+        List<CartModel> cartItems = (List<CartModel>) session.getAttribute("cartItems");
+        if (cartItems == null) {
+            cartItems = new ArrayList<>();
+            session.setAttribute("cartItems", cartItems);
+        }
+
         if (user == null) {
-            log.warn(LOGGER_NAME, "Người dùng chưa đăng nhập");
-            response.sendRedirect("/login");
+            // Xử lý giỏ hàng tạm thời trong session
+            boolean itemExists = false;
+            for (CartModel existingItem : cartItems) {
+                if (existingItem.getProductId().equals(productId) &&
+                        (variantId == null ? existingItem.getVariantId() == null : variantId.equals(existingItem.getVariantId()))) {
+                    int newQuantity = existingItem.getQuantity() + quantity;
+                    if (newQuantity > availableStock) {
+                        log.warn(LOGGER_NAME, "Tổng số lượng yêu cầu vượt quá tồn kho. Sản phẩm ID: " + productId + ", Tồn kho: " + availableStock);
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tổng số lượng trong giỏ hàng vượt quá số lượng tồn kho");
+                        return;
+                    }
+                    existingItem.setQuantity(newQuantity);
+                    itemExists = true;
+                    log.info(LOGGER_NAME, "Cập nhật số lượng sản phẩm ID: " + productId + ", số lượng mới: " + newQuantity);
+                    break;
+                }
+            }
+
+            if (!itemExists) {
+                if(productService.findVariantById(variantId) == null) {
+                    price = product.getPrice();
+                }
+                else {
+                    price = productService.findVariantById(variantId).getPrice();
+                }
+                CartModel newItem = CartModel.builder()
+                        .productId(productId)
+                        .variantId(variantId)
+                        .quantity(quantity)
+                        .priceAtAdded(variantId != null ? (long) price : product.getPrice())
+                        .build();
+                cartItems.add(newItem);
+                log.info(LOGGER_NAME, "Thêm sản phẩm mới vào giỏ hàng session, ID: " + productId + ", số lượng: " + quantity);
+            }
+
+            session.setAttribute("cartItems", cartItems);
+            log.info(LOGGER_NAME, "Hoàn tất thêm sản phẩm vào giỏ hàng session, tổng số mục: " + cartItems.size());
+            response.sendRedirect(request.getHeader("referer"));
             return;
         }
 
+        // Xử lý giỏ hàng trong cơ sở dữ liệu
         Long userId = user.getId();
-        // Kiểm tra user đã có cart chưa, nếu chưa thì tạo mới
         CartHeaderModel userCart = cartDAO.getCartByUserId(userId);
         if (userCart == null) {
             CartHeaderModel newCart = new CartHeaderModel();
@@ -85,7 +128,7 @@ public class CartServiceImpl implements ICartService {
             cartDAO.saveCartHeader(newCart);
             userCart = cartDAO.getCartByUserId(userId);
         }
-        // Kiểm tra cart_item đã tồn tại chưa (productId + variantId)
+
         CartModel newItem = CartModel.builder()
                 .cardId(userCart.getId())
                 .productId(productId)
@@ -95,10 +138,10 @@ public class CartServiceImpl implements ICartService {
                 .build();
 
         boolean itemExists = false;
-
-        List<CartModel> cartItems = cartDAO.getCartItemsByCartId(userCart.getId());
+        cartItems = cartDAO.getCartItemsByCartId(userCart.getId());
         for (CartModel existingItem : cartItems) {
-            if (existingItem.equals(newItem)) {
+            if (existingItem.getProductId().equals(productId) &&
+                    (variantId == null ? existingItem.getVariantId() == null : variantId.equals(existingItem.getVariantId()))) {
                 int newQuantity = existingItem.getQuantity() + quantity;
                 if (newQuantity > availableStock) {
                     log.warn(LOGGER_NAME, "Tổng số lượng yêu cầu vượt quá tồn kho. Sản phẩm ID: " + productId + ", Tồn kho: " + availableStock);
@@ -108,24 +151,27 @@ public class CartServiceImpl implements ICartService {
                 existingItem.setQuantity(newQuantity);
                 cartDAO.update(existingItem);
                 itemExists = true;
-                log.info(LOGGER_NAME, "Cập nhật số lượng sản phẩm ID: " + productId + ", số lượng mới: " + existingItem.getQuantity());
+                log.info(LOGGER_NAME, "Cập nhật số lượng sản phẩm ID: " + productId + ", số lượng mới: " + newQuantity);
                 break;
             }
         }
 
         if (!itemExists) {
-            // Thêm mới vào cart_item
-            newItem.setPriceAtAdded(product.getPrice());
+            if(productService.findVariantById(variantId) == null) {
+                price = product.getPrice();
+            }
+            else {
+                price = productService.findVariantById(variantId).getPrice();
+            }
+            newItem.setPriceAtAdded(variantId != null ? (long) price : product.getPrice());
             Long newCartItemId = cartDAO.save(newItem);
             newItem.setId(newCartItemId);
             cartItems.add(newItem);
             log.info(LOGGER_NAME, "Thêm sản phẩm mới vào giỏ hàng DB, ID: " + productId + ", số lượng: " + quantity);
         }
 
-        // Cập nhật session
         session.setAttribute("cartItems", cartItems);
         session.setAttribute("cart", userCart);
-
         log.info(LOGGER_NAME, "Hoàn tất thêm sản phẩm vào giỏ hàng, tổng số mục: " + cartItems.size());
         response.sendRedirect(request.getHeader("referer"));
     }
@@ -188,7 +234,6 @@ public class CartServiceImpl implements ICartService {
             return;
         }
 
-        // Kiểm tra tồn kho
         int availableStock;
         if (variantId != null) {
             ProductVariant variant = productService.findVariantById(variantId);
@@ -214,7 +259,7 @@ public class CartServiceImpl implements ICartService {
         for (CartModel item : cartItems) {
             if (item.getProductId().equals(productId) && (variantId == null ? item.getVariantId() == null : variantId.equals(item.getVariantId()))) {
                 item.setQuantity(quantity);
-                cartDAO.update(item); // Cập nhật vào cơ sở dữ liệu
+                cartDAO.update(item);
                 itemUpdated = true;
                 log.info(LOGGER_NAME, "Cập nhật giỏ hàng, sản phẩm ID: " + productId + ", variantId: " + (variantId != null ? variantId : "null") + ", số lượng mới: " + quantity);
                 break;
@@ -228,7 +273,6 @@ public class CartServiceImpl implements ICartService {
             return;
         }
 
-        // Cập nhật session
         session.setAttribute("cartItems", cartItems);
         session.setAttribute("cart", cartHeader);
         log.info(LOGGER_NAME, "Hoàn tất cập nhật giỏ hàng, tổng số mục: " + cartItems.size());
@@ -241,33 +285,49 @@ public class CartServiceImpl implements ICartService {
         response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
+        if (user == null) {
+            log.warn(LOGGER_NAME, "Người dùng chưa đăng nhập khi xóa mục giỏ hàng");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Vui lòng đăng nhập\"}");
+            return;
+        }
+
         CartHeaderModel cartHeader = cartDAO.getCartByUserId(user.getId());
-        @SuppressWarnings("unchecked")
+        if (cartHeader == null) {
+            log.error(LOGGER_NAME, "Không tìm thấy giỏ hàng để xóa mục.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Giỏ hàng không tồn tại\"}");
+            return;
+        }
+
         List<CartModel> cartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
         if (cartItems == null) {
             log.error(LOGGER_NAME, "Không tìm thấy giỏ hàng để xóa mục.");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"status\":\"error\", \"message\":\"Cart not found\"}");
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Giỏ hàng không tồn tại\"}");
             return;
         }
 
         Long productId = Long.parseLong(request.getParameter("productId"));
+        String variantIdParam = request.getParameter("variantId");
+        Long variantId = (variantIdParam == null || variantIdParam.isBlank()) ? null : Long.parseLong(variantIdParam);
+
         int initialSize = cartItems.size();
-        cartItems.removeIf(item -> item.getProductId().equals(productId));
+        cartItems.removeIf(item -> item.getProductId().equals(productId) &&
+                (variantId == null ? item.getVariantId() == null : variantId.equals(item.getVariantId())));
         cartDAO.removeProduct(productId);
+
         if (cartItems.size() < initialSize) {
-            log.info(LOGGER_NAME, "Xóa sản phẩm khỏi giỏ hàng, ID: " + productId);
-            session.setAttribute("cart", cartItems);
-            response.getWriter().write("{\"status\":\"success\"}");
+            log.info(LOGGER_NAME, "Xóa sản phẩm khỏi giỏ hàng, ID: " + productId + ", variantId: " + (variantId != null ? variantId : "null"));
+            session.setAttribute("cartItems", cartItems);
+            response.getWriter().write("{\"status\":\"success\", \"message\":\"Xóa sản phẩm thành công\"}");
         } else {
-            log.warn(LOGGER_NAME, "Không tìm thấy sản phẩm để xóa, ID: " + productId);
+            log.warn(LOGGER_NAME, "Không tìm thấy sản phẩm để xóa, ID: " + productId + ", variantId: " + (variantId != null ? variantId : "null"));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"status\":\"error\", \"message\":\"Product not found\"}");
+            response.getWriter().write("{\"status\":\"error\", \"message\":\"Sản phẩm không tìm thấy trong giỏ hàng\"}");
         }
-        session.setAttribute("cart", cartItems);
         log.info(LOGGER_NAME, "Hoàn tất xóa mục khỏi giỏ hàng, số mục còn lại: " + cartItems.size());
     }
-
     @Override
     public void clearCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
@@ -303,8 +363,7 @@ public class CartServiceImpl implements ICartService {
         UserModel user = (UserModel) session.getAttribute("user");
         List<CartModel> listCartItems = null;
         CartHeaderModel cartHeader = null;
-//        cartHeader = cartDAO.getCartByUserId(user.getId());
-//        listCartItems = cartDAO.getCartItemsByCartId(cartHeader.getId());
+
         if (user == null) {
             listCartItems = (List<CartModel>) session.getAttribute("cartItems");
         } else {
@@ -317,7 +376,6 @@ public class CartServiceImpl implements ICartService {
                 log.warn(LOGGER_NAME, "Database cart empty, using session cartItems: " + (listCartItems != null ? listCartItems.size() : 0));
             }
         }
-        log.info(LOGGER_NAME, "Hiển thị giỏ hàng, số mục: " + (listCartItems == null ? 0 : listCartItems.size()));
 
         if (listCartItems == null || listCartItems.isEmpty()) {
             log.warn(LOGGER_NAME, "Giỏ hàng trống khi hiển thị.");
@@ -327,97 +385,45 @@ public class CartServiceImpl implements ICartService {
         }
 
         List<CartModelHelper> listCartDisplay = new ArrayList<>();
-        long totalAmount = 0;
-        long selectedTotal = 0;
-
-        // Tính tổng giá trị giỏ hàng
-        for (CartModel cartItem : listCartItems) {
-            ProductModel product = productService.findProductById(cartItem.getProductId());
-            if (product == null) continue;
-            if (cartItem.getVariantId() == null) {
-                selectedTotal += product.getPrice() * cartItem.getQuantity();
-            } else {
-                List<ProductVariant> variants = productService.getProductVariantsByProductId(cartItem.getProductId());
-                ProductVariant variant = variants.stream()
-                        .filter(v -> v.getId().equals(cartItem.getVariantId()))
-                        .findFirst()
-                        .orElse(null);
-            }
-        }
-
-        List<CouponModel> allCoupons = couponService.findAvailableCoupons();
-        List<CouponModel> discountCodes = new ArrayList<>();
-
-        for (CouponModel coupon : allCoupons) {
-            Long minOrderValue = coupon.getMinOrderValue();
-            Long currentUsage = coupon.getCurrentUsage();
-            Long maxUsage = coupon.getMaxUsage();
-
-            if (minOrderValue == null || currentUsage == null || maxUsage == null) continue;
-
-            if (minOrderValue <= selectedTotal && currentUsage < maxUsage) {
-                discountCodes.add(coupon);
-            }
-        }
+        long totalAmount = calculateTotalAmount(listCartItems); // Sử dụng calculateTotalAmount
         long discountAmount = 0;
         String appliedCouponCode = (String) session.getAttribute("discountCode");
         CouponModel appliedCoupon = null;
 
         if (appliedCouponCode != null) {
-            for (CouponModel coupon : discountCodes) {
-                if (coupon.getCode().equals(appliedCouponCode)) {
-                    appliedCoupon = coupon;
-                    break;
+            appliedCoupon = couponDAO.findCouponByCode(appliedCouponCode);
+            if (appliedCoupon != null) {
+                discountAmount = calculateDiscount(totalAmount, appliedCoupon);
+                if (appliedCoupon.getMaxDiscountValue() != null && discountAmount > appliedCoupon.getMaxDiscountValue()) {
+                    discountAmount = appliedCoupon.getMaxDiscountValue();
                 }
             }
         }
 
-        try {
-            for (CartModel cartItem : listCartItems) {
-                ProductModel product = productService.findProductById(cartItem.getProductId());
-                if (product == null) {
-                    log.error(LOGGER_NAME, "Không tìm thấy sản phẩm khi hiển thị giỏ hàng, ID: " + cartItem.getProductId());
-                    continue;
-                }
-                if (cartItem.getVariantId() == null) {
-                    totalAmount += product.getPrice() * cartItem.getQuantity();
-                    listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), null));
-                    log.info(LOGGER_NAME, "Thêm sản phẩm vào danh sách hiển thị, ID: " + cartItem.getProductId());
-                } else {
-                    List<ProductVariant> listVariant = productService.getProductVariantsByProductId(cartItem.getProductId());
-                    ProductVariant variant = listVariant.stream()
-                            .filter(v -> v.getId().equals(cartItem.getVariantId()))
-                            .findFirst()
-                            .orElse(null);
-                    if (variant != null) {
-                        totalAmount += product.getPrice() * cartItem.getQuantity();
-                        listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), variant));
-                        log.info(LOGGER_NAME, "Thêm biến thể sản phẩm vào danh sách hiển thị, ID: " + cartItem.getProductId() + ", Variant ID: " + cartItem.getVariantId());
-                    } else {
-                        log.error(LOGGER_NAME, "Không tìm thấy biến thể sản phẩm, ID: " + cartItem.getProductId() + ", Variant ID: " + cartItem.getVariantId());
-                    }
-                }
+        for (CartModel cartItem : listCartItems) {
+            ProductModel product = productService.findProductById(cartItem.getProductId());
+            if (product == null) {
+                log.error(LOGGER_NAME, "Không tìm thấy sản phẩm khi hiển thị giỏ hàng, ID: " + cartItem.getProductId());
+                continue;
             }
-            if (appliedCoupon != null) {
-                discountAmount = calculateDiscount(totalAmount, appliedCoupon);
-                if (appliedCoupon.getMaxDiscountValue() != null &&
-                        appliedCoupon.getMaxDiscountValue() > 0 &&
-                        discountAmount > appliedCoupon.getMaxDiscountValue()) {
-                    discountAmount = appliedCoupon.getMaxDiscountValue();
-                }
+            ProductVariant variant = null;
+            if (cartItem.getVariantId() != null) {
+                variant = productService.findVariantById(cartItem.getVariantId());
             }
-        } catch (Exception e) {
-            log.error(LOGGER_NAME, "Lỗi khi xử lý hiển thị giỏ hàng: " + e.getMessage());
-            request.setAttribute("errorMessage", "Lỗi khi xử lý giỏ hàng: " + e.getMessage());
-            request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
-            return;
+            listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), variant));
         }
+
+        List<CouponModel> discountCodes = couponService.findAvailableCoupons().stream()
+                .filter(c -> c.getMinOrderValue() <= totalAmount && c.getCurrentUsage() < c.getMaxUsage())
+                .collect(Collectors.toList());
+
         request.setAttribute("listCartDisplay", listCartDisplay);
         request.setAttribute("totalAmount", totalAmount);
         request.setAttribute("discountAmount", discountAmount);
         request.setAttribute("discountCodes", discountCodes);
         request.setAttribute("finalAmount", totalAmount - discountAmount);
         request.setAttribute("appliedCouponCode", appliedCouponCode);
+        request.setAttribute("cartHeader", cartHeader);
 
         log.info(LOGGER_NAME, "Chuyển tiếp đến trang giỏ hàng, tổng tiền: " + totalAmount +
                 ", giảm giá: " + discountAmount + ", mã giảm giá áp dụng: " + appliedCouponCode);
@@ -425,16 +431,101 @@ public class CartServiceImpl implements ICartService {
     }
 
     private long calculateDiscount(long totalAmount, CouponModel coupon) {
-        if ("percentage".equals(coupon.getDiscountType())) {
+        if ("percentage".equalsIgnoreCase(coupon.getDiscountType().toString())) {
             long discount = totalAmount * coupon.getDiscountValue() / 100;
             log.info(LOGGER_NAME, "Tính giảm giá theo phần trăm, giá trị: " + discount);
             return discount;
-        } else if ("fixed".equals(coupon.getDiscountType())) {
+        } else if ("fixed".equalsIgnoreCase(coupon.getDiscountType().toString())) {
             log.info(LOGGER_NAME, "Tính giảm giá cố định, giá trị: " + coupon.getDiscountValue());
             return coupon.getDiscountValue();
         }
         log.warn(LOGGER_NAME, "Loại giảm giá không xác định: " + coupon.getDiscountType());
         return 0;
+    }
+    @Override
+    public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
+        HttpSession session = request.getSession();
+        List<CartModel> cartItems = null;
+
+        try {
+            cartItems = getCartList(request, response);
+        } catch (ServletException e) {
+            log.error(LOGGER_NAME, "Lỗi khi lấy giỏ hàng: " + e.getMessage());
+            session.setAttribute("discountError", "Lỗi khi lấy giỏ hàng");
+            response.sendRedirect("/gio-hang");
+            return;
+        }
+
+        if (cartItems == null || cartItems.isEmpty()) {
+            log.warn(LOGGER_NAME, "Giỏ hàng trống khi áp dụng mã giảm giá: " + discountCode);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"success\": false, \"message\": \"Giỏ hàng trống, không thể áp dụng voucher\"}");
+            return;
+        }
+
+        long total = calculateTotalAmount(cartItems);
+        CouponModel coupon = couponDAO.findCouponByCode(discountCode);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        if (coupon == null) {
+            log.error(LOGGER_NAME, "Không tìm thấy mã giảm giá: " + discountCode);
+            response.getWriter().write("{\"success\": false, \"message\": \"Mã giảm giá không hợp lệ\"}");
+            return;
+        }
+
+        if (!coupon.getIsAvailable()) {
+            log.warn(LOGGER_NAME, "Mã giảm giá không khả dụng: " + discountCode);
+            session.setAttribute("discountError", "Mã giảm giá không khả dụng");
+            response.getWriter().write("{\"success\": false, \"message\": \"Mã giảm giá không khả dụng\"}");
+            return;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(coupon.getStartDate())) {
+            log.warn(LOGGER_NAME, "Mã giảm giá chưa có hiệu lực: " + discountCode);
+            response.getWriter().write("{\"success\": false, \"message\": \"Mã giảm giá chưa có hiệu lực\"}");
+            return;
+        }
+
+        if (now.isAfter(coupon.getEndDate())) {
+            log.warn(LOGGER_NAME, "Mã giảm giá đã hết hạn: " + discountCode);
+            response.getWriter().write("{\"success\": false, \"message\": \"Mã giảm giá đã hết hạn\"}");
+            return;
+        }
+
+        if (total < coupon.getMinOrderValue()) {
+            log.warn(LOGGER_NAME, "Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã giảm giá: " + discountCode);
+            response.getWriter().write("{\"success\": false, \"message\": \"Đơn hàng chưa đủ điều kiện áp dụng mã giảm giá\"}");
+            return;
+        }
+
+        if (couponDAO.getRemainingQuantity(discountCode) <= 0) {
+            log.warn(LOGGER_NAME, "Mã giảm giá đã hết lượt sử dụng: " + discountCode);
+            response.getWriter().write("{\"success\": false, \"message\": \"Mã giảm giá đã hết lượt sử dụng\"}");
+            return;
+        }
+
+        long discountAmount = calculateDiscount(total, coupon);
+        if (coupon.getMaxDiscountValue() != null && coupon.getMaxDiscountValue() > 0 && discountAmount > coupon.getMaxDiscountValue()) {
+            discountAmount = coupon.getMaxDiscountValue();
+        }
+
+        long discountedTotal = total - discountAmount;
+
+        session.setAttribute("discountCode", discountCode);
+        session.setAttribute("discountAmount", discountAmount);
+        session.setAttribute("discountedTotal", discountedTotal);
+        session.removeAttribute("discountError");
+        log.info(LOGGER_NAME, "Áp dụng mã giảm giá thành công: " + discountCode);
+
+        String json = String.format(
+                "{\"success\": true, \"discountedTotal\": %d, \"discountAmount\": %d, \"message\": \"Áp dụng mã giảm giá thành công\"}",
+                discountedTotal, discountAmount
+        );
+        response.getWriter().write(json);
+
     }
 
     @Override
@@ -463,69 +554,7 @@ public class CartServiceImpl implements ICartService {
         return  listItems;
     }
 
-    @Override
-    public void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException {
-        HttpSession session = request.getSession();
-        List<CartModel> cartItems = (List<CartModel>) session.getAttribute("cart");
-        if (cartItems == null || cartItems.isEmpty()) {
-            log.warn(LOGGER_NAME, "Giỏ hàng trống khi áp dụng mã giảm giá: " + discountCode);
-            session.setAttribute("discountError", "Giỏ hàng trống, không thể áp dụng voucher");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
 
-        long totalAmount = calculateTotalAmount(cartItems);
-        log.info(LOGGER_NAME, "Tính tổng giá trị giỏ hàng khi áp dụng mã giảm giá: " + totalAmount);
-
-        CouponModel coupon = couponDAO.findCouponByCode(discountCode);
-        if (coupon == null) {
-            log.error(LOGGER_NAME, "Không tìm thấy mã giảm giá: " + discountCode);
-            session.setAttribute("discountError", "Mã giảm giá không tồn tại");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
-
-        if (!coupon.getIsAvailable()) {
-            log.warn(LOGGER_NAME, "Mã giảm giá không khả dụng: " + discountCode);
-            session.setAttribute("discountError", "Mã giảm giá không khả dụng");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
-
-        if (LocalDateTime.now().isBefore(coupon.getStartDate())) {
-            log.warn(LOGGER_NAME, "Mã giảm giá chưa có hiệu lực: " + discountCode);
-            session.setAttribute("discountError", "Mã giảm giá chưa có hiệu lực");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
-
-        if (LocalDateTime.now().isAfter(coupon.getEndDate())) {
-            log.warn(LOGGER_NAME, "Mã giảm giá đã hết hạn: " + discountCode);
-            session.setAttribute("discountError", "Mã giảm giá đã hết hạn");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
-
-        if (totalAmount < coupon.getMinOrderValue()) {
-            log.warn(LOGGER_NAME, "Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã giảm giá: " + discountCode);
-            session.setAttribute("discountError", "Đơn hàng chưa đạt giá trị tối thiểu để áp dụng voucher");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
-
-        if (couponDAO.getRemainingQuantity(discountCode) <= 0) {
-            log.warn(LOGGER_NAME, "Mã giảm giá đã hết lượt sử dụng: " + discountCode);
-            session.setAttribute("discountError", "Mã giảm giá đã hết lượt sử dụng");
-            response.sendRedirect("/gio-hang");
-            return;
-        }
-
-        session.setAttribute("discountCode", discountCode);
-        session.removeAttribute("discountError");
-        log.info(LOGGER_NAME, "Áp dụng mã giảm giá thành công: " + discountCode);
-
-        response.sendRedirect("/gio-hang");
-    }
 
     @Override
     public Long createCartForUser(Long id) {
@@ -541,13 +570,12 @@ public class CartServiceImpl implements ICartService {
                     total += product.getPrice() * item.getQuantity();
                     log.info(LOGGER_NAME, "Tính tổng cho sản phẩm ID: " + item.getProductId() + ", giá: " + product.getPrice() + ", số lượng: " + item.getQuantity());
                 } else {
-                    List<ProductVariant> variants = productService.getProductVariantsByProductId(item.getProductId());
-                    for (ProductVariant variant : variants) {
-                        if (variant.getId().equals(item.getVariantId())) {
-                            total += variant.getPrice() * item.getQuantity();
-                            log.info(LOGGER_NAME, "Tính tổng cho biến thể ID: " + item.getVariantId() + ", giá: " + variant.getPrice() + ", số lượng: " + item.getQuantity());
-                            break;
-                        }
+                    ProductVariant variant = productService.findVariantById(item.getVariantId());
+                    if (variant != null) {
+                        total += variant.getPrice() * item.getQuantity();
+                        log.info(LOGGER_NAME, "Tính tổng cho biến thể ID: " + item.getVariantId() + ", giá: " + variant.getPrice() + ", số lượng: " + item.getQuantity());
+                    } else {
+                        log.error(LOGGER_NAME, "Không tìm thấy biến thể ID: " + item.getVariantId());
                     }
                 }
             } else {

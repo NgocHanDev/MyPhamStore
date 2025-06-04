@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.util.StringUtils;
 import vn.edu.hcmuaf.fit.myphamstore.common.OrderStatus;
 import vn.edu.hcmuaf.fit.myphamstore.common.PaymentMethod;
 import vn.edu.hcmuaf.fit.myphamstore.common.SendEmail;
@@ -41,6 +42,8 @@ public class CheckoutServiceImpl implements ICheckoutService {
 
 @Override
 public void displayCheckout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    int discountPrice = (request.getParameter("discountPrice") == null || request.getParameter("discountPrice").isEmpty()) ? 0 : Integer.parseInt(request.getParameter("discountPrice"));
+    System.out.println(discountPrice);
     log.info(CLASS_NAME, "hiển thị trang checkout");
     HttpSession session = request.getSession();
     UserModel user = (UserModel) session.getAttribute("user");
@@ -90,6 +93,7 @@ public void displayCheckout(HttpServletRequest request, HttpServletResponse resp
     request.setAttribute("address", defaultAddress);
     request.setAttribute("listCartDisplay", listCartDisplay);
     request.setAttribute("totalAmount", totalAmount.get());
+    request.setAttribute("discountPrice", discountPrice);
     request.getRequestDispatcher("/frontend/checkout.jsp").forward(request, response);
 }
 

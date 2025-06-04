@@ -14,6 +14,9 @@ public interface ICouponService {
 
 
     List<CouponModel> getCouponsWithPaging(String keyword, int currentPage, int pageSize, String orderBy);
+
+    CouponModel findCouponByCode(String couponCode);
+
     Long getTotalPage(int numOfItem);
 
     void displayCoupon(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
