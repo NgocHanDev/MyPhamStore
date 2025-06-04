@@ -43,4 +43,6 @@ public interface IUserService {
 
     void updateGoogle(UserModel user);
     void updateRoles(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+    void setDefaultAddress(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void deleteAddress(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }

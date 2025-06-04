@@ -143,7 +143,35 @@ To change this template use File | Settings | File Templates.
             .default-address {
                 font-weight: bold;
             }
+            #manageAddressModal .modal-content {
+                background: #fff;
+                padding: 30px 40px;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 600px;
+                position: relative;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                animation: fadeIn 0.3s ease-out;
+            }
 
+            #manageAddressModal .address-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            #manageAddressModal .address-item .btn {
+                width: -webkit-fill-available;
+                margin-top: auto;
+                margin-left: 10px;
+                display: block;
+            }
+
+            .default-address-display {
+                margin-bottom: 10px;
+            }
 
         </style>
 
@@ -243,19 +271,28 @@ To change this template use File | Settings | File Templates.
 
                               <div class="mb-3">
                                   <label>Địa chỉ giao hàng:</label>
-                                  <ul class="address-list">
-                                      <% if (addresss != null) { %>
-                                      <% for (AddressModel addr : addresss) { %>
-                                      <li class="address-item <%= addr.getIsDefault() ? "default-address" : "" %>">
-            <span>
-                <input type="checkbox" name="deleteAddressIds" value="<%= addr.getId() %>" class="delete-address-checkbox" disabled>
-                <%= addr.getNote() + ", " + addr.getWard() + ", " + addr.getDistrict() + ", " + addr.getCity() %> <%= addr.getIsDefault() ? "(Mặc định)" : "" %>
-            </span>
-                                          <input type="radio" name="address" value="<%= addr.getId() %>" <%= addr.getIsDefault() ? "checked" : "" %> disabled>
-                                      </li>
+                                  <div class="default-address-display">
+                                      <%
+                                          AddressModel defaultAddress = null;
+                                          if (addresss != null) {
+                                              for (AddressModel addr : addresss) {
+                                                  if (addr.getIsDefault()) {
+                                                      defaultAddress = addr;
+                                                      break;
+                                                  }
+                                              }
+                                          }
+                                      %>
+                                      <% if (defaultAddress != null) { %>
+                                      <p class="default-address">
+                                          <%= defaultAddress.getNote() + ", " + defaultAddress.getWard() + ", " + defaultAddress.getDistrict() + ", " + defaultAddress.getCity() %>
+                                          (Mặc định)
+                                      </p>
+                                      <% } else { %>
+                                      <p>Chưa có địa chỉ mặc định</p>
                                       <% } %>
-                                      <% } %>
-                                  </ul>
+                                      <button type="button" class="btn btn-primary" id="manageAddressButton">Quản lý địa chỉ</button>
+                                  </div>
                               </div>
 
 
@@ -348,6 +385,28 @@ To change this template use File | Settings | File Templates.
             </form>
           </div>
       </div>
+      <!-- Modal quản lý địa chỉ -->
+      <div id="manageAddressModal" style="display: none; position: fixed; top: 0; left: 0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index:9999;">
+          <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:50%; position:relative;">
+              <span class="close" style="position:absolute; top:10px; right:20px; cursor:pointer;">×</span>
+              <h3>Quản lý địa chỉ</h3>
+              <ul class="address-list">
+                  <% if (addresss != null) { %>
+                  <% for (AddressModel addr : addresss) { %>
+                  <li class="address-item <%= addr.getIsDefault() ? "default-address" : "" %>">
+                <span>
+                    <%= addr.getNote() + ", " + addr.getWard() + ", " + addr.getDistrict() + ", " + addr.getCity() %> <%= addr.getIsDefault() ? "(Mặc định)" : "" %>
+                </span>
+                      <div>
+                          <button class="btn btn-primary set-default-btn" data-address-id="<%= addr.getId() %>">Đặt làm mặc định</button>
+                          <button class="btn btn-danger delete-address-btn" data-address-id="<%= addr.getId() %>">Xóa</button>
+                      </div>
+                  </li>
+                  <% } %>
+                  <% } %>
+              </ul>
+          </div>
+      </div>
 
       <script src="../static/js/jquery_min.js"></script>
       <script src="../static/js/wow.js"></script>
@@ -430,5 +489,77 @@ To change this template use File | Settings | File Templates.
           });
           });
       </script>
+    <script>
+        // Mở modal quản lý địa chỉ
+        document.getElementById('manageAddressButton').addEventListener('click', function () {
+            document.getElementById('manageAddressModal').style.display = 'flex';
+            document.body.classList.add('modal-open');
+        });
+
+        // Đóng modal quản lý địa chỉ
+        document.querySelectorAll('#manageAddressModal .close').forEach(function (element) {
+            element.addEventListener('click', function () {
+                document.getElementById('manageAddressModal').style.display = 'none';
+                document.body.classList.remove('modal-open');
+            });
+        });
+
+        // Xử lý đặt làm địa chỉ mặc định
+        document.querySelectorAll('.set-default-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const addressId = this.getAttribute('data-address-id');
+                fetch('/profile?action=setDefaultAddress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ addressId: addressId })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Đã đặt địa chỉ làm mặc định!');
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi:', error);
+                        alert('Có lỗi xảy ra, vui lòng thử lại!');
+                    });
+            });
+        });
+
+        // Xử lý xóa địa chỉ
+        document.querySelectorAll('.delete-address-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                if (confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) {
+                    const addressId = this.getAttribute('data-address-id');
+                    console.log(addressId);
+                    fetch('/profile?action=deleteAddress', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({ addressId: addressId })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Đã xóa địa chỉ!');
+                                location.reload();
+                            } else {
+                                alert('Lỗi: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Lỗi:', error);
+                            alert('Có lỗi xảy ra, vui lòng thử lại!');
+                        });
+                }
+            });
+        });
+    </script>
     </body>
 </html>

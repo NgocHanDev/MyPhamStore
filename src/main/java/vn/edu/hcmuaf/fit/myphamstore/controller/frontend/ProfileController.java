@@ -43,6 +43,10 @@ public class ProfileController extends HttpServlet {
         if ("uploadAvatar".equalsIgnoreCase(action)) {
             Part filePart = request.getPart("avatar"); // Lấy file từ form
             userService.uploadAvatar(request, response, filePart);
+        } else if ("setDefaultAddress".equalsIgnoreCase(action)) {
+            userService.setDefaultAddress(request, response);
+        } else if ("deleteAddress".equalsIgnoreCase(action)) {
+            userService.deleteAddress(request, response);
         } else {
             doGet(request, response);
         }

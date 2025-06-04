@@ -434,9 +434,9 @@ public class UserServiceImpl implements IUserService {
                 .userId(user.getId())
                 .recipientName(recipientName)
                 .recipientPhone(recipientPhone)
-//                .cityId(cityId)
-//                .districtId(districtId)
-//                .wardCode(wardCode)
+                .cityId(cityId)
+                .districtId(districtId)
+                .wardCode(wardCode)
                 .city(city)
                 .district(district)
                 .ward(ward)
@@ -538,6 +538,88 @@ public class UserServiceImpl implements IUserService {
         //update roles to user
         roleDAO.updateRolesToUser(roles, (long) userId);
         response.sendRedirect(request.getContextPath() + "/admin/users?action=displayDetail&id="+ userId);
+    }
+
+    @Override
+    public void setDefaultAddress(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        UserModel user = (UserModel) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.getWriter().write("{\"success\": false, \"message\": \"User not logged in.\"}");
+            return;
+        }
+
+        String addressIdStr = request.getParameter("addressId");
+        if (addressIdStr == null || addressIdStr.isEmpty()) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Invalid address ID.\"}");
+            return;
+        }
+
+        try {
+            Long addressId = Long.parseLong(addressIdStr);
+            AddressModel address = addressDAO.findAddressById(addressId);
+            if (address == null || !address.getUserId().equals(user.getId())) {
+                response.getWriter().write("{\"success\": false, \"message\": \"Address not found or not authorized.\"}");
+                return;
+            }
+
+            // Đặt tất cả địa chỉ của user thành không mặc định
+            List<AddressModel> addresses = addressDAO.findByUserId(user.getId());
+            for (AddressModel addr : addresses) {
+                if (!addr.getId().equals(addressId)) {
+                    addr.setIsDefault(false);
+                    addressDAO.update(addr);
+                }
+            }
+
+            // Đặt địa chỉ được chọn thành mặc định
+            address.setIsDefault(true);
+            addressDAO.update(address);
+
+            response.getWriter().write("{\"success\": true}");
+        } catch (NumberFormatException e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Invalid address ID format.\"}");
+        } catch (Exception e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Error updating default address.\"}");
+        }
+    }
+
+    @Override
+    public void deleteAddress(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        UserModel user = (UserModel) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.getWriter().write("{\"success\": false, \"message\": \"User not logged in.\"}");
+            return;
+        }
+
+        String addressIdStr = request.getParameter("addressId");
+        if (addressIdStr == null || addressIdStr.isEmpty()) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Invalid address ID.\"}");
+            return;
+        }
+
+        try {
+            Long addressId = Long.parseLong(addressIdStr);
+            AddressModel address = addressDAO.findAddressById(addressId);
+            if (address == null || !address.getUserId().equals(user.getId())) {
+                response.getWriter().write("{\"success\": false, \"message\": \"Address not found or not authorized.\"}");
+                return;
+            }
+
+            // Xóa địa chỉ
+
+            addressDAO.delete(address);
+            response.getWriter().write("{\"success\": true}");
+        } catch (NumberFormatException e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Invalid address ID format.\"}");
+        } catch (Exception e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Error deleting address.\"}");
+        }
     }
 
     public Long authenticate(String email, String password) {
