@@ -5,7 +5,7 @@ public interface Iconstant {
 
     public static final String GOOGLE_CLIENT_SECRET = "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";
 
-    public static final String GOOGLE_REDIRECT_URI = "http://localhost:8080/trang-chu";
+    public static final String GOOGLE_REDIRECT_URI = "http://myphamstore.io.vn/trang-chu";
 
     public static final String GOOGLE_GRANT_TYPE = "authorization_code";
 
@@ -17,7 +17,7 @@ public interface Iconstant {
 
     public static final String FACEBOOK_CLIENT_SECRET = "463e988ed3963dce9476c789feaefeda";
 
-    public static final String FACEBOOK_REDIRECT_URI = "http://localhost:8080/trang-chu";
+    public static final String FACEBOOK_REDIRECT_URI = "http://myphamstore.io.vn/trang-chu";
 
     public static final String FACEBOOK_LINK_GET_TOKEN = "https://graph.facebook.com/v19.0/oauth/access_token";
 
