@@ -8322,171 +8322,170 @@ a.navbar-brand img {
       75% { transform: rotate(270deg); }
       100% { transform: rotate(360deg); }
     }
-.ss_services_wrapper {
-  padding: 20px 0;
-}
+/*.ss_services_wrapper {*/
+/*  padding: 20px 0;*/
+/*}*/
 
-.row.align-items-stretch {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch; /* Đảm bảo các cột có cùng chiều cao */
-}
+/*.row.align-items-stretch {*/
+/*  display: flex;*/
+/*  flex-wrap: wrap;*/
+/*  align-items: stretch; !* Đảm bảo các cột có cùng chiều cao *!*/
+/*}*/
 
-.service-img {
-  height: 100%;
-}
+/*.service-img {*/
+/*  height: 100%;*/
+/*}*/
 
-.service-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Đảm bảo hình ảnh không bị méo */
-  border-radius: 8px;
-}
+/*.service-img img {*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  object-fit: cover; !* Đảm bảo hình ảnh không bị méo *!*/
+/*  border-radius: 8px;*/
+/*}*/
 
-.ss_latest_products.product-three-service {
-  height: 100%;
-}
+/*.ss_latest_products.product-three-service {*/
+/*  height: 100%;*/
+/*}*/
 
-.ss_featured_products_box {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-  margin: 10px;
-  height: calc(100% - 20px); /* Đảm bảo chiều cao đồng bộ */
-}
+/*.ss_featured_products_box {*/
+/*  background: #fff;*/
+/*  border-radius: 8px;*/
+/*  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
+/*  transition: transform 0.3s ease, box-shadow 0.3s ease;*/
+/*  overflow: hidden;*/
+/*  margin: 10px;*/
+/*}*/
 
-.ss_featured_products_box_img img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
+/*.ss_featured_products_box_img img {*/
+/*  width: 100%;*/
+/*  height: 180px;*/
+/*  object-fit: cover;*/
+/*  transition: transform 0.3s ease;*/
+/*}*/
 
-.ss_featured_products_box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+/*.ss_featured_products_box:hover {*/
+/*  transform: translateY(-5px);*/
+/*  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);*/
+/*}*/
 
-.ss_tag, .ss_offer {
-  position: absolute;
-  top: 10px;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #fff;
-}
+/*.ss_tag, .ss_offer {*/
+/*  position: absolute;*/
+/*  top: 10px;*/
+/*  padding: 5px 10px;*/
+/*  border-radius: 4px;*/
+/*  font-size: 12px;*/
+/*  font-weight: bold;*/
+/*  color: #fff;*/
+/*}*/
 
-.ss_tag {
-  left: 10px;
-  background: #ff4d4d;
-}
+/*.ss_tag {*/
+/*  left: 10px;*/
+/*  background: #ff4d4d;*/
+/*}*/
 
-.ss_offer {
-  right: 10px;
-  background: #28a745;
-}
+/*.ss_offer {*/
+/*  right: 10px;*/
+/*  background: #28a745;*/
+/*}*/
 
-.ss_feat_prod_cont_heading_wrapper {
-  padding: 15px;
-  text-align: center;
-}
+/*.ss_feat_prod_cont_heading_wrapper {*/
+/*  padding: 15px;*/
+/*  text-align: center;*/
+/*}*/
 
-.ss_feat_prod_cont_heading_wrapper h4 {
-  font-size: 16px;
-  margin: 0 0 10px;
-  height: 40px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
+/*.ss_feat_prod_cont_heading_wrapper h4 {*/
+/*  font-size: 16px;*/
+/*  margin: 0 0 10px;*/
+/*  height: 40px;*/
+/*  overflow: hidden;*/
+/*  text-overflow: ellipsis;*/
+/*  display: -webkit-box;*/
+/*  -webkit-line-clamp: 2;*/
+/*  -webkit-box-orient: vertical;*/
+/*}*/
 
-.price {
-  font-size: 16px;
-  margin: 5px 0;
-}
+/*.price {*/
+/*  font-size: 16px;*/
+/*  margin: 5px 0;*/
+/*}*/
 
-.price del {
-  color: #999;
-  font-size: 14px;
-}
+/*.price del {*/
+/*  color: #999;*/
+/*  font-size: 14px;*/
+/*}*/
 
-.price ins {
-  color: #e74c3c;
-  font-weight: bold;
-  text-decoration: none;
-}
+/*.price ins {*/
+/*  color: #e74c3c;*/
+/*  font-weight: bold;*/
+/*  text-decoration: none;*/
+/*}*/
 
-.ss_featured_products_box_footer ul {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  padding: 10px 0;
-}
+/*.ss_featured_products_box_footer ul {*/
+/*  display: flex;*/
+/*  gap: 10px;*/
+/*  justify-content: center;*/
+/*  padding: 10px 0;*/
+/*}*/
 
-.ss_btn {
-  background: #0091dc;
-  color: #fff;
-  padding: 8px 15px;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: background 0.3s ease;
-}
+/*.ss_btn {*/
+/*  background: #0091dc;*/
+/*  color: #fff;*/
+/*  padding: 8px 15px;*/
+/*  border-radius: 4px;*/
+/*  font-size: 14px;*/
+/*  transition: background 0.3s ease;*/
+/*}*/
 
-.ss_btn:hover {
-  background: #0070b3;
-}
+/*.ss_btn:hover {*/
+/*  background: #0070b3;*/
+/*}*/
 
-.fa-heart {
-  background: none;
-  border: none;
-  color: #e74c3c;
-  font-size: 20px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
+/*.fa-heart {*/
+/*  background: none;*/
+/*  border: none;*/
+/*  color: #e74c3c;*/
+/*  font-size: 20px;*/
+/*  cursor: pointer;*/
+/*  transition: color 0.3s ease;*/
+/*}*/
 
-.fa-heart:hover {
-  color: #c0392b;
-}
+/*.fa-heart:hover {*/
+/*  color: #c0392b;*/
+/*}*/
 
-.owl-nav {
-  position: absolute;
-  top: -40px;
-  right: 0;
-}
+/*.owl-nav {*/
+/*  position: absolute;*/
+/*  top: -40px;*/
+/*  right: 0;*/
+/*}*/
 
-.owl-nav .owl-prev,
-.owl-nav .owl-next {
-  background: #0091dc !important;
-  color: #fff !important;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  text-align: center;
-  margin: 0 5px;
-}
+/*.owl-nav .owl-prev,*/
+/*.owl-nav .owl-next {*/
+/*  background: #0091dc !important;*/
+/*  color: #fff !important;*/
+/*  border-radius: 50%;*/
+/*  width: 30px;*/
+/*  height: 30px;*/
+/*  line-height: 30px;*/
+/*  text-align: center;*/
+/*  margin: 0 5px;*/
+/*}*/
 
-.owl-nav .owl-prev:hover,
-.owl-nav .owl-next:hover {
-  background: #0070b3 !important;
-}
+/*.owl-nav .owl-prev:hover,*/
+/*.owl-nav .owl-next:hover {*/
+/*  background: #0070b3 !important;*/
+/*}*/
 
-@media (max-width: 767px) {
-  .row.align-items-stretch {
-    flex-direction: column; /* Xếp chồng trên mobile */
-  }
+/*@media (max-width: 767px) {*/
+/*  .row.align-items-stretch {*/
+/*    flex-direction: column; !* Xếp chồng trên mobile *!*/
+/*  }*/
 
-  .service-img img {
-    height: 200px; /* Giảm chiều cao hình ảnh trên mobile */
-  }
+/*  .service-img img {*/
+/*    height: 200px; !* Giảm chiều cao hình ảnh trên mobile *!*/
+/*  }*/
 
-  .ss_featured_products_box_img img {
-    height: 150px;
-  }
-}
+/*  .ss_featured_products_box_img img {*/
+/*    height: 150px;*/
+/*  }*/
+/*}*/
