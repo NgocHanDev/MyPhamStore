@@ -14,6 +14,20 @@ import static java.rmi.server.LogStream.log;
 public class CouponDAOImpl implements ICouponDAO {
 
     @Override
+    public List<CouponModel> query(String sql, Class<CouponModel> clazz) {
+        try {
+            return JDBIConnector.getJdbi().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .mapToBean(clazz)
+                            .list()
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
     public CouponModel getCouponDetail(Long id) {
         String sql = "select * from coupon where id=?";
         try{

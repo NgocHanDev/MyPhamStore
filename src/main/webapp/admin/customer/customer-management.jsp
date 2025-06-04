@@ -62,6 +62,7 @@
                     <th class="text-center">Tên khách hàng</th>
                     <th class="text-center">Email</th>
                     <th class="text-center">Số điện thoại</th>
+                    <th class="text-center">Vai trò</th>
                     <th class="text-center">Trạng thái</th>
                     <th class="text-center">Hành Động</th>
 
@@ -74,6 +75,26 @@
                         <td >${u.fullName}</td>
                         <td class="text-center">${u.email}</td>
                         <td class="text-center">${u.phone}</td>
+                        <td class="text-center">
+                            <c:set var="roles" value="${u.roles}"/>
+                            <c:set var="isEmployee" value="${false}"/>
+                            <c:set var="isAdmin" value="${false}"/>
+                            <c:forEach var="role" items="${roles}">
+                                <c:choose>
+                                    <c:when test="${role.name eq 'EMPLOYEE'}">
+                                        <c:set var="isEmployee" value="${true}"/>
+                                    </c:when>
+                                    <c:when test="${role.name eq 'ADMIN'}">
+                                        <c:set var="isAdmin" value="${true}"/>
+                                    </c:when>
+                                </c:choose>
+                            </c:forEach>
+                            <c:choose>
+                                <c:when test="${isAdmin}">Quản trị viên</c:when>
+                                <c:when test="${isEmployee}">Nhân viên</c:when>
+                                <c:otherwise>Khách hàng</c:otherwise>
+                            </c:choose>
+                        </td>
                         <td class="text-center">
                             <c:choose>
                                 <c:when test="${u.status eq 'ACTIVE'}">Còn hoạt động</c:when>

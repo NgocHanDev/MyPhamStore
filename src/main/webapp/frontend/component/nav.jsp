@@ -98,12 +98,25 @@
                     </c:when>
                     <c:otherwise>
                         <!-- Người dùng đã đăng nhập -->
+                        <c:set var="isManager" value="${false}" />
+                        <c:forEach var="role" items="${sessionScope.user.roles}">
+                            <c:if test="${role.name == 'ADMIN'}">
+                                <c:set var="isManager" value="${true}" />
+                            </c:if>
+                            <c:if test="${role.name == 'EMPLOYEE'}">
+                                <c:set var="isManager" value="${true}" />
+                            </c:if>
+                        </c:forEach>
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     ${user.fullName} <strong>#${user.id}</strong>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuDivider" style="left: 0; z-index: 111121;">
+                                <c:if test="${isManager}">
+                                    <li><a href="<c:url value='/admin' />">Quản lý</a></li>
+                                    <li role="separator" class="divider"></li>
+                                </c:if>
                                 <li><a href="<c:url value='/change-password' />" >Đổi mật khẩu</a></li>
                                 <li><a href="<c:url value='/profile' />">Thông tin cá nhân</a></li>
                                 <li><a href="<c:url value='/order-history' />">Lịch sử đơn hàng</a></li>

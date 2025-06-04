@@ -6,6 +6,12 @@
     color: white;
   }
 </style>
+<c:set var="isAdmin" value="${false}" />
+<c:forEach var="role" items="${sessionScope.user.roles}">
+  <c:if test="${role.name == 'ADMIN'}">
+    <c:set var="isAdmin" value="${true}" />
+  </c:if>
+</c:forEach>
 
 <div class="sidebar-brand">
   <div class="brand-flex">
@@ -55,11 +61,13 @@
           </a>
         </li>
         <li>
+        <c:if test="${isAdmin}" >
         <li>
           <a class="link-admin-header" href="<c:url value="/admin/users" />">
             <span class="las la-balance-scale"></span>Quản lý người dùng
           </a>
         </li>
+          </c:if>
         <li>
         <li>
           <a class="link-admin-header" href="<c:url value="/admin/orders?action=display" />">
@@ -81,11 +89,13 @@
             <span class="las la-balance-scale"></span>Quản lý nhãn hàng
           </a>
         </li>
+        <c:if test="${isAdmin}" >
         <li>
           <a class="link-admin-header" href="<c:url value="/admin/coupons" />">
             <span class="las la-balance-scale"></span>Quản lý mã giảm giá
           </a>
         </li>
+        </c:if>
         <li>
           <a class="link-admin-header" href="<c:url value="/admin/slides" />">
             <span class="las la-balance-scale"></span>Quản lý slide hiển thị

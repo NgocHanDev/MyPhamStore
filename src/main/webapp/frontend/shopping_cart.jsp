@@ -130,14 +130,32 @@
                 </table>
               </div>
               <div class="panel-heading checkout_panel_heading">
-                <h4 class="panel-title"><i class="fa fa-ticket"></i> Nhập mã giảm giá tại đây:</h4>
+                <h4 class="panel-title"><i class="fa fa-ticket"></i> Ưu đãi dành cho bạn:</h4>
               </div>
               <div class="panel-body">
-                <form method="post" action="/gio-hang">
-                  <input type="hidden" name="action" value="applyDiscount" />
-                  <input type="text" name="discountCode" placeholder="Nhập mã giảm giá của bạn" required />
-                  <button type="submit">Xác nhận</button>
-                </form>
+                <div class="voucher-container">
+                  <c:forEach var="voucher" items="${discountCodes}">
+                    <div class="voucher-wrapper">
+                      <img src="${pageContext.request.contextPath}/static/images/content/voucher.png"
+                           alt="Voucher Background" />
+                      <form class="voucher-form" method="post" action="${pageContext.request.contextPath}/gio-hang">
+                        <input type="hidden" name="action" value="applyDiscount" />
+                        <input type="hidden" name="discountCode" value="${voucher.code}" />
+                        <div style="font-size: 14px; font-weight: bold;">Mã: ${voucher.code}</div>
+                        <div style="font-size: 13px; color: #444;">Giảm ${voucher.discountValue}% - ĐH tối thiểu: ${voucher.minOrderValue}đ</div>
+                        <div style="font-size: 12px; color: gray;">HSD: ${voucher.endDate}</div>
+                        <button type="submit">Sử dụng</button>
+                      </form>
+                    </div>
+                  </c:forEach>
+                </div>
+
+                <c:if test="${empty discountCodes}">
+                  <p style="color: gray; font-style: italic;">Bạn chưa có mã giảm giá nào khả dụng.</p>
+                </c:if>
+              </div>
+
+              <!-- end voucher-wrapper -->
               </div>
             </div>
           </div>

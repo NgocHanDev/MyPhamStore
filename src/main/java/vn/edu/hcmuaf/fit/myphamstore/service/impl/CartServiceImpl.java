@@ -327,7 +327,50 @@ public class CartServiceImpl implements ICartService {
         }
 
         List<CartModelHelper> listCartDisplay = new ArrayList<>();
-        AtomicLong totalAmount = new AtomicLong(0);
+        long totalAmount = 0;
+        long selectedTotal = 0;
+
+        // Tính tổng giá trị giỏ hàng
+        for (CartModel cartItem : listCartItems) {
+            ProductModel product = productService.findProductById(cartItem.getProductId());
+            if (product == null) continue;
+            if (cartItem.getVariantId() == null) {
+                selectedTotal += product.getPrice() * cartItem.getQuantity();
+            } else {
+                List<ProductVariant> variants = productService.getProductVariantsByProductId(cartItem.getProductId());
+                ProductVariant variant = variants.stream()
+                        .filter(v -> v.getId().equals(cartItem.getVariantId()))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+
+        List<CouponModel> allCoupons = couponService.findAvailableCoupons();
+        List<CouponModel> discountCodes = new ArrayList<>();
+
+        for (CouponModel coupon : allCoupons) {
+            Long minOrderValue = coupon.getMinOrderValue();
+            Long currentUsage = coupon.getCurrentUsage();
+            Long maxUsage = coupon.getMaxUsage();
+
+            if (minOrderValue == null || currentUsage == null || maxUsage == null) continue;
+
+            if (minOrderValue <= selectedTotal && currentUsage < maxUsage) {
+                discountCodes.add(coupon);
+            }
+        }
+        long discountAmount = 0;
+        String appliedCouponCode = (String) session.getAttribute("discountCode");
+        CouponModel appliedCoupon = null;
+
+        if (appliedCouponCode != null) {
+            for (CouponModel coupon : discountCodes) {
+                if (coupon.getCode().equals(appliedCouponCode)) {
+                    appliedCoupon = coupon;
+                    break;
+                }
+            }
+        }
 
         try {
             for (CartModel cartItem : listCartItems) {
@@ -337,7 +380,7 @@ public class CartServiceImpl implements ICartService {
                     continue;
                 }
                 if (cartItem.getVariantId() == null) {
-                    totalAmount.addAndGet(product.getPrice() * cartItem.getQuantity());
+                    totalAmount += product.getPrice() * cartItem.getQuantity();
                     listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), null));
                     log.info(LOGGER_NAME, "Thêm sản phẩm vào danh sách hiển thị, ID: " + cartItem.getProductId());
                 } else {
@@ -347,12 +390,20 @@ public class CartServiceImpl implements ICartService {
                             .findFirst()
                             .orElse(null);
                     if (variant != null) {
-                        totalAmount.addAndGet((long) (variant.getPrice() * cartItem.getQuantity()));
+                        totalAmount += product.getPrice() * cartItem.getQuantity();
                         listCartDisplay.add(new CartModelHelper(product, cartItem.getQuantity(), variant));
                         log.info(LOGGER_NAME, "Thêm biến thể sản phẩm vào danh sách hiển thị, ID: " + cartItem.getProductId() + ", Variant ID: " + cartItem.getVariantId());
                     } else {
                         log.error(LOGGER_NAME, "Không tìm thấy biến thể sản phẩm, ID: " + cartItem.getProductId() + ", Variant ID: " + cartItem.getVariantId());
                     }
+                }
+            }
+            if (appliedCoupon != null) {
+                discountAmount = calculateDiscount(totalAmount, appliedCoupon);
+                if (appliedCoupon.getMaxDiscountValue() != null &&
+                        appliedCoupon.getMaxDiscountValue() > 0 &&
+                        discountAmount > appliedCoupon.getMaxDiscountValue()) {
+                    discountAmount = appliedCoupon.getMaxDiscountValue();
                 }
             }
         } catch (Exception e) {
@@ -361,29 +412,15 @@ public class CartServiceImpl implements ICartService {
             request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
             return;
         }
-
-        List<CouponModel> discountCodes = couponService.findAvailableCoupons();
-        log.info(LOGGER_NAME, "Tải danh sách mã giảm giá, số lượng: " + discountCodes.size());
-        request.setAttribute("discountCodes", discountCodes);
-
-        String discountCode = (String) session.getAttribute("discountCode");
-        long discountAmount = 0;
-        if (discountCode != null && !discountCodes.isEmpty()) {
-            for (CouponModel coupon : discountCodes) {
-                if (coupon.getCode().equals(discountCode)) {
-                    discountAmount = calculateDiscount(totalAmount.get(), coupon);
-                    log.info(LOGGER_NAME, "Áp dụng mã giảm giá: " + discountCode + ", số tiền giảm: " + discountAmount);
-                    break;
-                }
-            }
-        }
         request.setAttribute("listCartDisplay", listCartDisplay);
         request.setAttribute("totalAmount", totalAmount);
         request.setAttribute("discountAmount", discountAmount);
         request.setAttribute("discountCodes", discountCodes);
-        request.setAttribute("finalAmount", totalAmount.get() - discountAmount);
+        request.setAttribute("finalAmount", totalAmount - discountAmount);
+        request.setAttribute("appliedCouponCode", appliedCouponCode);
 
-        log.info(LOGGER_NAME, "Chuyển tiếp đến trang giỏ hàng, tổng tiền: " + totalAmount.get() + ", giảm giá: " + discountAmount);
+        log.info(LOGGER_NAME, "Chuyển tiếp đến trang giỏ hàng, tổng tiền: " + totalAmount +
+                ", giảm giá: " + discountAmount + ", mã giảm giá áp dụng: " + appliedCouponCode);
         request.getRequestDispatcher("/frontend/shopping_cart.jsp").forward(request, response);
     }
 
@@ -519,5 +556,9 @@ public class CartServiceImpl implements ICartService {
         }
         log.info(LOGGER_NAME, "Tổng giá trị giỏ hàng: " + total);
         return total;
+    }
+    @Override
+    public List<CouponModel> getAvailableCoupons() {
+        return couponService.findAvailableCoupons();
     }
 }
