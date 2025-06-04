@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
 import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-
+import vn.edu.hcmuaf.fit.myphamstore.model.CouponModel;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,4 +20,5 @@ public interface ICartService {
     List<CartModel> getCartList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     void applyDiscountCode(HttpServletRequest request, HttpServletResponse response, String discountCode) throws IOException;
     Long createCartForUser(Long id);
+    List<CouponModel> getAvailableCoupons();
 }

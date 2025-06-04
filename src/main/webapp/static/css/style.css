@@ -7818,42 +7818,42 @@ a.navbar-brand img {
   padding: 15px;
 }
 
-.voucher-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
+/*.voucher-container {*/
+/*  display: flex;*/
+/*  flex-wrap: wrap;*/
+/*  gap: 15px;*/
+/*}*/
 
-.voucher-card {
-  background: #fff;
-  border-radius: 10px;
-  border: 2px dashed #ff9800;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-}
+/*.voucher-card {*/
+/*  background: #fff;*/
+/*  border-radius: 10px;*/
+/*  border: 2px dashed #ff9800;*/
+/*  padding: 15px;*/
+/*  margin-bottom: 15px;*/
+/*  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);*/
+/*  transition: transform 0.2s ease-in-out;*/
+/*}*/
 
-.voucher-card:hover {
-  transform: scale(1.02);
-}
+/*.voucher-card:hover {*/
+/*  transform: scale(1.02);*/
+/*}*/
 
-.voucher-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  font-size: 18px;
-  color: #ff5722;
-}
+/*.voucher-header {*/
+/*  display: flex;*/
+/*  justify-content: space-between;*/
+/*  align-items: center;*/
+/*  font-weight: bold;*/
+/*  font-size: 18px;*/
+/*  color: #ff5722;*/
+/*}*/
 
-.voucher-code {
-  background: #ff9800;
-  padding: 5px 10px;
-  color: white;
-  border-radius: 5px;
-  font-size: 16px;
-}
+/*.voucher-code {*/
+/*  background: #ff9800;*/
+/*  padding: 5px 10px;*/
+/*  color: white;*/
+/*  border-radius: 5px;*/
+/*  font-size: 16px;*/
+/*}*/
 
 .copy-btn {
   background: #4CAF50;
@@ -7869,9 +7869,78 @@ a.navbar-brand img {
   background: #388E3C;
 }
 
-.voucher-details p {
-  margin: 5px 0;
+/*.voucher-details p {*/
+/*  margin: 5px 0;*/
+/*  font-size: 14px;*/
+/*}*/
+
+/* ======= Voucher Background & Form Overlay ======= */
+.voucher-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.voucher-wrapper {
+  position: relative;
+  width: calc(25% - 15px);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  overflow: hidden;
+}
+.voucher-wrapper img {
+  width: 100%;
+  height: auto;
+  min-height: 160px;
+  display: block;
+  border-radius: 5px;
+}
+
+
+.voucher-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 8px;
+  border: 2px dashed #b70000;
+  border-radius: 6px;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.voucher-form input[type="text"] {
+  width: 100%;
+  padding: 8px;
   font-size: 14px;
+  border: 1px dashed #b70000;
+  border-radius: 4px;
+  outline: none;
+}
+
+.voucher-form input[type="text"]::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.voucher-form button {
+  margin-top: 5px;
+  background-color: #2e9ad0;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.voucher-form button:hover {
+  background-color: #1c7bbf;
 }
 
 .discount-value {

@@ -134,6 +134,15 @@ public class CouponServiceImpl implements ICouponService {
 
     @Override
     public List<CouponModel> findAvailableCoupons() {
-        return couponDAO.findAvailableCoupons();
+        log.info(CLASS_NAME, "Lấy danh sách coupon khả dụng");
+        String sql = "SELECT * FROM coupon WHERE is_available = 1 AND end_date >= NOW()";
+        List<CouponModel> availableCoupons = couponDAO.query(sql, CouponModel.class);
+        if (availableCoupons == null || availableCoupons.isEmpty()) {
+            log.info(CLASS_NAME, "Không có coupon khả dụng");
+            return List.of();
+        } else {
+            log.info(CLASS_NAME, "Có " + availableCoupons.size() + " coupon khả dụng");
+            return availableCoupons;
+        }
     }
 }
