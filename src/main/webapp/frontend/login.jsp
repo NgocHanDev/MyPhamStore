@@ -36,6 +36,9 @@
         <input type="text" name="email" id="email" class="form__input" placeholder="Email" required />
         <input type="password" name="password" id="password" class="form__input" placeholder="Mật khẩu" required />
         <div id="message" class="alert alert-danger" role="alert" hidden></div>
+        <!-- Hiển thị CAPTCHA -->
+          <div class="g-recaptcha" style="display: flex; justify-content: center; margin-bottom: 5px" data-sitekey="6LeA6FUrAAAAAOjftyalO8ojb5fRV6kqVh5k6zNi"></div>
+
         <input type="submit" value="Đăng nhập" class="btn" />
       </form>
 
@@ -82,4 +85,5 @@
 </div>
 
 </body>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </html>

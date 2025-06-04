@@ -22,4 +22,6 @@ public interface Iconstant {
     public static final String FACEBOOK_LINK_GET_TOKEN = "https://graph.facebook.com/v19.0/oauth/access_token";
 
     public static final String FACEBOOK_LINK_GET_USER_INFO = "https://graph.facebook.com/me?fields=id,name,email,picture&access_token=";
+
+    public static final String SECRET_KEY_CAPTCHA = "6LeA6FUrAAAAAO0_No58aVIZtPslEUWcbZ_PHzIP";
 }

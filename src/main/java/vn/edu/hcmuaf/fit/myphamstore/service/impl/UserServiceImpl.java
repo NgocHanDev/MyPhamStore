@@ -1,5 +1,7 @@
 package vn.edu.hcmuaf.fit.myphamstore.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.RequestDispatcher;
@@ -11,14 +13,17 @@ import jakarta.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import vn.edu.hcmuaf.fit.myphamstore.common.*;
+import vn.edu.hcmuaf.fit.myphamstore.constant.Iconstant;
 import vn.edu.hcmuaf.fit.myphamstore.dao.*;
 import vn.edu.hcmuaf.fit.myphamstore.exception.UserNotActiveException;
 import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Base64;
@@ -84,6 +89,15 @@ public class UserServiceImpl implements IUserService {
     public void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+
+        boolean verified = verifyRecaptcha(gRecaptchaResponse);
+
+        if (!verified) {
+            request.setAttribute("message", "Vui lòng xác minh không phải robot!");
+            request.getRequestDispatcher("/frontend/login.jsp").forward(request, response);
+            return;
+        }
         HttpSession session = request.getSession();
 
         if (email == null || password == null || email.trim().isEmpty() || password.trim().isEmpty()) {
@@ -546,5 +560,36 @@ public class UserServiceImpl implements IUserService {
             return user.getId();
         }
         return null;
+    }
+    private boolean verifyRecaptcha(String gRecaptchaResponse) throws IOException {
+        String url = "https://www.google.com/recaptcha/api/siteverify";
+        String params = "secret=" + URLEncoder.encode(Iconstant.SECRET_KEY_CAPTCHA, "UTF-8") +
+                "&response=" + URLEncoder.encode(gRecaptchaResponse, "UTF-8");
+
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        con.setRequestMethod("POST");
+        con.setDoOutput(true);
+
+        // Gửi dữ liệu
+        try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
+            wr.writeBytes(params);
+            wr.flush();
+        }
+
+        // Đọc phản hồi
+        StringBuilder responseStr = new StringBuilder();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                responseStr.append(line);
+            }
+        }
+
+        // Dùng Gson parse JSON
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(responseStr.toString(), JsonObject.class);
+        return jsonObject.get("success").getAsBoolean();
     }
 }
