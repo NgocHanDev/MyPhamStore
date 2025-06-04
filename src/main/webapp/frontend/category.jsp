@@ -80,10 +80,10 @@ To change this template use File | Settings | File Templates.
 	</div>
 	<!-- ss inner title Wrapper End -->
 	<!-- CC pc sidebar accordion Start -->
-	<div class="cc_pc_accordion_main_wrapper">
+	<div class="cc_pc_accordion_main_wrapper" style="padding-top: 0px">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
+				<div class="col-3 col-md-3 hidden-sm hidden-xs">
 					<div class="cc_pc_first_accordion_wrapper cc_pc_second_accordion_wrapper2">
 						<form id="filterForm" method="get" action="/danh-muc">
 							<div class="cc_pc_accordion">
@@ -136,7 +136,7 @@ To change this template use File | Settings | File Templates.
 						<p>Không có sản phẩm nào phù hợp với các điều kiện lọc.</p>
 					</c:if>
 				</div>
-				<div class="col-lg-9  col-md-9 col-sm-12 col-xs-12 sidebar2_main_wrapper">
+				<div class="col-9  col-md-9 col-sm-12 col-xs-12 sidebar2_main_wrapper" style="margin-top: -38px">
 					<div class="sidebar_widget2">
 						<div class="filter-area">
 							<div class="showpro">
@@ -177,38 +177,19 @@ To change this template use File | Settings | File Templates.
 														<ins class="price">${product.price - (product.price * 0.2)}</ins>
 													</div>
 													<div class="ss_featured_products_box_footer">
-														<a href="/chi-tiet-san-pham?id=${product.id}">Chi tiết sản phẩm</a>
-														<fieldset class="rating">
-															<input type="radio" name="rating${product.id}" value="5" />
-															<label class="full" title="5 stars"></label>
-															<input type="radio" name="rating${product.id}" value="4 and a half" />
-															<label class="half" title="4.5 stars"></label>
-															<input type="radio" name="rating${product.id}" value="4" />
-															<label class="full" title="4 stars"></label>
-															<input type="radio" name="rating${product.id}" value="3 and a half" />
-															<label class="half" title="3.5 stars"></label>
-															<input type="radio" name="rating${product.id}" value="3" />
-															<label class="full" title="3 stars"></label>
-															<input type="radio" name="rating${product.id}" value="2 and a half" />
-															<label class="half" title="2.5 stars"></label>
-															<input type="radio" name="rating${product.id}" value="2" />
-															<label class="full" title="2 stars"></label>
-															<input type="radio" name="rating${product.id}" value="1 and a half" />
-															<label class="half" title="1.5 stars"></label>
-															<input type="radio" name="rating${product.id}" value="1" />
-															<label class="full" title="1 star"></label>
-															<input type="radio" name="rating${product.id}" value="half" />
-															<label class="half" title="0.5 stars"></label>
-														</fieldset>
-														<ul>
-															<form method="post" action="/gio-hang">
+														<ul style="    display: flex;padding-top: 5px;justify-content: center;">
+															<form method="post" action="<c:url value='/gio-hang' />">
 																<input type="hidden" name="action" value="add">
 																<input type="hidden" name="productId" value="${product.id}">
 																<button type="submit" class="ss_btn">Thêm vào giỏ</button>
 															</form>
-
-															<li><a href="#" class="fa fa-heart" data-product-id="${product.id}" aria-hidden="true"></a></li>
-
+															<li>
+																<form method="post" action="<c:url value='/wishlist' />">
+																	<input type="hidden" name="action" value="add">
+																	<input type="hidden" name="productId" value="${product.id}">
+																	<button type="submit" class="fa fa-heart" aria-hidden="true"></button>
+																</form>
+															</li>
 														</ul>
 													</div>
 												</div>

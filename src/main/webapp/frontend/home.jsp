@@ -110,10 +110,9 @@ To change this template use File | Settings | File Templates.
 
 	<div class="ss_services_wrapper" style="padding-bottom: 0;">
 		<div class="container custom-container">
-			<div class="row">
+			<div class="row" >
 				<div class="col-lg-3 col-md-3 col-sm-12">
 					<div class="service-img">
-						<img src="https://file.hstatic.net/1000006063/file/banner_thuong_hieu_noi_bat_pc_489_x_955_76d4bb5104914396b78f2db70ae4c231.png" alt="" height="500px">
 					</div>
 				</div>
 				<div class="col-lg-9 col-md-9 col-sm-12 col-12">
