@@ -61,12 +61,12 @@ public class ReviewServiceImpl implements IReviewService {
         List<OrderModel> orders = orderService.getOrdersByUserId(Long.parseLong(userId));
         List<OrderModel> confirmedOrders = new ArrayList<>();
         for (OrderModel order : orders) {
-            if (order.getStatus() == OrderStatus.CONFIRMED) {
+            if (order.getStatus() == OrderStatus.CONFIRMED || order.getStatus() == OrderStatus.SHIPPING || order.getStatus() == OrderStatus.DELIVERED) {
                 confirmedOrders.add(order);
             }
         }
         for (OrderModel order : confirmedOrders) {
-            if(order.getStatus() != OrderStatus.CONFIRMED){
+            if(order.getStatus() == OrderStatus.PENDING || order.getStatus() == OrderStatus.CANCELLED) {
                 orders.remove(order);
             }
             List<OrderDetailModel> orderDetailModels = orderService.getOrderDetailsByOrderId(order.getId());
