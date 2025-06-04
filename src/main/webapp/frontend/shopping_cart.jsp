@@ -115,11 +115,14 @@
                     <td colspan="5" style="padding: 20px;">
                       <div style="display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold;">
                         <div>
-                          <p style="margin: 5px 0;">Tổng cộng: <span id="total-amount" class="price">0đ</span></p>
+                          <p>Tổng sản phẩm: <span id="total-amount">${totalAmount}đ</span></p>
+                          <p>Giảm giá: <span id="discount-amount">${discountAmount}đ</span></p>
+                          <p>Tổng cộng: <span id="discounted-total">${finalAmount}đ</span></p>
                         </div>
                         <div>
                           <form id="checkout-form" method="post" action="${pageContext.request.contextPath}/checkout?action=display">
                             <input type="hidden" name="selectedItems" id="selectedItemsInput" />
+                            <input type="hidden" name="discountPrice" id="discountPrice" />
                             <button type="submit" class="btn btn-primary">Thanh toán</button>
                           </form>
                         </div>
@@ -142,9 +145,11 @@
                         <input type="hidden" name="action" value="applyDiscount" />
                         <input type="hidden" name="discountCode" value="${voucher.code}" />
                         <div style="font-size: 14px; font-weight: bold;">Mã: ${voucher.code}</div>
-                        <div style="font-size: 13px; color: #444;">Giảm ${voucher.discountValue}% - ĐH tối thiểu: ${voucher.minOrderValue}đ</div>
+                        <div style="font-size: 13px; color: #444;">Giảm ${voucher.discountValue}${voucher.discountType == 'FIXED' ? 'k' : '%'} - ĐH tối thiểu: ${voucher.minOrderValue}đ</div>
+                        <div style="font-size: 12px; color: gray;">HSD: ${voucher.startDate}</div>
                         <div style="font-size: 12px; color: gray;">HSD: ${voucher.endDate}</div>
-                        <button type="submit">Sử dụng</button>
+                        <button type="submit" class="apply-discount-btn">Sử dụng</button>
+
                       </form>
                     </div>
                   </c:forEach>
@@ -197,6 +202,45 @@
     });
     wow.init();
   });
+</script>
+<script>
+  $(document).ready(function () {
+    $(".apply-discount-btn").click(function (e) {
+      e.preventDefault();
+
+      const $form = $(this).closest("form");
+      const discountCode = $form.find("input[name='discountCode']").val();
+
+      $.ajax({
+        url: "/gio-hang",
+        type: "POST",
+        dataType: "json",
+        data: {
+          action: "applyDiscount",
+          discountCode: discountCode
+        },
+        success: function(response) {
+          if (response.success) {
+            const discountAmount = Number(response.discountAmount);
+            const discountedTotal = Number(response.discountedTotal);
+
+            $("#discount-amount").text(discountAmount.toLocaleString("vi-VN") + "đ");
+            $("#discounted-total").text(discountedTotal.toLocaleString("vi-VN") + "đ");
+            $("#discountPrice").val(discountAmount);
+
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        },
+
+        error: function() {
+          alert("Có lỗi xảy ra khi áp dụng mã giảm giá.");
+        }
+      });
+    });
+  });
+
 </script>
 <script>
   function formatPrice(price, currencySymbol, delimiter) {

@@ -40,7 +40,7 @@ public class ReviewDAOImpl implements IReviewDAO {
 
     @Override
     public List<ReviewModel> getAllReviewsByProductId(Long id) {
-        String sql = "SELECT * FROM review WHERE product_id = :id";
+        String sql = "SELECT * FROM review WHERE product_id = :id order by created_at desc";
         try {
             return JDBIConnector.getJdbi().withHandle(handle -> handle.createQuery(sql)
                     .bind("id", id)

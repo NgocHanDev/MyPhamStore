@@ -297,6 +297,11 @@
           </tr>
         </c:forEach>
         <tr>
+          <td>Số tiền được giảm</td>
+          <td></td>
+          <td >${discountPrice}</td>
+        </tr>
+        <tr>
           <td>Phí Vận Chuyển</td>
           <td></td>
           <td id="fee-cost"></td>
@@ -306,7 +311,7 @@
         <tr>
           <td>Tổng: </td>
           <td></td>
-          <input id="sub-total-amount" type="hidden" value="${totalAmount}">
+          <input id="sub-total-amount" type="hidden" value="${totalAmount - discountPrice}">
           <td id="total-amount"></td>
         </tr>
         </tfoot>
@@ -415,7 +420,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" id="btn-close-modal" class="btn btn-default hidden " data-dismiss="modal" >Đóng</button>
+        <button type="button" id="btn-close-modal" class="btn btn-default  " data-dismiss="modal" >Đóng</button>
       </div>
     </div>
 
@@ -504,7 +509,7 @@
       const totalAmount = parseInt($('#total-amount').text().replace(' đ', '').trim());
       const descriptionInput = generateRandomString(12);
       //create img qr code element
-      let qrCodeUrl = 'https://img.vietqr.io/image/BIDV-V3CASSNGOCHAN-print.png?amount='+totalAmount+'&addInfo='+descriptionInput;
+      let qrCodeUrl = 'https://img.vietqr.io/image/BIDV-V3CASSPHUOCHAI-print.png?amount='+totalAmount+'&addInfo='+descriptionInput;
       // Tạo phần tử img
       let qrCodeImg = $('<img>').attr({
         src: qrCodeUrl,
@@ -527,7 +532,6 @@
         if (time <= 0) {
           $countdown.text('QR đã hết hạn!');
           $('.spinner').hide();
-          $('#btn-close-modal').removeClass('hidden');
           $('.paid-status').text('Đã hết hạn thanh toán!')
           clearInterval(interval);
         }
@@ -536,7 +540,7 @@
       //call api check payment status
       let checkPaymentStatus = setInterval(() => {
         $.ajax({
-          url: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLj8_6ehEoROBCUkTe9gN4YaAOuZt7z4H9MabZBM9xYZNKnbMVjixXSCgy-agOlGFF_8-DSM3sIQEwtQU6x40sFjUwqK1M2yp5wBP7uJ9d-ofWdHYq1o-Y8jW5vefLM2Y-Xz1UbTa3gPToiLlXERwbLFta12POBxZOu0Wzr_ybJkap9GawYHHp3Hu479aivjW6cO_TJK7tl3DYtK8ZijzjQ0A3JCVvWV-1LWM9_XzeyvzdquPBHnRfuJdoMqGX1QC90ZFuOUD3Ju8RLuMoyunsnKve0cTA&lib=Mr7TTfKIhIo4j5Qm7-ehMzaWRBdHt1V3q',
+          url: 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhWMwJXwW1qQT-lb2wGPftMQqOKJtBVFyFH6xfJIMLWwedFPxc-WpkE6Vu1HXQoi2gxvvbemIdqBpDFPJMF8V1VZTgrLsFTHbxAP0ZRsEN4s3eMMyFaFJyBdLJwByrUA4mbXuXmk7lcdUsI94VYIgKV3c8BAP7SNO4aIwjdMrADtQyl3tHP_6tVGUpNlK29fdop3CYtsdkq1AQ_N3mHEExH5xkhStphUstO5qsOkoTfZkSn1108X_Ij1c_NSvm5SmBrGg9p3PNvdyVMR4qAazkTVInjSA&lib=MefAGJO-K_E0-PprtpWJOobDt6-Ehs5Nh',
           type: 'GET',
           success: function(response) {
             const data = response.data[1];

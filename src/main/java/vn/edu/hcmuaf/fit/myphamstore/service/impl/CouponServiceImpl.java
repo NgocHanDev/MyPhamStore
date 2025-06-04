@@ -46,6 +46,12 @@ public class CouponServiceImpl implements ICouponService {
         log.info(CLASS_NAME, "Áp dụng coupon thành công: " + couponCode);
         return coupon;
     }
+
+    @Override
+    public CouponModel findCouponByCode(String couponCode) {
+        return couponDAO.findCouponByCode(couponCode);
+    }
+
     @Override
     public Long getTotalPage(int numOfItem) {
         return couponDAO.getTotalPage(numOfItem);
