@@ -80,40 +80,73 @@ To change this template use File | Settings | File Templates.
 		</div>
 		<div class="col-lg-9  col-md-9 col-sm-12 col-xs-12 sidebar2_main_wrapper">
 			<div class="ss_latest_products product-three-service">
-				<div class="owl-carousel owl-theme">
-					<c:forEach var="product" items="${productsWishlist}">
-						<div class="item">
-							<div class="ss_featured_products_box">
-								<div class="ss_featured_products_box_img">
-									<span class="ss_tag">Mới</span>
-									<span class="ss_offer">Giảm 20%</span>
-									<img src="${product.thumbnail != null ? product.thumbnail : '/path/to/default/image.jpg'}" alt="Product" class="img-responsive">
-								</div>
-								<div class="ss_feat_prod_cont_heading_wrapper">
-									<h4>
-										<a class="limited-text" href="<c:url value='/chi-tiet-san-pham?id=${product.id}' />">${product.name}</a>
-									</h4>
-									<del>${product.price}</del>
-									<ins>${product.price - (product.price * 0.2)}</ins>
-								</div>
-								<div class="ss_featured_products_box_footer">
-									<ul style="display: flex; padding-top: 15px; justify-content: center;">
-										<form method="post" action="/gio-hang">
-											<input type="hidden" name="action" value="add">
-											<input type="hidden" name="productId" value="${product.id}">
-											<button type="submit" class="ss_btn">Thêm vào giỏ</button>
-										</form>
-										<form method="post" action="<c:url value='/wishlist' />">
-											<input type="hidden" name="action" value="remove">
-											<input type="hidden" name="productId" value="${product.id}">
-											<button type="submit" class="remove-wishlist-btn">Xóa</button>
-										</form>
-									</ul>
-								</div>
-							</div>
+<%--				<div class="owl-carousel owl-theme">--%>
+<%--					<c:forEach var="product" items="${productsWishlist}">--%>
+<%--						<div class="item">--%>
+<%--							<div class="ss_featured_products_box">--%>
+<%--								<div class="ss_featured_products_box_img">--%>
+<%--									<span class="ss_tag">Mới</span>--%>
+<%--									<span class="ss_offer">Giảm 20%</span>--%>
+<%--									<img src="${product.thumbnail != null ? product.thumbnail : '/path/to/default/image.jpg'}" alt="Product" class="img-responsive">--%>
+<%--								</div>--%>
+<%--								<div class="ss_feat_prod_cont_heading_wrapper">--%>
+<%--									<h4>--%>
+<%--										<a class="limited-text" href="<c:url value='/chi-tiet-san-pham?id=${product.id}' />">${product.name}</a>--%>
+<%--									</h4>--%>
+<%--									<del>${product.price}</del>--%>
+<%--									<ins>${product.price - (product.price * 0.2)}</ins>--%>
+<%--								</div>--%>
+<%--								<div class="ss_featured_products_box_footer">--%>
+<%--									<ul style="display: flex; padding-top: 15px; justify-content: center;">--%>
+<%--										<form method="post" action="/gio-hang">--%>
+<%--											<input type="hidden" name="action" value="add">--%>
+<%--											<input type="hidden" name="productId" value="${product.id}">--%>
+<%--											<button type="submit" class="ss_btn">Thêm vào giỏ</button>--%>
+<%--										</form>--%>
+<%--										<form method="post" action="<c:url value='/wishlist' />">--%>
+<%--											<input type="hidden" name="action" value="remove">--%>
+<%--											<input type="hidden" name="productId" value="${product.id}">--%>
+<%--											<button type="submit" class="remove-wishlist-btn">Xóa</button>--%>
+<%--										</form>--%>
+<%--									</ul>--%>
+<%--								</div>--%>
+<%--							</div>--%>
+<%--						</div>--%>
+<%--					</c:forEach>--%>
+<%--				</div>--%>
+	<div class="ss_latest_products" style="">
+		<div class="owl-carousel owl-theme">
+			<c:forEach var="product" items="${productsWishlist}">
+				<div class="item">
+					<div class="ss_featured_products_box">
+						<div class="ss_featured_products_box_img">
+							<span class="ss_tag">mới</span>
+							<img src="${product.thumbnail}" alt="${product.name}" class="img-responsive">
 						</div>
-					</c:forEach>
+						<div class="ss_feat_prod_cont_heading_wrapper">
+							<h4><a class="limited-text" href="<c:url value="/product-detail?id=${product.id}" />">${product.name}</a></h4>
+							<del class="price">${product.price}</del>
+							<ins class="price">${product.price - (product.price * 0.2)}</ins>
+						</div>
+						<div class="ss_featured_products_box_footer">
+							<ul style="display: flex; padding-top: 15px; justify-content: center;">
+								<form method="post" action="/gio-hang">
+									<input type="hidden" name="action" value="add">
+									<input type="hidden" name="productId" value="${product.id}">
+									<button type="submit" class="ss_btn">Thêm vào giỏ</button>
+								</form>
+								<form method="post" action="<c:url value='/wishlist' />">
+									<input type="hidden" name="action" value="remove">
+									<input type="hidden" name="productId" value="${product.id}">
+									<button type="submit" class="remove-wishlist-btn">Xóa</button>
+								</form>
+							</ul>
+						</div>
+					</div>
 				</div>
+			</c:forEach>
+		</div>
+	</div>
 				<!-- Phân trang -->
 				<div class="col-lg-12 col-md-12 hidden-sm hidden-xs">
 					<div class="pager_wrapper gc_blog_pagination">

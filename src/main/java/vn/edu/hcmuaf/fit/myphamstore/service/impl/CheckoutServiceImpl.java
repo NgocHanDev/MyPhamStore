@@ -175,6 +175,7 @@ public void checkout(HttpServletRequest request, HttpServletResponse response) t
 
     // Xóa toàn bộ giỏ hàng sau khi thanh toán
     listCartItems.clear();
+    cartService.clearCart(request,response);
     session.setAttribute("cart", listCartItems);
 
     // Cập nhật tổng giá đơn hàng

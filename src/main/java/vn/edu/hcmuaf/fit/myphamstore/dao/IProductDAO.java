@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.myphamstore.dao;
 
+import org.springframework.security.access.method.P;
 import vn.edu.hcmuaf.fit.myphamstore.model.ProductModel;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface IProductDAO extends GenericDAO<ProductModel> {
     List<ProductModel> findVariantsByProductId(Long productId);
     List<ProductModel> getLatestProducts();
      Long countAllProducts();
-
+    List<ProductModel> getMostPopularProducts();
     List<ProductModel> findProduct(Long productId);
 
     Integer getSoldQuantityByProductId(Long id);

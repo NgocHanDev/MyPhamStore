@@ -340,8 +340,59 @@ To change this template use File | Settings | File Templates.
 			</div>
 		</div>
 	</div>
+	<div class="ss_latest_products_wrapper" style="padding-bottom: 0;">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="ss_featured_products_tab">
+						<div class="ss_heading">
+							<h3>Sản Phẩm Được Mua Nhiều</h3>
+						</div>
+					</div>
+					<div class="ss_latest_products">
+						<div class="owl-carousel owl-theme">
+							<c:forEach var="product" items="${mostPopularProducts}">
+								<div class="item">
+									<div class="ss_featured_products_box">
+										<div class="ss_featured_products_box_img">
+											<span class="ss_tag">mới</span>
+											<img src="${product.thumbnail}" alt="${product.name}" class="img-responsive">
+										</div>
+										<div class="ss_feat_prod_cont_heading_wrapper">
+											<h4><a class="limited-text" href="<c:url value="/product-detail?id=${product.id}" />">${product.name}</a></h4>
+											<del class="price">${product.price}</del>
+											<ins class="price">${product.price - (product.price * 0.2)}</ins>
+										</div>
+										<div class="ss_featured_products_box_footer">
+											<ul style="    display: flex
+;
+    padding-top: 15px;
+    justify-content: center;">
+												<form method="post" action="<c:url value='/gio-hang' />">
+													<input type="hidden" name="action" value="add">
+													<input type="hidden" name="productId" value="${product.id}">
+													<button type="submit" class="ss_btn">Thêm vào giỏ</button>
+												</form>
 
-		<div class="ss_latest_products_wrapper" style="padding-bottom: 0;">
+												<li>
+													<form method="post" action="<c:url value='/wishlist' />">
+														<input type="hidden" name="action" value="add">
+														<input type="hidden" name="productId" value="${product.id}">
+														<button type="submit" class="fa fa-heart" aria-hidden="true"></button>
+													</form>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</c:forEach>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ss_latest_products_wrapper" style="padding-bottom: 0;">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-12">
@@ -392,8 +443,7 @@ To change this template use File | Settings | File Templates.
 					</div>
 				</div>
 			</div>
-			</div>
-		</div>
+	</div>
 
 	<!-- Latest Products Wrapper End -->
 	

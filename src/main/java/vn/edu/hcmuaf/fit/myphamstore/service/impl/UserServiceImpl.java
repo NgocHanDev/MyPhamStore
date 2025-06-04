@@ -13,10 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import vn.edu.hcmuaf.fit.myphamstore.common.*;
 import vn.edu.hcmuaf.fit.myphamstore.dao.*;
 import vn.edu.hcmuaf.fit.myphamstore.exception.UserNotActiveException;
-import vn.edu.hcmuaf.fit.myphamstore.model.AddressModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartHeaderModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.CartModel;
-import vn.edu.hcmuaf.fit.myphamstore.model.UserModel;
+import vn.edu.hcmuaf.fit.myphamstore.model.*;
 import vn.edu.hcmuaf.fit.myphamstore.service.IUserService;
 import vn.edu.hcmuaf.fit.myphamstore.service.LoggingService;
 
@@ -106,7 +103,7 @@ public class UserServiceImpl implements IUserService {
                 UserModel user = this.findUserByEmail(email); // Gọi thêm phương thức này
                 if (user != null) {
                     request.getSession().setAttribute("user", user);
-                    if (user.getRoles() != null && user.getRoles().stream().anyMatch(r -> r.getName().equalsIgnoreCase (RoleType.ADMIN))) {
+                    if (user.getRoles() != null && user.getRoles().stream().anyMatch(r -> (r.getName().equalsIgnoreCase(RoleType.ADMIN)) || (r.getName().equalsIgnoreCase(RoleType.EMPLOYEE)))) {
                         response.sendRedirect(request.getContextPath() + "/admin");
                     } else {
                         CartHeaderModel cartHeaderModel = cartDAO.getCartByUserId(user.getId());
@@ -272,10 +269,12 @@ public class UserServiceImpl implements IUserService {
     public void detailUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long id = Long.parseLong(request.getParameter("id"));
         UserModel userModel = null;
+        List<RoleModel> roles = roleDAO.findAllRoles();
         if(id != null) {
             userModel = this.findUserById(id);
         }
         if(userModel != null) {
+            request.setAttribute("availableRoles", roles);
             request.setAttribute("user", userModel);
             request.getRequestDispatcher("/admin/customer/user-detail.jsp").forward(request, response);
         }
@@ -305,7 +304,6 @@ public class UserServiceImpl implements IUserService {
         if(verify) {
             UserModel user = userDAO.getUserByEmail(email);
             user.setStatus(UserStatus.ACTIVE);
-            roleDAO.setRoleToUser(RoleType.CUSTOMER, user.getId());
             userDAO.update(user);
             request.setAttribute("message", "Kích hoạt tài khoản thành công");
         }else {
@@ -526,6 +524,20 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void updateGoogle(UserModel user) {
         userDAO.update(user);
+    }
+
+    @Override
+    public void updateRoles(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //get user id from request
+        int userId = Integer.parseInt(request.getParameter("id"));
+        //get roles from request
+        List<RoleModel> roles = Arrays.stream(request.getParameterValues("roles"))
+                .map(roleName -> roleDAO.findRoleByName(roleName.trim()))
+                .toList();
+
+        //update roles to user
+        roleDAO.updateRolesToUser(roles, (long) userId);
+        response.sendRedirect(request.getContextPath() + "/admin/users?action=displayDetail&id="+ userId);
     }
 
     public Long authenticate(String email, String password) {
