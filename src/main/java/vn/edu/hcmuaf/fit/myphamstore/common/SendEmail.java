@@ -103,7 +103,7 @@
                     "            <p>Chào bạn,</p>\n" +
                     "            <p>Cảm ơn bạn đã đăng ký tài khoản tại <strong>Website của chúng tôi</strong>.</p>\n" +
                     "            <p>Vui lòng nhấn vào nút bên dưới để kích hoạt tài khoản của bạn:</p>\n" +
-                    "            <a href=\"http://localhost:8080/register?action=verify&register&otp="+otp+"&email="+to+"  \">Kích hoạt tài khoản</a>\n" +
+                    "            <a href=\"http://myphamstore.io.vn/register?action=verify&register&otp="+otp+"&email="+to+"  \">Kích hoạt tài khoản</a>\n" +
                     "            <p>Nếu bạn không thực hiện đăng ký, vui lòng bỏ qua email này.</p>\n" +
                     "            <p>Trân trọng,</p>\n" +
                     "            <p><strong>Đội ngũ hỗ trợ</strong></p>\n" +
@@ -367,7 +367,7 @@
                     "            <p>Xin chào,</p>\n" +
                     "            <p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình.</p>\n" +
                     "            <p>Vui lòng nhấn vào nút bên dưới để đặt lại mật khẩu:</p>\n" +
-                    "            <a class=\"reset-link\" href=\"http://localhost:8080/reset-password?otp=" + otp + "&email=" + to + "\">Đặt lại mật khẩu</a>\n" +
+                    "            <a class=\"reset-link\" href=\"http://myphamstore.io.vn/reset-password?otp=" + otp + "&email=" + to + "\">Đặt lại mật khẩu</a>\n" +
                     "            <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>\n" +
                     "        </div>\n" +
                     "        <div class=\"email-footer\">\n" +
