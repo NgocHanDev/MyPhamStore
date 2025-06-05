@@ -115,9 +115,9 @@
                     <td colspan="5" style="padding: 20px;">
                       <div style="display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold;">
                         <div>
-                          <p>Tổng sản phẩm: <span id="total-amount">${totalAmount}đ</span></p>
-                          <p>Giảm giá: <span id="discount-amount">${discountAmount}đ</span></p>
-                          <p>Tổng cộng: <span id="discounted-total">${finalAmount}đ</span></p>
+                          <p>Tổng sản phẩm: <span id="total-amount">0đ</span></p>
+                          <p>Giảm giá: <span id="discount-amount">0đ</span></p>
+                          <p>Tổng cộng: <span id="discounted-total">0đ</span></p>
                         </div>
                         <div>
                           <form id="checkout-form" method="post" action="${pageContext.request.contextPath}/checkout?action=display">
@@ -268,10 +268,23 @@
   function updateTotalAmount() {
     let total = 0;
     $(".product-checkbox:checked").each(function () {
-      total += parseInt($(this).data("price"));
+      total += parseInt($(this).data("price")) || 0;
     });
+
     $("#total-amount").text(total.toLocaleString('vi-VN') + "đ");
+
+    // Lấy lại số giảm giá hiện tại từ DOM (đã được áp dụng từ trước)
+    let discount = 0;
+    const discountText = $("#discount-amount").text().replace(/\D/g, "");
+    if (discountText) {
+      discount = parseInt(discountText);
+    }
+
+    // Cập nhật lại tổng cộng sau giảm giá
+    const finalAmount = total - discount;
+    $("#discounted-total").text(finalAmount.toLocaleString('vi-VN') + "đ");
   }
+
 
   function updateSelectedItems() {
     const selectedKeys = [];
@@ -392,6 +405,7 @@
         console.error('Failed to fetch cart count');
       }
     });
+
   }
 </script>
 </body>

@@ -764,7 +764,7 @@ VALUES
 ('PERCENT10', 100000, 'PERCENTAGE', 10, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 2, 10, true, 50000),
 
 -- 2. Phiếu giảm cố định, đang hoạt động, không có giới hạn giảm
-('FIXED50K', 200000, 'FIXED', 50, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, null, true, null),
+('FIXED50K', 200000, 'FIXED', 50, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, 1, true, null),
 
 -- 3. Phiếu đã hết hạn
 ('EXPIRED_COUPON', 50000, 'PERCENTAGE', 15, '2025-04-01 00:00:00', '2025-05-01 23:59:59', 5, 100, true, 30000),
@@ -776,16 +776,16 @@ VALUES
 ('LIMITED_USE', 100000, 'PERCENTAGE', 20, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 100, 100, true, 70000),
 
 -- 6. Phiếu đang hoạt động, nhưng bị vô hiệu hóa
-('DISABLED_COUPON', 0, 'FIXED', 10, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, null, false, null),
+('DISABLED_COUPON', 0, 'FIXED', 10, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, 1, false, null),
 
 -- 7. Phiếu giảm giá phần trăm, không có giới hạn số lần dùng
-('UNLIMITED_PERCENT', 0, 'PERCENTAGE', 5, '2025-05-01 00:00:00', '2025-12-31 23:59:59', 250, null, true, null),
+('UNLIMITED_PERCENT', 0, 'PERCENTAGE', 5, '2025-05-01 00:00:00', '2025-12-31 23:59:59', 250, 1, true, null),
 
 -- 8. Phiếu giảm cố định, đã dùng nhưng chưa đạt `max_usage`
 ('USED_FIXED', 150000, 'FIXED', 30, '2025-05-01 00:00:00', '2025-06-30 23:59:59', 3, 10, true, null),
 
 -- 9. Phiếu giảm giá phần trăm có giới hạn giảm nhỏ
-('PERCENT_LOW_CAP', 100000, 'PERCENTAGE', 50, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, null, true, 20000),
+('PERCENT_LOW_CAP', 100000, 'PERCENTAGE', 50, '2025-06-01 00:00:00', '2025-06-30 23:59:59', 0, 1, true, 20000),
 
 -- 10. Phiếu không yêu cầu giá trị đơn hàng tối thiểu
 ('NO_MIN_ORDER', 0, 'FIXED', 15, '2025-06-01 00:00:00', '2025-07-01 23:59:59', 1, 5, true, null);

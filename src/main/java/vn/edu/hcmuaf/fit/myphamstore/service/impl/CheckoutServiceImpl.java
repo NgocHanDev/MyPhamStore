@@ -20,9 +20,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CheckoutServiceImpl implements ICheckoutService {
@@ -43,11 +45,24 @@ public class CheckoutServiceImpl implements ICheckoutService {
 @Override
 public void displayCheckout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     int discountPrice = (request.getParameter("discountPrice") == null || request.getParameter("discountPrice").isEmpty()) ? 0 : Integer.parseInt(request.getParameter("discountPrice"));
-    System.out.println(discountPrice);
     log.info(CLASS_NAME, "hiển thị trang checkout");
+    String selectedItemsParam = request.getParameter("selectedItems");
+    System.out.println(selectedItemsParam);
     HttpSession session = request.getSession();
     UserModel user = (UserModel) session.getAttribute("user");
     List<CartModel> listCartItems = cartService.getCartList(request, response);
+
+// Lọc danh sách giỏ hàng theo các sản phẩm đã chọn
+    if (selectedItemsParam != null && !selectedItemsParam.isEmpty()) {
+        String[] itemIds = selectedItemsParam.split(",");
+        Set<Long> selectedProductIds = Arrays.stream(itemIds)
+                .map(Long::parseLong)
+                .collect(Collectors.toSet());
+
+        listCartItems = listCartItems.stream()
+                .filter(item -> selectedProductIds.contains(item.getProductId()))
+                .collect(Collectors.toList());
+    }
 
     if (listCartItems == null || listCartItems.isEmpty()) {
         request.setAttribute("errorMessage", "Giỏ hàng trống.");
